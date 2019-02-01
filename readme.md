@@ -37,6 +37,20 @@ yarn link "@globalfishingwatch/map-components"
 yarn start
 ```
 
+## Release
+
+Using [zeit release](https://github.com/zeit/release) to make our life easier, so just run
+
+```bash
+npx release major|minor|patch
+```
+
+and it will update the package.json, generate the github release and push your changes and finally:
+
+```bash
+yarn publish
+```
+
 ## License
 
 MIT ©
