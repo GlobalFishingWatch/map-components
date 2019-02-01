@@ -23,7 +23,7 @@ class MyApp extends Component {
 ## Develop
 
 ```bash
-git clone https://github.com/GlobalFishingWatch/map-components
+git clone git@github.com:GlobalFishingWatch/map-components.git
 cd map-components
 yarn install
 yarn link
