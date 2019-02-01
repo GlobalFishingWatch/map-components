@@ -1,1 +1,1 @@
-export { default as Example } from './components/example/example'
+export { default as MiniGlobe } from './components/miniglobe/miniglobe'
