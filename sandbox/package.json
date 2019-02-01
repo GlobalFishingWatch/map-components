@@ -1,5 +1,5 @@
 {
-  "name": "@globalfishingwatch/map-components-workspace",
+  "name": "@globalfishingwatch/map-components-sandbox",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

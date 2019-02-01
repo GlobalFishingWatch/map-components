@@ -31,7 +31,7 @@ yarn start
 ```
 
 ```bash
-cd workspace
+cd sandbox
 yarn install
 yarn link "@globalfishingwatch/map-components"
 yarn start
