@@ -1,14 +1,14 @@
 {
-  "vendors.js": "/static/js/vendors.36cf8994.js",
-  "vendors.js.map": "/static/js/vendors.59564683d7ab88e2d21a.js.map",
-  "app.js": "/static/js/app.a1d2241b.js",
-  "app.js.map": "/static/js/app.59564683d7ab88e2d21a.js.map",
-  "runtime~app.js": "/static/js/runtime~app.59564683d7ab88e2d21a.js",
-  "runtime~app.js.map": "/static/js/runtime~app.59564683d7ab88e2d21a.js.map",
-  "src-components-miniglobe-miniglobe.css": "/static/css/src-components-miniglobe-miniglobe.59564683d7ab88e2d21a.css",
-  "src-components-miniglobe-miniglobe.js": "/static/js/src-components-miniglobe-miniglobe.71f59239.js",
-  "src-components-miniglobe-miniglobe.js.map": "/static/js/src-components-miniglobe-miniglobe.59564683d7ab88e2d21a.js.map",
-  "static/js/4.de20857f.js": "/static/js/4.de20857f.js",
-  "static/js/4.59564683d7ab88e2d21a.js.map": "/static/js/4.59564683d7ab88e2d21a.js.map",
-  "index.html": "/index.html"
+  "vendors.js": "/map-components/static/js/vendors.34fd9e2f.js",
+  "vendors.js.map": "/map-components/static/js/vendors.c49590ca9dd500bec4c9.js.map",
+  "app.js": "/map-components/static/js/app.2c31a10e.js",
+  "app.js.map": "/map-components/static/js/app.c49590ca9dd500bec4c9.js.map",
+  "runtime~app.js": "/map-components/static/js/runtime~app.c49590ca9dd500bec4c9.js",
+  "runtime~app.js.map": "/map-components/static/js/runtime~app.c49590ca9dd500bec4c9.js.map",
+  "src-components-miniglobe-miniglobe.css": "/map-components/static/css/src-components-miniglobe-miniglobe.c49590ca9dd500bec4c9.css",
+  "src-components-miniglobe-miniglobe.js": "/map-components/static/js/src-components-miniglobe-miniglobe.71f59239.js",
+  "src-components-miniglobe-miniglobe.js.map": "/map-components/static/js/src-components-miniglobe-miniglobe.c49590ca9dd500bec4c9.js.map",
+  "static/js/4.de20857f.js": "/map-components/static/js/4.de20857f.js",
+  "static/js/4.c49590ca9dd500bec4c9.js.map": "/map-components/static/js/4.c49590ca9dd500bec4c9.js.map",
+  "index.html": "/map-components/index.html"
 }
