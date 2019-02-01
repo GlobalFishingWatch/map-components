@@ -4,7 +4,7 @@
   "description": "Set of components used in global fishing watch world",
   "author": "Satellite Studio",
   "license": "MIT",
-  "repository": "https://github.com/GlobalFishingWatch/gfw-map-components",
+  "repository": "https://github.com/GlobalFishingWatch/map-components",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "engines": {
