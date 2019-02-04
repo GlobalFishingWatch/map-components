@@ -1,24 +1,10 @@
-# gfw-components
+# GFW map components
 
 Set of components used in global fishing watch map frontend.
 
-## Install
+## Install & Usage
 
-```bash
-yarn add gfw-components
-```
-
-## Usage
-
-```jsx
-import { MiniGloble } from '@globalfishingwatch/map-components'
-
-class MyApp extends Component {
-  render() {
-    return <MiniGloble />
-  }
-}
-```
+Check out the [online documentation](http://globalfishingwatch.io/map-components/)
 
 ## Develop
 
