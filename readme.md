@@ -23,6 +23,16 @@ yarn link "@globalfishingwatch/map-components"
 yarn start
 ```
 
+## Documentation
+
+[Docz](https://www.docz.site/) is used to include live components documentation using mdx.
+
+This playground could be used locally to test the components running:
+
+```bash
+yarn docz:dev
+```
+
 ## Release
 
 Using [zeit release](https://github.com/zeit/release) to make our life easier, so just run
@@ -35,6 +45,11 @@ and it will update the package.json, generate the github release and push your c
 
 ```bash
 yarn publish
+```
+
+Last step is to keep the documentation updated running:
+```bash
+yarn docz:deploy
 ```
 
 ## License
