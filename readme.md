@@ -11,7 +11,7 @@ yarn add gfw-components
 ## Usage
 
 ```jsx
-import { MiniGloble } from '@globalfishingwatch/map-components'
+import { MiniGlobe } from '@globalfishingwatch/map-components'
 
 class MyApp extends Component {
   render() {
