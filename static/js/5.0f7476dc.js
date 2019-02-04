@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[5],{"./.docz/app/imports.js":function(n,i,e){"use strict";e.r(i),e.d(i,"imports",function(){return o});var o={"src/index.mdx":function(){return e.e(3).then(e.bind(null,"./src/index.mdx"))},"src/miniglobe/miniglobe.mdx":function(){return Promise.all([e.e(0),e.e(4)]).then(e.bind(null,"./src/miniglobe/miniglobe.mdx"))}}}},0,[0,4,3]]);
+//# sourceMappingURL=5.35aa975fb9f908d80252.js.map
