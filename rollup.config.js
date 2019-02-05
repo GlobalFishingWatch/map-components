@@ -5,7 +5,7 @@ import postcss from 'rollup-plugin-postcss'
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
 import json from 'rollup-plugin-json'
-import reactSvg from 'rollup-plugin-react-svg'
+import svgr from '@svgr/rollup'
 
 import pkg from './package.json'
 
@@ -25,19 +25,7 @@ export default {
   ],
   plugins: [
     json(),
-    reactSvg({
-      // svgo options
-      svgo: {
-        plugins: [], // passed to svgo
-        multipass: true,
-      },
-      // whether to output jsx
-      jsx: false,
-      // include: string
-      include: null,
-      // exclude: string
-      exclude: null,
-    }),
+    svgr(),
     external(),
     postcss({ modules: true }),
     url(),
