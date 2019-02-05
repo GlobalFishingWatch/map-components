@@ -1,0 +1,16 @@
+.mainContainer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+
+.humanizedTimeSpan {
+  font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.tools {
+  margin-bottom: 100px;
+}

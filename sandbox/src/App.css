@@ -1,3 +1,23 @@
-.App {
-  text-align: center;
+.nav {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 20px;
+  background-color: #021236;
+}
+
+.nav a {
+  font-size: 24px;
+  margin-right: 10px;
+  color: #33447e;
+  text-decoration: none;
+}
+
+.nav a.active {
+  color: #e54430;
+  text-decoration: underline;
+}
+
+.content {
+  padding-top: 20px;
 }
