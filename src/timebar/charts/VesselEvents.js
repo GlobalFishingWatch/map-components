@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import classNames from 'classnames'
-import * as m from 'dayjs'
-import { getTime } from '../utils'
+import dayjs from 'dayjs'
 import styles from './VesselEvents.css'
 import IconEncounter from '../icons/events/encounter.svg'
 import IconUnregistered from '../icons/events/unregistered.svg'
@@ -86,7 +85,7 @@ class VesselEvents extends Component {
   filterEvents = memoize((events, outerStart, outerEnd) => {
     let filteredEvents = events
 
-    if (m(outerEnd).diff(m(outerStart), 'day') > 300) {
+    if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 300) {
       filteredEvents = events.filter(event => event.type !== 'fishing')
     }
 
@@ -119,7 +118,9 @@ class VesselEvents extends Component {
       >
         {ICONS[highlightedEvent.type]}
         <div className={styles.tooltipText}>
-          <div className={styles.tooltipDate}>{m(highlightedEvent.start).format('MMM D YYYY')}</div>
+          <div className={styles.tooltipDate}>
+            {dayjs(highlightedEvent.start).format('MMM D YYYY')}
+          </div>
           {
             {
               port: 'Docked at ???',

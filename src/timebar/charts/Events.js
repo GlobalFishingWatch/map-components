@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import { stack, stackOrderNone, stackOffsetSilhouette, area, curveStepAfter } from 'd3-shape'
-import * as m from 'dayjs'
-import { animated, Spring } from 'react-spring'
+import dayjs from 'dayjs'
 import styles from './Events.css'
 
 const TOP_MARGIN = 5
@@ -21,8 +20,8 @@ class Events extends Component {
       }
 
       const baseUnit = events.offset
-      const mStart = m(events.start)
-      const mEnd = m(events.end)
+      const mStart = dayjs(events.start)
+      const mEnd = dayjs(events.end)
       let mCurrentStart = mStart.clone()
       const numUnits = mEnd.diff(mStart, baseUnit)
 

@@ -139,7 +139,7 @@ class TimelineUnits extends Component {
           enter={d => ({ left: d.x, width: d.width, opacity: 1 })}
           update={d => ({ left: d.x, width: d.width, opacity: 1 })}
         >
-          {units.map(d => s => (
+          {d => s => (
             <animated.div style={s} className={styles.unit}>
               {baseUnit === 'hour' ? (
                 <animated.div>{d.label}</animated.div>
@@ -155,7 +155,7 @@ class TimelineUnits extends Component {
                 </animated.button>
               )}
             </animated.div>
-          ))}
+          )}
         </Transition>
       </div>
     )
