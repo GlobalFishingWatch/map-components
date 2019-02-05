@@ -12,7 +12,7 @@
     "npm": ">=5"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "cross-env NODE_ENV=production rollup -c",
     "start": "rollup -c -w",
     "docz:dev": "docz dev",
     "docz:build": "docz build",
@@ -69,6 +69,7 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-url": "^2.2.0",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0"
