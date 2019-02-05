@@ -4,10 +4,10 @@ import memoize from 'memoize-one'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import styles from './VesselEvents.css'
-import IconEncounter from '../icons/events/encounter.svg'
-import IconUnregistered from '../icons/events/unregistered.svg'
-import IconGap from '../icons/events/gap.svg'
-import IconPort from '../icons/events/port.svg'
+import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
+import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
+import { ReactComponent as IconGap } from '../icons/events/gap.svg'
+import { ReactComponent as IconPort } from '../icons/events/port.svg'
 
 const ICONS = {
   encounter: <IconEncounter />,

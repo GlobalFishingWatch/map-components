@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styles from './DateSelector.css'
-import IconArrowUp from './icons/arrowUp.svg'
-import IconArrowDown from './icons/arrowDown.svg'
+import { ReactComponent as IconArrowUp } from '../icons/arrowUp.svg'
+import { ReactComponent as IconArrowDown } from '../icons/arrowDown.svg'
 
 class DateSelector extends Component {
   render() {

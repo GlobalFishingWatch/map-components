@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { getHumanizedDates } from './utils'
+import { getHumanizedDates } from '../utils'
 import styles from './Bookmark.css'
-import IconBookmarkFilled from './icons/bookmarkFilled.svg'
-import IconDelete from './icons/delete.svg'
-import Arrow from './icons/arrow.svg'
+import { ReactComponent as IconBookmarkFilled } from '../icons/bookmarkFilled.svg'
+import { ReactComponent as IconDelete } from '../icons/delete.svg'
+import { ReactComponent as Arrow } from '../icons/arrow.svg'
 
 const MIN_WIDTH = 32
 const MIN_WIDTH_WITH_OVERFLOW_ARROWS = 52

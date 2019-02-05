@@ -10,7 +10,7 @@ import {
   getDeltaMs,
   isMoreThanADay,
   stickToClosestUnit,
-} from './utils'
+} from '../utils'
 import Bookmark from './Bookmark'
 import TimelineUnits from './TimelineUnits'
 import Handler from './TimelineHandler'

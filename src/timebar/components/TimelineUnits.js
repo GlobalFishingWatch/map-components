@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import { animated, Transition } from 'react-spring'
-import { getTime, getDeltaDays } from './utils'
+import { getTime, getDeltaDays } from '../utils'
 import styles from './TimelineUnits.css'
 
 const getUnitLabel = (mUnit, baseUnit, availableWidth) => {

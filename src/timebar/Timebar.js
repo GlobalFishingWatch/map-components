@@ -9,18 +9,18 @@ import {
   isMoreThanADay,
   getHumanizedDates,
 } from './utils'
-import TimeRangeSelector from './TimeRangeSelector'
-import Timeline from './Timeline'
-import styles from './Timebar.css'
-import IconLoop from './icons/loop.svg'
-import IconBack from './icons/back.svg'
-import IconPlay from './icons/play.svg'
-import IconForward from './icons/forward.svg'
-import IconTimeRange from './icons/timeRange.svg'
-import IconBookmark from './icons/bookmark.svg'
-import IconBookmarkFilled from './icons/bookmarkFilled.svg'
-import IconMinus from './icons/minus.svg'
-import IconPlus from './icons/plus.svg'
+import styles from './timebar.css'
+import TimeRangeSelector from './components/TimeRangeSelector'
+import Timeline from './components/Timeline'
+import { ReactComponent as IconLoop } from './icons/loop.svg'
+import { ReactComponent as IconBack } from './icons/back.svg'
+import { ReactComponent as IconPlay } from './icons/play.svg'
+import { ReactComponent as IconForward } from './icons/forward.svg'
+import { ReactComponent as IconTimeRange } from './icons/timeRange.svg'
+import { ReactComponent as IconBookmark } from './icons/bookmark.svg'
+import { ReactComponent as IconBookmarkFilled } from './icons/bookmarkFilled.svg'
+import { ReactComponent as IconMinus } from './icons/minus.svg'
+import { ReactComponent as IconPlus } from './icons/plus.svg'
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
 
