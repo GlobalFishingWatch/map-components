@@ -1,0 +1,112 @@
+.TimeRangeSelector {
+  position: absolute;
+  bottom: var(--timeline-size);
+  left: 0;
+  width: 46rem;
+  background: var(--main-background-color);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 3.5rem 3rem 3rem;
+  box-sizing: border-box;
+  z-index: 0;
+  box-shadow: 0 0 28px 5px rgba(0, 0, 0, 0.8);
+}
+
+.veil {
+  content: '';
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: var(--main-background-color);
+  opacity: 0.7;
+  z-index: -1;
+}
+
+h2 {
+  font-size: var(--extra-large-font-size);
+  line-height: var(--extra-large-font-size);
+  margin: 0 0 2rem;
+  letter-spacing: 0.1rem;
+}
+
+.selectors {
+  display: flex;
+  margin-bottom: 2.6rem;
+}
+
+.selectorGroup {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.selectorLabel {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cta {
+  display: block;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  cursor: pointer;
+  width: 15rem;
+  height: 3.6rem;
+  background: var(--cta-btn-color);
+  color: var(--white);
+  font-size: var(--font-size);
+  transition: var(--hover-transition);
+}
+
+.cta:hover,
+.cta:focus {
+  background: var(--cta-btn-hover);
+  outline: none;
+}
+
+.secondary {
+  background: transparent;
+  border: 0.1rem solid var(--cta-btn-color);
+}
+
+.secondary:hover,
+.secondary:focus {
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+@media only screen and (max-width: 540px) {
+  .TimeRangeSelector {
+    width: 100vw;
+    position: fixed;
+    bottom: var(--timeline-size);
+  }
+}
+
+@media only screen and (max-width: 380px) {
+  .selectors {
+    flex-direction: column;
+  }
+
+  .selectorGroup {
+    align-items: center;
+  }
+
+  .selectorGroup:first-child {
+    margin-bottom: 2rem;
+  }
+
+  .selectorLabel {
+    width: 6rem;
+  }
+
+  .secondary {
+    display: none;
+  }
+}

@@ -1,1 +1,5 @@
 export { default as MiniGlobe } from './miniglobe/miniglobe'
+export { default as Timebar } from './timebar/Timebar'
+export { default as TimebarActivity } from './timebar/charts/Activity'
+export { default as TimebarEvents } from './timebar/charts/Events'
+export { default as TimebarVesselEvents } from './timebar/charts/VesselEvents'

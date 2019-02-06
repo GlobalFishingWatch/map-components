@@ -2,11 +2,13 @@
 
 Set of components used in global fishing watch map frontend.
 
-## Install & Usage
+## Using the components
 
 Check out the [online documentation](http://globalfishingwatch.io/map-components/)
 
-## Develop
+## Develop with components
+
+In order to do easier edits on the components while developping parent apps, use this repo locally: 
 
 ```bash
 git clone git@github.com:GlobalFishingWatch/map-components.git

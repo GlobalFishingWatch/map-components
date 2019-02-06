@@ -1,0 +1,148 @@
+:root {
+  /* COLORS */
+  --main-background-color: #021236;
+  --main-border-color: #1e365a;
+  --secondary-background-color: #0b285f;
+  --tertiary-background-color: #163f89;
+  --ui-btn-color: #163f89;
+  --ui-btn-color-faded: rgba(22, 63, 137, 0.5);
+  --ui-btn-color-hover: #2d5295;
+  --cta-btn-color: #46a4b9;
+  --cta-btn-hover: #58acbf;
+  --light-blue: #4fc6d7;
+  --white: #fff;
+
+  /* TYPE */
+  --font-family: 'Roboto', sans-serif;
+  --extra-large-font-size: 2rem;
+  --font-size: 1.3rem;
+  --font-weight: 500;
+  --small-font-size: 1.2rem;
+
+  /* OTHER */
+  --hover-transition: all 150ms linear;
+  --timeline-size: 7.2rem;
+}
+
+.Timebar {
+  width: 100%;
+  height: var(--timeline-size);
+  display: flex;
+  background: var(--main-background-color);
+  border-top: 1px solid var(--main-border-color);
+  color: var(--white);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  font-weight: var(--font-weight);
+  box-sizing: border-box;
+}
+
+.uiButton {
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  cursor: pointer;
+  width: 3.6rem;
+  height: 3.6rem;
+  background-color: var(--ui-btn-color);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--hover-transition);
+}
+
+.uiButton:disabled {
+  cursor: not-allowed;
+}
+
+.uiButton:disabled svg {
+  opacity: 0.5;
+}
+
+.uiButton:hover,
+.uiButton:focus {
+  background-color: var(--ui-btn-color-hover);
+  outline: none;
+}
+
+/* PLAYBACK ACTIONS */
+
+.playbackActions {
+  background-color: var(--ui-btn-color);
+  width: var(--timeline-size);
+  height: 100%;
+  margin-right: 0.1rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.secondary {
+  opacity: 0;
+}
+
+.playbackActions:hover .secondary {
+  opacity: 0.5;
+}
+
+.playbackActions:hover .secondary:hover {
+  opacity: 1;
+}
+
+.playbackActions .uiButton {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+}
+
+.playbackActions .loop {
+  margin: 0 2.4rem;
+}
+
+.playbackActions .speed {
+  margin-left: 2.4rem;
+}
+
+/* TIME ACTIONS */
+
+.timeActions {
+  position: relative;
+  width: var(--timeline-size);
+  display: flex;
+  flex-wrap: wrap;
+  z-index: 1;
+}
+
+.timeRange {
+  border-right: 0.1rem solid var(--main-background-color);
+}
+
+.timeScale {
+  display: flex;
+}
+
+.timeScale .uiButton {
+  border-top: 0.1rem solid var(--main-background-color);
+  height: 3.5rem;
+}
+
+@media only screen and (max-width: 72rem) {
+  :root {
+    --timeline-size: 6rem;
+  }
+
+  .playbackActions,
+  .bookmark,
+  .timeScale {
+    display: none;
+  }
+
+  .timeRange {
+    width: var(--timeline-size);
+    height: var(--timeline-size);
+  }
+}
+
+.timeRangeContainer {
+  position: relative;
+}
