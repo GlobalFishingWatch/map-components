@@ -9,7 +9,9 @@ class CountryFlag extends Component {
     return svg === true || flag.emoji === null ? (
       <img style={{ width: '18px' }} alt={flag.name} src={flag.svg} />
     ) : (
-      <span>{flag.emoji}</span>
+      <span role="img" aria-label={flag.name}>
+        {flag.emoji}
+      </span>
     )
   }
 }
