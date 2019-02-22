@@ -5,12 +5,11 @@ import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
 import groupVesselEvents from './mocks/groupVesselEvents'
 
-import {
-  Timebar,
+import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
-} from '@globalfishingwatch/map-components'
+} from '@globalfishingwatch/map-components/dist/timebar'
 
 import './timebar.css'
 
