@@ -6,9 +6,26 @@ Set of components used in global fishing watch map frontend.
 
 Check out the [online documentation](http://globalfishingwatch.io/map-components/)
 
+## Components structure
+```
+component
+│   component.js    // Component logic
+│   component.css   // Component styles
+│   component.mdx   // Generates component documentation
+│   index.js // Optional file that generates a new folder below the components one
+│            // and exports component code and any possible child component dependencies
+│            // This makes possible components code splitting easily with
+│            // import Component from '@globalfishingwatch/map-components/components/[component-name]
+│
+└───subcomponent
+│       subcomponent.js
+│       subcomponent.css
+└───────────────────────
+```
+
 ## Develop with components
 
-In order to do easier edits on the components while developping parent apps, use this repo locally: 
+In order to do easier edits on the components while developping parent apps, use this repo locally:
 
 ```bash
 git clone git@github.com:GlobalFishingWatch/map-components.git
