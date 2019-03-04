@@ -12,10 +12,10 @@ component
 │   component.js    // Component logic
 │   component.css   // Component styles
 │   component.mdx   // Generates component documentation
-│   index.js // Optional file that generates a new folder below the dist one
+│   index.js // Optional file that generates a new folder below the components one
 │            // and exports component code and any possible child component dependencies
 │            // This makes possible components code splitting easily with
-│            // import Component from '@globalfishingwatch/map-components/dist/component
+│            // import Component from '@globalfishingwatch/map-components/components/[component-name]
 │
 └───subcomponent
 │       subcomponent.js

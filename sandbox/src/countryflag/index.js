@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import CountryFlag from '@globalfishingwatch/map-components/dist/countryflag'
+import CountryFlag from '@globalfishingwatch/map-components/components/countryflag'
 
 class CountryFlagPage extends Component {
   render() {

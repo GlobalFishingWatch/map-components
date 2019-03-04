@@ -5,13 +5,13 @@
   "author": "Satellite Studio",
   "license": "MIT",
   "repository": "https://github.com/GlobalFishingWatch/map-components",
-  "main": "dist/index.js",
+  "main": "components/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "build": "rimraf ./dist/* && cross-env NODE_ENV=production rollup -c",
+    "build": "rimraf ./components/* && cross-env NODE_ENV=production rollup -c",
     "start": "rollup -c -w",
     "docz:dev": "docz dev",
     "docz:build": "docz build",
@@ -85,6 +85,6 @@
     }
   },
   "files": [
-    "dist"
+    "components"
   ]
 }

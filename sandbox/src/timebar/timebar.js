@@ -9,7 +9,7 @@ import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
-} from '@globalfishingwatch/map-components/dist/timebar'
+} from '@globalfishingwatch/map-components/components/timebar'
 
 import './timebar.css'
 
