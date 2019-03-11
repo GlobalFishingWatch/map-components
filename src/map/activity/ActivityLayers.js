@@ -9,7 +9,7 @@ import {
   hueIncrementToHue,
   wrapHue,
   VESSELS_HUES_INCREMENTS_NUM,
-} from '@globalfishingwatch/map-colors'
+} from '../utils/map-colors'
 import {
   VESSELS_BASE_RADIUS,
   VESSELS_HEATMAP_BLUR_FACTOR,
