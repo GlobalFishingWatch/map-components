@@ -37,14 +37,10 @@ const getHighlightTemporalExtent = (state) => state.map.module.highlightTemporal
 const getTemporalExtentIndexes = createSelector(
   [getTemporalExtent],
   (temporalExtent) => {
-    let finalTemporalExtent = temporalExtent
-    if (temporalExtent === undefined || temporalExtent === null) {
-      finalTemporalExtent = [new Date(1970), new Date()]
-    }
-    const startTimestamp = finalTemporalExtent[0].getTime()
+    const startTimestamp = temporalExtent[0].getTime()
     const endTimestamp = Math.max(
-      finalTemporalExtent[1].getTime(),
-      finalTemporalExtent[0].getTime() + MIN_FRAME_LENGTH_MS
+      temporalExtent[1].getTime(),
+      temporalExtent[0].getTime() + MIN_FRAME_LENGTH_MS
     )
     const startIndex = convert.getOffsetedTimeAtPrecision(startTimestamp)
     const endIndex = convert.getOffsetedTimeAtPrecision(endTimestamp)

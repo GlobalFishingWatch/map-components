@@ -5,7 +5,7 @@ import { INIT_MODULE, SET_TEMPORAL_EXTENT, START_LOADER, COMPLETE_LOADER } from 
 const initialState = {
   loaders: null,
   token: undefined,
-  temporalExtent: null,
+  temporalExtent: [new Date(1970), new Date()],
   onViewportChange: undefined,
   onHover: undefined,
   onClick: undefined,
@@ -39,7 +39,7 @@ const moduleReducer = (state = initialState, action) => {
 
     case COMPLETE_LOADER: {
       const loaders = [...state.loaders]
-      const loaderIndex = loaders.findIndex(l => l === action.payload)
+      const loaderIndex = loaders.findIndex((l) => l === action.payload)
       loaders.splice(loaderIndex, 1)
       return { ...state, loaders }
     }

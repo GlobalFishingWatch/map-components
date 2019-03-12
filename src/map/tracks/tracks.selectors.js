@@ -51,7 +51,6 @@ const filterGeojsonByTimerange = (geojson, { start, end }) => {
 export const getTracksStyles = createSelector(
   [getTemporalExtent, getTracksData],
   (temporalExtent, tracks) => {
-    console.log(tracks)
     const filteredTracks = tracks.filter((t) => t.isGeoJSON === true)
     const hasTemporalExtent = temporalExtent && temporalExtent.length > 0
     const hasTracks = filteredTracks && filteredTracks.length > 0
