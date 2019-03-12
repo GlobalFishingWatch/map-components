@@ -24,13 +24,15 @@ const getTracks = (state) => state.map.tracks.data
 const getTracksWithData = createSelector(
   [getTracks],
   (tracks) => {
-    const tracksWithData = tracks.filter((t) => t.data !== undefined)
+    const tracksWithData = tracks
+      .filter((t) => t.isGeoJSON !== true)
+      .filter((t) => t.data !== undefined)
     return tracksWithData
   }
 )
 
 const getTemporalExtent = (state) => state.map.module.temporalExtent
-// const getHighlightTemporalExtent = (state) => ownProps.highlightTemporalExtent
+const getHighlightTemporalExtent = (state) => state.map.module.highlightTemporalExtent
 
 const getTemporalExtentIndexes = createSelector(
   [getTemporalExtent],
@@ -50,19 +52,20 @@ const getTemporalExtentIndexes = createSelector(
   }
 )
 
-// const getHighlightTemporalExtentIndexes = createSelector(
-//   [getHighlightTemporalExtent],
-//   highlightTemporalExtent => {
-//     if (highlightTemporalExtent === undefined) {
-//       return null
-//     }
-//     const startTimestamp = highlightTemporalExtent[0].getTime()
-//     const endTimestamp = highlightTemporalExtent[1].getTime()
-//     const startIndex = convert.getOffsetedTimeAtPrecision(startTimestamp)
-//     const endIndex = convert.getOffsetedTimeAtPrecision(endTimestamp)
-//     return [startIndex, endIndex]
-//   }
-// )
+const getHighlightTemporalExtentIndexes = createSelector(
+  [getHighlightTemporalExtent],
+  (highlightTemporalExtent) => {
+    console.log(highlightTemporalExtent)
+    if (highlightTemporalExtent === undefined) {
+      return null
+    }
+    const startTimestamp = highlightTemporalExtent[0].getTime()
+    const endTimestamp = highlightTemporalExtent[1].getTime()
+    const startIndex = convert.getOffsetedTimeAtPrecision(startTimestamp)
+    const endIndex = convert.getOffsetedTimeAtPrecision(endTimestamp)
+    return [startIndex, endIndex]
+  }
+)
 
 const mapStateToProps = (state) => ({
   highlightedVessels: state.map.heatmap.highlightedVessels,
@@ -74,7 +77,7 @@ const mapStateToProps = (state) => ({
   leftWorldScaled: state.map.viewport.leftWorldScaled,
   rightWorldScaled: state.map.viewport.rightWorldScaled,
   temporalExtentIndexes: getTemporalExtentIndexes(state),
-  // highlightTemporalExtentIndexes: getHighlightTemporalExtentIndexes(state, ownProps),
+  highlightTemporalExtentIndexes: getHighlightTemporalExtentIndexes(state),
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

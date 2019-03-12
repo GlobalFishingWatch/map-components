@@ -14,15 +14,15 @@ export const ADD_TRACK = 'ADD_TRACK'
 export const UPDATE_TRACK = 'UPDATE_TRACK'
 export const REMOVE_TRACK = 'REMOVE_TRACK'
 
-const getTrackDataParsed = geojson => {
+const getTrackDataParsed = (geojson) => {
   const time = { start: Infinity, end: 0 }
   if (geojson && geojson.features) {
-    geojson.features.forEach(feature => {
+    geojson.features.forEach((feature) => {
       const hasTimes =
         feature.properties.coordinateProperties.times &&
         feature.properties.coordinateProperties.times.length > 0
       if (hasTimes) {
-        feature.properties.coordinateProperties.times.forEach(datetime => {
+        feature.properties.coordinateProperties.times.forEach((datetime) => {
           if (datetime < time.start) {
             time.start = datetime
           } else if (datetime > time.end) {
@@ -101,7 +101,7 @@ function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color
   return (dispatch, getState) => {
     const state = getState()
     const loaderID = startLoader(dispatch, state)
-    if (state.map.tracks.data.find(t => t.id === id)) {
+    if (state.map.tracks.data.find((t) => t.id === id)) {
       return
     }
 
@@ -120,7 +120,7 @@ function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color
       const token = state.map.module.token
       const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
 
-      Promise.all(promises.map(p => p.catch(e => e))).then(rawTileData => {
+      Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
         const cleanData = getCleanVectorArrays(rawTileData)
 
         if (!cleanData.length) {
@@ -151,11 +151,11 @@ function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color
       })
     } else {
       fetch(url)
-        .then(res => {
+        .then((res) => {
           if (res.status >= 400) throw new Error(res.statusText)
           return res.json()
         })
-        .then(data => {
+        .then((data) => {
           const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
           dispatch({
             type: UPDATE_TRACK,
@@ -164,19 +164,20 @@ function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color
               data: geojson,
               geoBounds,
               timelineBounds,
+              isGeoJSON: true,
             },
           })
           if (fitBoundsOnLoad) {
             targetMapVessel(id)
           }
         })
-        .catch(err => console.warn(err))
+        .catch((err) => console.warn(err))
         .finally(() => dispatch(completeLoader(loaderID)))
     }
   }
 }
 
-const removeTrack = trackId => ({
+const removeTrack = (trackId) => ({
   type: REMOVE_TRACK,
   payload: {
     trackId,
@@ -187,9 +188,9 @@ export const updateTracks = (newTracks = []) => (dispatch, getState) => {
   const prevTracks = getState().map.tracks.data
   // add and update layers
   if (newTracks) {
-    newTracks.forEach(newTrack => {
+    newTracks.forEach((newTrack) => {
       const trackId = newTrack.id
-      const prevTrack = prevTracks.find(t => t.id === trackId)
+      const prevTrack = prevTracks.find((t) => t.id === trackId)
       if (prevTrack === undefined) {
         dispatch(loadTrack(newTrack))
       } else if (prevTrack.color !== newTrack.color) {
@@ -205,8 +206,8 @@ export const updateTracks = (newTracks = []) => (dispatch, getState) => {
   }
 
   // clean up unused tracks
-  prevTracks.forEach(prevTrack => {
-    if (!newTracks || !newTracks.find(t => t.id === prevTrack.id)) {
+  prevTracks.forEach((prevTrack) => {
+    if (!newTracks || !newTracks.find((t) => t.id === prevTrack.id)) {
       dispatch(removeTrack(prevTrack.id))
     }
   })

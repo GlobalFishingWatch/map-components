@@ -17,7 +17,7 @@ const tracksReducer = (state = initialState, action) => {
 
     case UPDATE_TRACK: {
       const trackData = action.payload
-      const data = state.data.map(track => {
+      const data = state.data.map((track) => {
         if (track.id !== trackData.id) return track
         return {
           ...track,
@@ -29,7 +29,7 @@ const tracksReducer = (state = initialState, action) => {
 
     case REMOVE_TRACK: {
       const removedTrackId = action.payload.trackId
-      const data = state.data.filter(track => track.id !== removedTrackId)
+      const data = state.data.filter((track) => track.id !== removedTrackId)
       return { ...state, data }
     }
 
@@ -50,6 +50,7 @@ const tracksTypes = {
         maxLat: PropTypes.number,
         maxLng: PropTypes.number,
       }),
+      isGeoJSON: PropTypes.bool,
     })
   ),
 }
