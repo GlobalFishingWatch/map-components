@@ -1,1 +1,1 @@
-export { default } from './map'
+export { default, targetMapVessel, AVAILABLE_BASEMAPS } from './map'
