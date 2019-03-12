@@ -8,8 +8,11 @@ import json from 'rollup-plugin-json'
 import svgr from '@svgr/rollup'
 import { terser } from 'rollup-plugin-terser'
 import multiInput from 'rollup-plugin-multi-input'
+import replace from 'rollup-plugin-replace'
 
 import pkg from './package.json'
+
+require('dotenv').config()
 
 const distFolder = pkg.main.split('/')[0]
 
@@ -32,6 +35,7 @@ export default {
     babel({ exclude: 'node_modules/**' }),
     resolve(),
     commonjs(),
+    replace({ REDUX_REMOTE_DEBUG: process.env.REDUX_REMOTE_DEBUG === 'true' }),
     isProduction && terser(),
   ],
 }
