@@ -58,12 +58,12 @@ const store = createStore(
   compose(applyMiddleware(thunk))
 )
 
-const throttleApplyTemporalExtent = throttle(temporalExtent => {
+const throttleApplyTemporalExtent = throttle((temporalExtent) => {
   store.dispatch(applyTemporalExtent(temporalExtent))
   store.dispatch(setTemporalExtent(temporalExtent))
 }, 16)
 
-const updateViewportFromIncomingProps = incomingViewport => {
+const updateViewportFromIncomingProps = (incomingViewport) => {
   store.dispatch(
     updateViewport({
       latitude: incomingViewport.center[0],
@@ -76,6 +76,14 @@ const updateViewportFromIncomingProps = incomingViewport => {
 class MapModule extends React.Component {
   state = {
     initialized: false,
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log(error, errorInfo)
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    })
   }
 
   componentDidMount() {
@@ -172,7 +180,6 @@ class MapModule extends React.Component {
         store.dispatch(updateLayerLoadTemporalExtents(this.props.loadTemporalExtent))
       }
     }
-
     // temporalExtent
     if (this.props.temporalExtent !== undefined && this.props.temporalExtent.length) {
       if (
@@ -211,6 +218,17 @@ class MapModule extends React.Component {
     }
   }
   render() {
+    console.log(this.state.error)
+    if (this.state.error !== undefined) {
+      return (
+        <div>
+          <h2>Map component crashed!</h2>
+          <p className="red">{this.state.error && this.state.error.toString()}</p>
+          <div>Component Stack Error Details:</div>
+          <p className="red">{this.state.errorInfo.componentStack}</p>
+        </div>
+      )
+    }
     // won't render anything before actions in componentDidMount have been triggered
     return this.state.initialized !== true ? null : (
       <Provider store={store}>
@@ -245,8 +263,8 @@ MapModule.propTypes = {
 
 export default MapModule
 
-export const targetMapVessel = id => {
-  const track = store.getState().map.tracks.data.find(t => t.id === id.toString())
+export const targetMapVessel = (id) => {
+  const track = store.getState().map.tracks.data.find((t) => t.id === id.toString())
   store.dispatch(fitToBounds(track.geoBounds))
 
   return track.timelineBounds

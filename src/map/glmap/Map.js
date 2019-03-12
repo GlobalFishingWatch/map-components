@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
 
-const PopupWrapper = props => {
+const PopupWrapper = (props) => {
   const { latitude, longitude, children, closeButton, onClose } = props
   return (
     <Popup
@@ -64,15 +64,15 @@ class Map extends React.Component {
     }
   }
 
-  onViewportChange = viewport => {
+  onViewportChange = (viewport) => {
     this.props.setViewport(viewport)
   }
 
-  onHover = event => {
+  onHover = (event) => {
     this.props.mapHover(event.lngLat[1], event.lngLat[0], event.features)
   }
 
-  onClick = event => {
+  onClick = (event) => {
     this.props.mapClick(event.lngLat[1], event.lngLat[0], event.features)
   }
 
@@ -94,7 +94,7 @@ class Map extends React.Component {
       <div
         id="map"
         className={styles.map}
-        ref={ref => {
+        ref={(ref) => {
           this._mapContainerRef = ref
         }}
         onMouseLeave={() => {
@@ -121,11 +121,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
         >
-          <ActivityLayers
-            temporalExtentIndexes={this.props.temporalExtentIndexes}
-            highlightTemporalExtentIndexes={this.props.highlightTemporalExtentIndexes}
-            loadTemporalExtent={this.props.loadTemporalExtent}
-          />
+          <ActivityLayers loadTemporalExtent={this.props.loadTemporalExtent} />
           {clickPopup !== undefined && clickPopup !== null && (
             <PopupWrapper
               latitude={clickPopup.latitude}
