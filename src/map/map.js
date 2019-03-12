@@ -11,7 +11,7 @@ import { heatmapLayerTypes, basemapLayerTypes, staticLayerTypes } from './propty
 import { viewportTypes, popupTypes } from './proptypes/shared'
 
 import Map from './glmap/Map.container'
-import { initModule, setTemporalExtent } from './module/module.actions'
+import { initModule, setTemporalExtent, setHighlightTemporalExtent } from './module/module.actions'
 import { fitToBounds, updateViewport, transitionToZoom } from './glmap/viewport.actions'
 import { initStyle, commitStyleUpdates, applyTemporalExtent } from './glmap/style.actions'
 import { updateTracks } from './tracks/tracks.actions'
@@ -189,6 +189,23 @@ class MapModule extends React.Component {
         this.props.temporalExtent[1].getTime() !== prevProps.temporalExtent[1].getTime()
       ) {
         throttleApplyTemporalExtent(this.props.temporalExtent)
+      }
+    }
+
+    // highlightTemporalExtent
+    if (
+      this.props.highlightTemporalExtent !== undefined &&
+      this.props.highlightTemporalExtent.length
+    ) {
+      if (
+        prevProps.highlightTemporalExtent === undefined ||
+        !prevProps.highlightTemporalExtent.length ||
+        this.props.highlightTemporalExtent[0].getTime() !==
+          prevProps.highlightTemporalExtent[0].getTime() ||
+        this.props.highlightTemporalExtent[1].getTime() !==
+          prevProps.highlightTemporalExtent[1].getTime()
+      ) {
+        store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
       }
     }
 

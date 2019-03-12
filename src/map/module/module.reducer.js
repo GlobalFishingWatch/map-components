@@ -1,11 +1,18 @@
 import PropTypes from 'prop-types'
 import withReducerTypes from '../utils/withReducerTypes'
-import { INIT_MODULE, SET_TEMPORAL_EXTENT, START_LOADER, COMPLETE_LOADER } from './module.actions'
+import {
+  INIT_MODULE,
+  SET_TEMPORAL_EXTENT,
+  SET_HIGHLIGHT_TEMPORAL_EXTENT,
+  START_LOADER,
+  COMPLETE_LOADER,
+} from './module.actions'
 
 const initialState = {
   loaders: null,
   token: undefined,
   temporalExtent: [new Date(1970), new Date()],
+  highlightTemporalExtent: null,
   onViewportChange: undefined,
   onHover: undefined,
   onClick: undefined,
@@ -28,6 +35,13 @@ const moduleReducer = (state = initialState, action) => {
       return {
         ...state,
         temporalExtent: action.payload,
+      }
+    }
+
+    case SET_HIGHLIGHT_TEMPORAL_EXTENT: {
+      return {
+        ...state,
+        highlightTemporalExtent: action.payload,
       }
     }
 

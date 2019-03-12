@@ -51,8 +51,7 @@ const getTemporalExtentIndexes = createSelector(
 const getHighlightTemporalExtentIndexes = createSelector(
   [getHighlightTemporalExtent],
   (highlightTemporalExtent) => {
-    console.log(highlightTemporalExtent)
-    if (highlightTemporalExtent === undefined) {
+    if (highlightTemporalExtent === undefined || highlightTemporalExtent === null) {
       return null
     }
     const startTimestamp = highlightTemporalExtent[0].getTime()
