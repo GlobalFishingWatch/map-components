@@ -76,8 +76,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  queryHeatmapVessels: (coords) => {
-    dispatch(queryHeatmapVessels(coords, ownProps.temporalExtentIndexes))
+  queryHeatmapVessels: (coords, temporalExtentIndexes) => {
+    dispatch(queryHeatmapVessels(coords, temporalExtentIndexes))
   },
   exportNativeViewport: (viewport) => {
     dispatch(exportNativeViewport(viewport))
