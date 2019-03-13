@@ -19,20 +19,20 @@ const getFeatureMetaFields = (staticLayerId, state, feature) => {
   // when layer is of type geojson (custom layer), use all feature properties available
   return Object.keys(feature.properties).length === 0
     ? null
-    : Object.keys(feature.properties).map(key => ({ id: key }))
+    : Object.keys(feature.properties).map((key) => ({ id: key }))
 }
 
-const getAreaKm2 = glFeature => {
+const getAreaKm2 = (glFeature) => {
   const areakm2 = 10 ** -6 * area(glFeature.geometry)
   const formatted = areakm2.toLocaleString('en-US', { maximumFractionDigits: 0 })
   return formatted
 }
 
-const getStaticLayerIdFromGlFeature = glFeature =>
+const getStaticLayerIdFromGlFeature = (glFeature) =>
   (glFeature.layer.metadata !== undefined && glFeature.layer.metadata['gfw:id']) ||
   glFeature.layer.source
 
-const findFeature = glFeatures => {
+const findFeature = (glFeatures) => {
   if (glFeatures === undefined || !glFeatures.length) {
     return undefined
   }
@@ -66,10 +66,10 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
       if (popupFields !== null) {
         const properties = feature.feature.properties
         const mainPopupField =
-          popupFields.find(f => f.id && f.id.toLowerCase() === 'name') ||
-          popupFields.find(f => f.id && f.id.toLowerCase() === 'id') ||
+          popupFields.find((f) => f.id && f.id.toLowerCase() === 'name') ||
+          popupFields.find((f) => f.id && f.id.toLowerCase() === 'id') ||
           popupFields.find(
-            f =>
+            (f) =>
               f.id &&
               properties[f.id] !== null &&
               properties[f.id] !== 'null' &&
@@ -134,7 +134,7 @@ export const mapClick = (latitude, longitude, features) => (dispatch, getState) 
       let fields
       const properties = feature.feature.properties
       if (metaFields !== null) {
-        fields = metaFields.map(metaField => {
+        fields = metaFields.map((metaField) => {
           const id = metaField.id || metaField
           const value = id === POLYGON_LAYERS_AREA ? getAreaKm2(feature.feature) : properties[id]
           return {

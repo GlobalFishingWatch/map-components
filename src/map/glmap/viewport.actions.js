@@ -10,7 +10,7 @@ export const SET_MOUSE_LAT_LONG = 'SET_MOUSE_LAT_LONG'
 export const TRANSITION_END = 'TRANSITION_END'
 export const SET_NATIVE_VIEWPORT = 'SET_NATIVE_VIEWPORT'
 
-export const setViewport = viewport => dispatch => {
+export const setViewport = (viewport) => (dispatch) => {
   dispatch({
     type: SET_VIEWPORT,
     payload: viewport,
@@ -19,7 +19,7 @@ export const setViewport = viewport => dispatch => {
   dispatch(onViewportChange())
 }
 
-export const updateViewport = viewportUpdate => dispatch => {
+export const updateViewport = (viewportUpdate) => (dispatch) => {
   dispatch({
     type: UPDATE_VIEWPORT,
     payload: viewportUpdate,
@@ -28,7 +28,7 @@ export const updateViewport = viewportUpdate => dispatch => {
   dispatch(onViewportChange())
 }
 
-const transitionTo = (increment, latitude = null, longitude = null, zoom = null) => dispatch => {
+const transitionTo = (increment, latitude = null, longitude = null, zoom = null) => (dispatch) => {
   dispatch({
     type: SET_ZOOM_INCREMENT,
     payload: {
@@ -42,11 +42,11 @@ const transitionTo = (increment, latitude = null, longitude = null, zoom = null)
   dispatch(onViewportChange())
 }
 
-export const transitionToZoom = zoom => dispatch => {
+export const transitionToZoom = (zoom) => (dispatch) => {
   dispatch(transitionTo(null, null, null, zoom))
 }
 
-export const transitionEnd = () => dispatch => {
+export const transitionEnd = () => (dispatch) => {
   dispatch({
     type: TRANSITION_END,
   })
@@ -54,11 +54,11 @@ export const transitionEnd = () => dispatch => {
   dispatch(onViewportChange())
 }
 
-export const zoomIntoVesselCenter = (latitude, longitude) => dispatch => {
+export const zoomIntoVesselCenter = (latitude, longitude) => (dispatch) => {
   dispatch(transitionTo(CLUSTER_CLICK_ZOOM_INCREMENT, latitude, longitude))
 }
 
-export const fitToBounds = bounds => (dispatch, getState) => {
+export const fitToBounds = (bounds) => (dispatch, getState) => {
   const state = getState()
   const vp = fitBounds({
     bounds: [[bounds.minLng, bounds.minLat], [bounds.maxLng, bounds.maxLat]],
@@ -69,7 +69,7 @@ export const fitToBounds = bounds => (dispatch, getState) => {
   dispatch(transitionTo(null, vp.latitude, vp.longitude, vp.zoom))
 }
 
-export const exportNativeViewport = nativeViewport => dispatch => {
+export const exportNativeViewport = (nativeViewport) => (dispatch) => {
   const topLeftPx = [0, 0]
   const bottomRightPx = [nativeViewport.width, nativeViewport.height]
 

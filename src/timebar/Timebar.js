@@ -50,7 +50,7 @@ class Timebar extends Component {
   }
 
   toggleTimeRangeSelector = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showTimeRangeSelector: !prevState.showTimeRangeSelector,
     }))
   }
@@ -67,7 +67,7 @@ class Timebar extends Component {
     })
   }
 
-  zoom = zoom => {
+  zoom = (zoom) => {
     const { start, end, absoluteStart, absoluteEnd } = this.props
     const delta = Math.round(getDeltaDays(start, end))
 

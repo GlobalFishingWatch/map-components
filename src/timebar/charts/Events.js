@@ -40,7 +40,7 @@ class Events extends Component {
         })
 
         if (
-          labels.map(k => valuesAtDate[k]).filter(v => v === undefined).length === labels.length
+          labels.map((k) => valuesAtDate[k]).filter((v) => v === undefined).length === labels.length
         ) {
           console.warn('there are no values after this date, aborting rendering', valuesAtDate)
           break
@@ -55,9 +55,9 @@ class Events extends Component {
       }
 
       const allRatios = []
-      allValues.forEach(valuesAtDate => {
+      allValues.forEach((valuesAtDate) => {
         const ratiosAtDate = { ...valuesAtDate }
-        labels.forEach(key => {
+        labels.forEach((key) => {
           ratiosAtDate[key] = valuesAtDate[key] / maxValue
         })
         allRatios.push(ratiosAtDate)
@@ -91,13 +91,13 @@ class Events extends Component {
     const middle = graphHeight / 2
 
     const areaGenerator = area()
-      .x(d => outerScale(d.data.date))
-      .y0(d => middle + finalHeight * d[0])
-      .y1(d => middle + finalHeight * d[1])
+      .x((d) => outerScale(d.data.date))
+      .y0((d) => middle + finalHeight * d[0])
+      .y1((d) => middle + finalHeight * d[1])
       .curve(curveStepAfter)
     return (
       <svg width={outerWidth} height={graphHeight} className={styles.Events}>
-        {finalEvents.map(eventsForKey => (
+        {finalEvents.map((eventsForKey) => (
           <path d={areaGenerator(eventsForKey)} className={styles[eventsForKey.key]} />
         ))}
       </svg>

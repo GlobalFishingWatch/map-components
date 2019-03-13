@@ -9,13 +9,13 @@ export default (tileUrl, token) => {
         }
       : {},
   })
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`could not load tile ${tileUrl}`)
       }
-      return response.blob().then(blob => {
+      return response.blob().then((blob) => {
         const reader = new FileReader()
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           reader.addEventListener('loadend', () => {
             // reader.result contains the contents of blob as a typed array
             // blob.type === 'application/x-protobuf'
@@ -27,7 +27,7 @@ export default (tileUrl, token) => {
         })
       })
     })
-    .catch(e => {
+    .catch((e) => {
       console.warn(e)
     })
   return vectorTilePromise

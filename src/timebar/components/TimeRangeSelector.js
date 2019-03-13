@@ -103,7 +103,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('start', bounds, 'day', offset)
               }}
               value={mStart.date()}
@@ -111,7 +111,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('start', bounds, 'month', offset)
               }}
               value={mStart.format('MMM')}
@@ -119,7 +119,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('start', bounds, 'year', offset)
               }}
               value={mStart.year()}
@@ -130,7 +130,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('end', bounds, 'day', offset)
               }}
               value={mEnd.date()}
@@ -138,7 +138,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('end', bounds, 'month', offset)
               }}
               value={mEnd.format('MMM')}
@@ -146,7 +146,7 @@ class TimeRangeSelector extends Component {
             <DateSelector
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={offset => {
+              onChange={(offset) => {
                 this.setUnit('end', bounds, 'year', offset)
               }}
               value={mEnd.year()}

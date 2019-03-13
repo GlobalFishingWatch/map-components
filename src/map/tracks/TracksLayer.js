@@ -48,7 +48,7 @@ class TracksLayer extends React.Component {
     const fishingCirclesRadius = 1 + (zoom - TRACKS_DOTS_STYLE_ZOOM_THRESHOLD) * 0.5
     const drawOverTrack = overExtent !== undefined && overExtent[0] > 0 && overExtent[1] > 0
 
-    tracks.forEach(track => {
+    tracks.forEach((track) => {
       n += this._drawTrack({
         data: track.data,
         startIndex,
@@ -199,7 +199,7 @@ class TracksLayer extends React.Component {
     }
 
     if (duplicateWorld === true) {
-      ;[-512, 512].forEach(offset => {
+      ;[-512, 512].forEach((offset) => {
         this._drawTrack({
           worldOffset: offset,
           data,

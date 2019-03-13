@@ -35,7 +35,7 @@ export default function(state = initialState, action) {
       )
       // clean to load tiles of tiles that needs to be released
       const newToLoadTilesUids = currentToLoadTileUids.filter(
-        tileUid => currentToReleaseTileUids.indexOf(tileUid) === -1
+        (tileUid) => currentToReleaseTileUids.indexOf(tileUid) === -1
       )
       return { ...state, currentToLoadTileUids: newToLoadTilesUids, currentToReleaseTileUids }
     }
@@ -44,7 +44,7 @@ export default function(state = initialState, action) {
       const currentToLoadTileUids = state.currentToLoadTileUids
       const tileUidsMarkedAsLoaded = action.payload
       const newCurrentToLoadTileUids = currentToLoadTileUids.filter(
-        tileUid => tileUidsMarkedAsLoaded.indexOf(tileUid) === -1
+        (tileUid) => tileUidsMarkedAsLoaded.indexOf(tileUid) === -1
       )
       return { ...state, currentToLoadTileUids: newCurrentToLoadTileUids }
     }

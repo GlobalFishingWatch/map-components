@@ -10,11 +10,11 @@ const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
   const FORMATS = {
     year: { isFirst: () => false, formats: [[0, 'YYYY']] },
     month: {
-      isFirst: fm => fm.month() === 0,
+      isFirst: (fm) => fm.month() === 0,
       formats: [[200, 'MMMM YYYY'], [100, 'MMMM', 'MMM YYYY'], [0, 'MMM', 'MMM YY']],
     },
     day: {
-      isFirst: fm => fm.date() === 1,
+      isFirst: (fm) => fm.date() === 1,
       formats: [
         [999, 'ddd D MMMM YYYY'],
         [200, 'ddd D MMMM'],
@@ -23,7 +23,7 @@ const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
       ],
     },
     hour: {
-      isFirst: fm => fm.hour() === 0,
+      isFirst: (fm) => fm.hour() === 0,
       formats: [[999, 'ddd D MMMM YYYY H[H]'], [0, 'H[H]', 'ddd D']],
     },
   }
@@ -133,13 +133,13 @@ class TimelineUnits extends Component {
           native
           immediate={immediate}
           items={units}
-          keys={units.map(d => d.id)}
+          keys={units.map((d) => d.id)}
           from={{ opacity: 0 }}
           leave={{ opacity: 0 }}
-          enter={d => ({ left: d.x, width: d.width, opacity: 1 })}
-          update={d => ({ left: d.x, width: d.width, opacity: 1 })}
+          enter={(d) => ({ left: d.x, width: d.width, opacity: 1 })}
+          update={(d) => ({ left: d.x, width: d.width, opacity: 1 })}
         >
-          {d => s => (
+          {(d) => (s) => (
             <animated.div style={s} className={styles.unit}>
               {baseUnit === 'hour' ? (
                 <animated.div>{d.label}</animated.div>

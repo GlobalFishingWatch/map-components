@@ -17,11 +17,11 @@ const ICONS = {
   fishing: null,
 }
 
-const Layer = props => {
+const Layer = (props) => {
   const { outerScale, events, y, className, children } = props
   return (
     <g transform={`translate(0, ${y})`} className={className}>
-      {events.map(event => {
+      {events.map((event) => {
         const x1 = outerScale(event.start)
         const x2 = outerScale(event.end)
         const height = event.isThick ? 8 : 6
@@ -56,11 +56,11 @@ Layer.propTypes = {
 }
 
 class VesselEvents extends Component {
-  getEvents = memoize(events =>
+  getEvents = memoize((events) =>
     events
       // .filter(event => ['encounter', 'gap', 'fishing'].indexOf(event.type) > -1)
       // .filter(event => event.type !== 'port')
-      .map(event => ({
+      .map((event) => ({
         ...event,
         isThick: ['encounter', 'gap'].indexOf(event.type) > -1,
         start: new Date(event.start),
@@ -69,14 +69,14 @@ class VesselEvents extends Component {
   )
 
   addHighlightInfo = memoize((events, highlightedEventIDs) => {
-    const eventsWithHighlight = events.map(event => ({
+    const eventsWithHighlight = events.map((event) => ({
       ...event,
       isHighlighted: highlightedEventIDs.indexOf(event.id) > -1,
     }))
 
     const highlighted = [
-      ...eventsWithHighlight.filter(event => event.isHighlighted === false),
-      ...eventsWithHighlight.filter(event => event.isHighlighted === true),
+      ...eventsWithHighlight.filter((event) => event.isHighlighted === false),
+      ...eventsWithHighlight.filter((event) => event.isHighlighted === true),
     ]
 
     return highlighted
@@ -86,22 +86,22 @@ class VesselEvents extends Component {
     let filteredEvents = events
 
     if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 300) {
-      filteredEvents = events.filter(event => event.type !== 'fishing')
+      filteredEvents = events.filter((event) => event.type !== 'fishing')
     }
 
     return filteredEvents
   })
 
-  getBackgrounds = memoize(events => events.filter(event => event.type === 'port'))
+  getBackgrounds = memoize((events) => events.filter((event) => event.type === 'port'))
 
-  getLines = memoize(events => events.filter(event => event.type === 'port'))
+  getLines = memoize((events) => events.filter((event) => event.type === 'port'))
 
   renderTooltip(events) {
     const { highlightedEventIDs, outerScale } = this.props
     if (highlightedEventIDs.length !== 1) {
       return null
     }
-    const highlightedEvent = events.find(event => event.id === highlightedEventIDs[0])
+    const highlightedEvent = events.find((event) => event.id === highlightedEventIDs[0])
     if (highlightedEvent === undefined) {
       return null
     }
@@ -157,7 +157,7 @@ class VesselEvents extends Component {
     return [
       <svg width={outerWidth} height={graphHeight} className={styles.Events} key="svg">
         <Layer {...this.props} events={backgrounds} className={styles.backgrounds} y={0}>
-          {props => (
+          {(props) => (
             <g
               className={classNames(styles[props.event.type], {
                 [styles._highlighted]: props.event.isHighlighted,
@@ -170,7 +170,7 @@ class VesselEvents extends Component {
           )}
         </Layer>
         <Layer {...this.props} events={lines} className={styles.lines} y={y}>
-          {props => (
+          {(props) => (
             <line
               className={styles[props.event.type]}
               y={0}
@@ -180,7 +180,7 @@ class VesselEvents extends Component {
           )}
         </Layer>
         <Layer {...this.props} events={overlays} className={styles.overlays} y={y}>
-          {props => (
+          {(props) => (
             <g
               className={classNames(styles[props.event.type], {
                 [styles._highlighted]: props.event.isHighlighted,

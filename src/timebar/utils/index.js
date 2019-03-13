@@ -1,4 +1,4 @@
-const getTimebarRangeAuto = auto => {
+const getTimebarRangeAuto = (auto) => {
   const ONE_DAY = 24 * 60 * 60 * 1000
   const daysEndInnerOuterFromToday = auto.daysEndInnerOuterFromToday || 4
   const daysInnerExtent = auto.daysInnerExtent || 30
@@ -12,14 +12,14 @@ const getTimebarRangeAuto = auto => {
   return { start, end }
 }
 
-const getTimebarRangeDefault = range => {
+const getTimebarRangeDefault = (range) => {
   return {
     start: range.innerExtent[0],
     end: range.innerExtent[1],
   }
 }
 
-export const getTimebarRangeByWorkspace = timeline => {
+export const getTimebarRangeByWorkspace = (timeline) => {
   return timeline.auto !== undefined
     ? getTimebarRangeAuto(timeline.auto)
     : getTimebarRangeDefault(timeline)

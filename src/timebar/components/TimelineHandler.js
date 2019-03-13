@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import styles from './TimelineHandler.css'
 import { ReactComponent as IconDrag } from '../icons/drag.svg'
 
-const Handler = props => (
+const Handler = (props) => (
   <button
     onMouseDown={props.onMouseDown}
     onTouchStart={props.onMouseDown}
