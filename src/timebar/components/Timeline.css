@@ -26,7 +26,7 @@
   position: absolute;
   height: 100%;
   top: 0;
-  transition: var(--hover-transition);
+  transition: var(--timebar-hover-transition);
   z-index: 1;
   pointer-events: all;
 }
@@ -36,7 +36,7 @@
   background-image:
     linear-gradient(
       90deg,
-      var(--main-background-color) 0%,
+      var(--timebar-main-background-color) 0%,
       rgba(0, 16, 57, 0.3) 100%
     );
 }
@@ -48,7 +48,7 @@
     linear-gradient(
       90deg,
       rgba(0, 16, 57, 0.3) 0%,
-      var(--main-background-color) 100%
+      var(--timebar-main-background-color) 100%
     );
 }
 

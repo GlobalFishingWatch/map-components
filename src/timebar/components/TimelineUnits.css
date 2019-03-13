@@ -19,10 +19,10 @@
   line-height: 1.4rem;
   text-transform: uppercase;
   user-select: none;
-  color: var(--light-blue);
-  font-size: var(--small-font-size);
+  color: var(--timebar-light-blue);
+  font-size: var(--timebar-small-font-size);
   font-weight: 400;
-  font-family: var(--font-family);
+  font-family: var(--timebar-font-family);
 }
 
 .unit button {
@@ -37,7 +37,7 @@
 
 .unit button:hover {
   outline: 0;
-  color: var(--white);
+  color: var(--timebar-white);
   background-image:
     linear-gradient(
       0deg,
@@ -52,7 +52,7 @@
   }
 
   .unit span {
-    height: var(--timeline-size);
-    line-height: var(--timeline-size);
+    height: var(--timebar-size);
+    line-height: var(--timebar-size);
   }
 }

@@ -1,20 +1,20 @@
 :root {
-  --color-miniglobe-bg: #011137;
-  --color-miniglobe-fg: #99d3e1;
-  --color-miniglobe-viewport: #f00;
+  --miniglobe-bg-color: #011137;
+  --miniglobe-fg-color: #99d3e1;
+  --miniglobe-viewport-color: #f00;
 }
 
 .globeBackground {
-  fill: var(--color-miniglobe-fg);
+  fill: var(--miniglobe-fg-color);
   stroke: none;
 }
 
 .globeSvg {
-  fill: var(--color-miniglobe-bg);
+  fill: var(--miniglobe-bg-color);
   stroke: none;
 }
 
 .viewport {
   fill: none;
-  stroke: var(--color-miniglobe-viewport);
+  stroke: var(--miniglobe-viewport-color);
 }

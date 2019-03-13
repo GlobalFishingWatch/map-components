@@ -1,39 +1,38 @@
 :root {
   /* COLORS */
-  --main-background-color: #021236;
-  --main-border-color: #1e365a;
-  --secondary-background-color: #0b285f;
-  --tertiary-background-color: #163f89;
-  --ui-btn-color: #163f89;
-  --ui-btn-color-faded: rgba(22, 63, 137, 0.5);
-  --ui-btn-color-hover: #2d5295;
-  --cta-btn-color: #46a4b9;
-  --cta-btn-hover: #58acbf;
-  --light-blue: #4fc6d7;
-  --white: #fff;
+  --timebar-main-background-color: #021236;
+  --timebar-main-border-color: #1e365a;
+  --timebar-secondary-background-color: #0b285f;
+  --timebar-ui-btn-color: #163f89;
+  --timebar-ui-btn-color-faded: rgba(22, 63, 137, 0.5);
+  --timebar-ui-btn-color-hover: #2d5295;
+  --timebar-cta-btn-color: #46a4b9;
+  --timebar-cta-btn-hover: #58acbf;
+  --timebar-light-blue: #4fc6d7;
+  --timebar-white: #fff;
 
   /* TYPE */
-  --font-family: 'Roboto', sans-serif;
-  --extra-large-font-size: 2rem;
-  --font-size: 1.3rem;
-  --font-weight: 500;
-  --small-font-size: 1.2rem;
+  --timebar-font-family: 'Roboto', sans-serif;
+  --timebar-extra-large-font-size: 2rem;
+  --timebar-font-size: 1.3rem;
+  --timebar-font-weight: 500;
+  --timebar-small-font-size: 1.2rem;
 
   /* OTHER */
-  --hover-transition: all 150ms linear;
-  --timeline-size: 7.2rem;
+  --timebar-hover-transition: all 150ms linear;
+  --timebar-size: 7.2rem;
 }
 
 .Timebar {
   width: 100%;
-  height: var(--timeline-size);
+  height: var(--timebar-size);
   display: flex;
-  background: var(--main-background-color);
-  border-top: 1px solid var(--main-border-color);
-  color: var(--white);
-  font-family: var(--font-family);
-  font-size: var(--font-size);
-  font-weight: var(--font-weight);
+  background: var(--timebar-main-background-color);
+  border-top: 1px solid var(--timebar-main-border-color);
+  color: var(--timebar-white);
+  font-family: var(--timebar-font-family);
+  font-size: var(--timebar-font-size);
+  font-weight: var(--timebar-font-weight);
   box-sizing: border-box;
 }
 
@@ -44,12 +43,12 @@
   cursor: pointer;
   width: 3.6rem;
   height: 3.6rem;
-  background-color: var(--ui-btn-color);
-  color: var(--white);
+  background-color: var(--timebar-ui-btn-color);
+  color: var(--timebar-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--hover-transition);
+  transition: var(--timebar-hover-transition);
 }
 
 .uiButton:disabled {
@@ -62,15 +61,15 @@
 
 .uiButton:hover,
 .uiButton:focus {
-  background-color: var(--ui-btn-color-hover);
+  background-color: var(--timebar-ui-btn-color-hover);
   outline: none;
 }
 
 /* PLAYBACK ACTIONS */
 
 .playbackActions {
-  background-color: var(--ui-btn-color);
-  width: var(--timeline-size);
+  background-color: var(--timebar-ui-btn-color);
+  width: var(--timebar-size);
   height: 100%;
   margin-right: 0.1rem;
   display: flex;
@@ -107,14 +106,14 @@
 
 .timeActions {
   position: relative;
-  width: var(--timeline-size);
+  width: var(--timebar-size);
   display: flex;
   flex-wrap: wrap;
   z-index: 1;
 }
 
 .timeRange {
-  border-right: 0.1rem solid var(--main-background-color);
+  border-right: 0.1rem solid var(--timebar-main-background-color);
 }
 
 .timeScale {
@@ -122,13 +121,13 @@
 }
 
 .timeScale .uiButton {
-  border-top: 0.1rem solid var(--main-background-color);
+  border-top: 0.1rem solid var(--timebar-main-background-color);
   height: 3.5rem;
 }
 
 @media only screen and (max-width: 72rem) {
   :root {
-    --timeline-size: 6rem;
+    --timebar-size: 6rem;
   }
 
   .playbackActions,
@@ -138,8 +137,8 @@
   }
 
   .timeRange {
-    width: var(--timeline-size);
-    height: var(--timeline-size);
+    width: var(--timebar-size);
+    height: var(--timebar-size);
   }
 }
 
