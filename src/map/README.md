@@ -25,6 +25,10 @@ This module does not deal with:
 - UI (such as UI to set layer properties, filters, or timebar, see <a href="https://github.com/GlobalFishingWatch/map-timebar-module">Timebar repo</a>);
 - GFW main client features: reporting, vessel search, etc.
 
+## Dependencies
+
+Pixi.js can't be bundled easily so there is a need to include `pixi.js` as a dependency of your own package.json project.
+
 # API
 
 ## `token`

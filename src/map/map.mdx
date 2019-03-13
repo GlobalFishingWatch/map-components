@@ -1,0 +1,26 @@
+---
+name: Map Module
+---
+
+import { Playground, PropsTable } from 'docz'
+import Map from './index.js'
+
+# Map
+
+## Description
+
+This component displays and load fishing activity and fishing-related layers on a map, used in various GFW projects:
+
+- [Map client](https://github.com/GlobalFishingWatch/map-client/blob/9c5179358d4870c0fd4c2c0742917e72e6025c59/app/src/map/components/MapWrapper.jsx#L5)
+- [Vessel profiles](https://github.com/GlobalFishingWatch/vessel-profiles/blob/aa0e17395f6a4947bb3fdf3106cb9d0a744ba64f/src/profile/components/MapWrapper.js#L3)
+- [Data portal](https://github.com/GlobalFishingWatch/data-portal/blob/96b1e24efcff58ade672a67229da0610d9d241ab/src/map/MapWrapper.jsx#L2)
+
+## Available properties
+
+TODO: fix crash on PropsTable docz component
+
+## Basic usage
+
+<Playground>
+  <Map viewport={{ center: [0.026, 123.61], zoom: 5, }} />
+</Playground>
