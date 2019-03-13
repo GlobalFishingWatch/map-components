@@ -310,7 +310,5 @@ Function. Notify of attributions changes depending on layers toggled [PARTIALLY 
 
 As the module is using redux internally it is hard to debug the store or know which actions are being dispatched. To solve this you could run the [remote redux devtools](https://github.com/zalmoxisus/remote-redux-devtools) with the following steps:
 
-1. Run the websockets server with `npm run debug-server`
+1. Run the websockets server with `yarn debug-server`
 2. Follow https://github.com/zalmoxisus/remote-redux-devtools#monitoring to see the logs
-
-TODO: Include a `REDUX_REMOTE_DEBUG` env variable when moved to map-components
