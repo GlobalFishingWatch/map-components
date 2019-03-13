@@ -1,5 +1,5 @@
 .DateSelector {
-  /* font-family: var(--font-family); */
+  /* font-family: var(--timebar-font-family); */
   display: flex;
   flex-direction: column;
   width: 4.2rem;
@@ -13,11 +13,11 @@
   cursor: pointer;
   height: 2.4rem;
   background: transparent;
-  color: var(--white);
+  color: var(--timebar-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--hover-transition);
+  transition: var(--timebar-hover-transition);
 }
 
 .arrowButton:disabled {
@@ -36,7 +36,7 @@
   height: 3.4rem;
   align-items: center;
   justify-content: center;
-  background: var(--secondary-background-color);
-  color: var(--light-blue);
+  background: var(--timebar-secondary-background-color);
+  color: var(--timebar-light-blue);
   text-transform: uppercase;
 }

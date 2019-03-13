@@ -1,8 +1,8 @@
 .handler {
   border: none;
   padding: 0;
-  background: var(--ui-btn-color);
-  color: var(--white);
+  background: var(--timebar-ui-btn-color);
+  color: var(--timebar-white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,7 +19,7 @@
   cursor: -moz-grab;
   cursor: -webkit-grab;
   z-index: 2;
-  transition: var(--hover-transition);
+  transition: var(--timebar-hover-transition);
 }
 
 /*
@@ -37,7 +37,7 @@
 
 .handler:hover,
 .handler:focus {
-  background: var(--ui-btn-color-hover);
+  background: var(--timebar-ui-btn-color-hover);
   outline: none;
 }
 

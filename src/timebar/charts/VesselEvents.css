@@ -1,9 +1,9 @@
 :root {
-  --encounter-color: #e5647d;
-  --gap-color: #ffe7a0;
-  --fishing-color: #fe81eb;
-  --unregistered-color: #9a84ed;
-  --port-color: #44a1b9;
+  --timebar-encounter-color: #e5647d;
+  --timebar-gap-color: #ffe7a0;
+  --timebar-fishing-color: #fe81eb;
+  --timebar-unregistered-color: #9a84ed;
+  --timebar-port-color: #44a1b9;
 }
 
 .Events {
@@ -16,38 +16,38 @@
 }
 
 .overlays ._highlighted rect {
-  stroke: var(--white);
+  stroke: var(--timebar-white);
   stroke-width: 2px;
 }
 
 .overlays .encounter rect {
-  fill: var(--encounter-color);
+  fill: var(--timebar-encounter-color);
 }
 
 .overlays .gap rect {
-  fill: var(--gap-color);
+  fill: var(--timebar-gap-color);
 }
 
 .overlays .fishing rect {
-  fill: var(--fishing-color);
+  fill: var(--timebar-fishing-color);
   fill-opacity: 0.5;
 }
 
 .lines line.port {
-  stroke: var(--fishing-color);
+  stroke: var(--timebar-fishing-color);
   stroke-dasharray: 4;
   stroke-linecap: butt;
   stroke-width: 2px;
 }
 
 .overlays .port circle {
-  fill: var(--main-background-color);
-  stroke: var(--fishing-color);
+  fill: var(--timebar-main-background-color);
+  stroke: var(--timebar-fishing-color);
   stroke-width: 2px;
 }
 
 .backgrounds .port rect {
-  fill: var(--white);
+  fill: var(--timebar-white);
   fill-opacity: 0.1;
 }
 
@@ -56,12 +56,12 @@
 }
 
 .tooltip {
-  background: var(--white);
+  background: var(--timebar-white);
   position: absolute;
   display: flex;
   align-items: center;
   pointer-events: none;
-  color: var(--main-background-color);
+  color: var(--timebar-main-background-color);
   padding: 6px 8px;
   transform: translate(-50%, -100%);
   top: 10px;
@@ -70,7 +70,7 @@
 }
 
 .tooltip::after {
-  background: var(--white);
+  background: var(--timebar-white);
   content: ' ';
   width: 10px;
   height: 10px;
@@ -90,29 +90,29 @@
 }
 
 .tooltip.encounter .tooltipDate {
-  color: var(--encounter-color);
+  color: var(--timebar-encounter-color);
 }
 
 .tooltip.encounter svg {
-  fill: var(--encounter-color);
+  fill: var(--timebar-encounter-color);
 }
 
 .tooltip.gap .tooltipDate {
-  color: var(--gap-color);
+  color: var(--timebar-gap-color);
 }
 
 .tooltip.gap svg {
-  fill: var(--gap-color);
+  fill: var(--timebar-gap-color);
 }
 
 .tooltip.fishing .tooltipDate {
-  color: var(--fishing-color);
+  color: var(--timebar-fishing-color);
 }
 
 .tooltip.port .tooltipDate {
-  color: var(--port-color);
+  color: var(--timebar-port-color);
 }
 
 .tooltip.port svg {
-  stroke: var(--port-color);
+  stroke: var(--timebar-port-color);
 }
