@@ -3,5 +3,8 @@
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "error"
+  },
+  "globals": {
+    "MAP_REDUX_REMOTE_DEBUG": true
   }
 }

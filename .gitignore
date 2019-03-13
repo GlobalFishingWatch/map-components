@@ -5,8 +5,8 @@ node_modules
 
 # builds
 build
-dist
 components
+stats.html
 
 # misc
 .DS_Store
