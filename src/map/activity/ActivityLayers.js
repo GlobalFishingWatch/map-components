@@ -21,7 +21,7 @@ import {
 import HeatmapLayer from '../heatmap/HeatmapLayer'
 import TracksLayer from '../tracks/TracksLayer'
 
-const shouldUseRadialGradientStyle = zoom => zoom < VESSELS_RADIAL_GRADIENT_STYLE_ZOOM_THRESHOLD
+const shouldUseRadialGradientStyle = (zoom) => zoom < VESSELS_RADIAL_GRADIENT_STYLE_ZOOM_THRESHOLD
 
 // builds a texture spritesheet containing
 // - the heatmap style (radial gradient)
@@ -142,20 +142,20 @@ class ActivityLayers extends BaseControl {
     this.heatmapStage.alpha = dim === true ? VESSELS_HEATMAP_DIMMING_ALPHA : 1
   }
 
-  onTouchStart = event => {
+  onTouchStart = (event) => {
     if (!event.touches.length) {
       return
     }
-    this.queryHeatmapVessels(event.touches[0].clientX, event.touches[0].clientY)
+    this.queryCoords(event.touches[0].clientX, event.touches[0].clientY)
   }
 
-  onMouseMove = event => {
-    this.queryHeatmapVessels(event.clientX, event.clientY)
+  onMouseMove = (event) => {
+    this.queryCoords(event.clientX, event.clientY)
   }
 
-  queryHeatmapVessels(x, y) {
+  queryCoords(x, y) {
     // bail if all heatmap layers are set to non-interactive
-    if (this.props.heatmapLayers.every(l => l.interactive !== true)) {
+    if (this.props.heatmapLayers.every((l) => l.interactive !== true)) {
       return
     }
 
@@ -173,13 +173,16 @@ class ActivityLayers extends BaseControl {
 
     const toleranceRadiusInWorldUnits = VESSEL_CLICK_TOLERANCE_PX / viewport.scale
 
-    this.props.queryHeatmapVessels({
-      longitude: wrappedLongitude,
-      latitude,
-      worldX,
-      worldY,
-      toleranceRadiusInWorldUnits,
-    })
+    this.props.queryHeatmapVessels(
+      {
+        longitude: wrappedLongitude,
+        latitude,
+        worldX,
+        worldY,
+        toleranceRadiusInWorldUnits,
+      },
+      this.props.temporalExtentIndexes
+    )
   }
 
   _onTick = () => {
@@ -223,16 +226,16 @@ class ActivityLayers extends BaseControl {
       highlightedVessels.foundVessels !== undefined &&
       highlightedVessels.isEmpty !== true
     ) {
-      const sourceLayer = heatmapLayers.find(l => l.id === highlightedVessels.layer.id)
+      const sourceLayer = heatmapLayers.find((l) => l.id === highlightedVessels.layer.id)
       highlightLayerData = { highlightLayerData, ...sourceLayer }
-      highlightFilters = highlightedVessels.foundVessels.map(vessel => ({
+      highlightFilters = highlightedVessels.foundVessels.map((vessel) => ({
         hue,
         filterValues: {
           series: [vessel.series],
         },
       }))
     } else if (highlightedClickedVessel !== null) {
-      const sourceLayer = heatmapLayers.find(l => l.id === highlightedClickedVessel.layer.id)
+      const sourceLayer = heatmapLayers.find((l) => l.id === highlightedClickedVessel.layer.id)
       highlightLayerData = { highlightLayerData, ...sourceLayer }
       highlightFilters = [
         {
@@ -285,14 +288,14 @@ class ActivityLayers extends BaseControl {
 
     return (
       <div
-        ref={ref => {
+        ref={(ref) => {
           this.container = ref
         }}
         style={{ position: 'absolute' }}
         onMouseMove={this.onMouseMove}
         onTouchStart={this.onTouchStart}
       >
-        {heatmapLayers.map(layer => (
+        {heatmapLayers.map((layer) => (
           <HeatmapLayer
             key={layer.id}
             layer={layer}

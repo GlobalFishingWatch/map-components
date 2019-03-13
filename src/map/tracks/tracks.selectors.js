@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 import { getTemporalExtent } from '../module/module.selectors.js'
 
-export const getTracksData = state => state.map.tracks.data
+export const getTracksData = (state) => state.map.tracks.data
 
 const filterGeojsonByTimerange = (geojson, { start, end }) => {
   if (!geojson || !geojson.features) return null
@@ -51,15 +51,16 @@ const filterGeojsonByTimerange = (geojson, { start, end }) => {
 export const getTracksStyles = createSelector(
   [getTemporalExtent, getTracksData],
   (temporalExtent, tracks) => {
+    const filteredTracks = tracks.filter((t) => t.type === 'geojson')
     const hasTemporalExtent = temporalExtent && temporalExtent.length > 0
-    const hasTracks = tracks && tracks.length > 0
+    const hasTracks = filteredTracks && filteredTracks.length > 0
     if (!hasTemporalExtent || !hasTracks) return null
 
     const timerange = {
       start: temporalExtent[0].getTime(),
       end: temporalExtent[1].getTime(),
     }
-    const styles = tracks.reduce(
+    const styles = filteredTracks.reduce(
       (acc, track) => {
         if (!track.data) return acc
 

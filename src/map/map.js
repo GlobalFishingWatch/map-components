@@ -9,7 +9,7 @@ import { heatmapLayerTypes, basemapLayerTypes, staticLayerTypes } from './propty
 import { viewportTypes, popupTypes } from './proptypes/shared'
 
 import Map from './glmap/Map.container'
-import { initModule, setTemporalExtent } from './module/module.actions'
+import { initModule, setTemporalExtent, setHighlightTemporalExtent } from './module/module.actions'
 import { fitToBounds, updateViewport, transitionToZoom } from './glmap/viewport.actions'
 import { initStyle, commitStyleUpdates, applyTemporalExtent } from './glmap/style.actions'
 import { updateTracks } from './tracks/tracks.actions'
@@ -56,12 +56,12 @@ const store = createStore(
   composeEnhancers(applyMiddleware(thunk))
 )
 
-const throttleApplyTemporalExtent = throttle(temporalExtent => {
+const throttleApplyTemporalExtent = throttle((temporalExtent) => {
   store.dispatch(applyTemporalExtent(temporalExtent))
   store.dispatch(setTemporalExtent(temporalExtent))
 }, 16)
 
-const updateViewportFromIncomingProps = incomingViewport => {
+const updateViewportFromIncomingProps = (incomingViewport) => {
   store.dispatch(
     updateViewport({
       latitude: incomingViewport.center[0],
@@ -74,6 +74,14 @@ const updateViewportFromIncomingProps = incomingViewport => {
 class MapModule extends React.Component {
   state = {
     initialized: false,
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log(error, errorInfo)
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    })
   }
 
   componentDidMount() {
@@ -170,7 +178,6 @@ class MapModule extends React.Component {
         store.dispatch(updateLayerLoadTemporalExtents(this.props.loadTemporalExtent))
       }
     }
-
     // temporalExtent
     if (this.props.temporalExtent !== undefined && this.props.temporalExtent.length) {
       if (
@@ -180,6 +187,23 @@ class MapModule extends React.Component {
         this.props.temporalExtent[1].getTime() !== prevProps.temporalExtent[1].getTime()
       ) {
         throttleApplyTemporalExtent(this.props.temporalExtent)
+      }
+    }
+
+    // highlightTemporalExtent
+    if (
+      this.props.highlightTemporalExtent !== undefined &&
+      this.props.highlightTemporalExtent.length
+    ) {
+      if (
+        prevProps.highlightTemporalExtent === undefined ||
+        !prevProps.highlightTemporalExtent.length ||
+        this.props.highlightTemporalExtent[0].getTime() !==
+          prevProps.highlightTemporalExtent[0].getTime() ||
+        this.props.highlightTemporalExtent[1].getTime() !==
+          prevProps.highlightTemporalExtent[1].getTime()
+      ) {
+        store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
       }
     }
 
@@ -209,6 +233,17 @@ class MapModule extends React.Component {
     }
   }
   render() {
+    if (this.state.error !== undefined) {
+      console.log(this.state.error)
+      return (
+        <div>
+          <h2>Map component crashed!</h2>
+          <p className="red">{this.state.error && this.state.error.toString()}</p>
+          <div>Component Stack Error Details:</div>
+          <p className="red">{this.state.errorInfo.componentStack}</p>
+        </div>
+      )
+    }
     // won't render anything before actions in componentDidMount have been triggered
     return this.state.initialized !== true ? null : (
       <Provider store={store}>
@@ -243,8 +278,8 @@ MapModule.propTypes = {
 
 export default MapModule
 
-export const targetMapVessel = id => {
-  const track = store.getState().map.tracks.data.find(t => t.id === id.toString())
+export const targetMapVessel = (id) => {
+  const track = store.getState().map.tracks.data.find((t) => t.id === id.toString())
   store.dispatch(fitToBounds(track.geoBounds))
 
   return track.timelineBounds

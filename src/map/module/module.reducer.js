@@ -1,11 +1,18 @@
 import PropTypes from 'prop-types'
 import withReducerTypes from '../utils/withReducerTypes'
-import { INIT_MODULE, SET_TEMPORAL_EXTENT, START_LOADER, COMPLETE_LOADER } from './module.actions'
+import {
+  INIT_MODULE,
+  SET_TEMPORAL_EXTENT,
+  SET_HIGHLIGHT_TEMPORAL_EXTENT,
+  START_LOADER,
+  COMPLETE_LOADER,
+} from './module.actions'
 
 const initialState = {
   loaders: null,
   token: undefined,
-  temporalExtent: null,
+  temporalExtent: [new Date(1970), new Date()],
+  highlightTemporalExtent: null,
   onViewportChange: undefined,
   onHover: undefined,
   onClick: undefined,
@@ -31,6 +38,13 @@ const moduleReducer = (state = initialState, action) => {
       }
     }
 
+    case SET_HIGHLIGHT_TEMPORAL_EXTENT: {
+      return {
+        ...state,
+        highlightTemporalExtent: action.payload,
+      }
+    }
+
     case START_LOADER: {
       const loaders = state.loaders !== null ? [...state.loaders] : []
       loaders.push(action.payload)
@@ -39,7 +53,7 @@ const moduleReducer = (state = initialState, action) => {
 
     case COMPLETE_LOADER: {
       const loaders = [...state.loaders]
-      const loaderIndex = loaders.findIndex(l => l === action.payload)
+      const loaderIndex = loaders.findIndex((l) => l === action.payload)
       loaders.splice(loaderIndex, 1)
       return { ...state, loaders }
     }
