@@ -235,8 +235,8 @@ class MapModule extends React.Component {
     }
   }
   render() {
-    console.log(this.state.error)
     if (this.state.error !== undefined) {
+      console.log(this.state.error)
       return (
         <div>
           <h2>Map component crashed!</h2>

@@ -164,7 +164,6 @@ function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color
               data: geojson,
               geoBounds,
               timelineBounds,
-              isGeoJSON: true,
             },
           })
           if (fitBoundsOnLoad) {

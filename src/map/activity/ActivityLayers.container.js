@@ -25,7 +25,7 @@ const getTracksWithData = createSelector(
   [getTracks],
   (tracks) => {
     const tracksWithData = tracks
-      .filter((t) => t.isGeoJSON !== true)
+      .filter((t) => t.type !== 'geojson')
       .filter((t) => t.data !== undefined)
     return tracksWithData
   }

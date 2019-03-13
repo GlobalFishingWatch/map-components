@@ -50,7 +50,6 @@ const tracksTypes = {
         maxLat: PropTypes.number,
         maxLng: PropTypes.number,
       }),
-      isGeoJSON: PropTypes.bool,
     })
   ),
 }
