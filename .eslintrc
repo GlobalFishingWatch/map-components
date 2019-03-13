@@ -5,6 +5,6 @@
     "prettier/prettier": "error"
   },
   "globals": {
-    "REDUX_REMOTE_DEBUG": true
+    "MAP_REDUX_REMOTE_DEBUG": true
   }
 }

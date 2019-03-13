@@ -110,6 +110,7 @@
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-url": "^2.2.0",
+    "rollup-plugin-visualizer": "^1.0.2",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0",
     "viewport-mercator-project": "^6.1.1"

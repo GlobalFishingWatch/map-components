@@ -11580,7 +11580,7 @@ opn@5.2.0:
   dependencies:
     is-wsl "^1.1.0"
 
-opn@5.4.0, opn@^5.1.0:
+opn@5.4.0, opn@^5.1.0, opn@^5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/opn/-/opn-5.4.0.tgz#cb545e7aab78562beb11aa3bfabc7042e1761035"
   integrity sha512-YF9MNdVy/0qvJvDtunAOzFw9iasOQHpVthTCvGzxt61Il64AYSGdK+rYwld7NAfk9qJ7dt+hymBNSc9LNYS+Sw==
@@ -14654,6 +14654,16 @@ rollup-plugin-url@^2.2.0:
     mkpath "^1.0.0"
     rollup-pluginutils "^2.3.3"
 
+rollup-plugin-visualizer@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-1.0.2.tgz#1b389c2093fff8b68cdf1c37b58fcef645cf3b5b"
+  integrity sha512-sbHGPI2KLqCIxKZxqL5io3xLkKWFdLdsYr58fkNh8p3TAoyuHbC89wvrfc+WtBwm/KQltQzepH6NzrzAwMdWXQ==
+  dependencies:
+    mkdirp "^0.5.1"
+    opn "^5.4.0"
+    source-map "^0.7.3"
+    typeface-oswald "0.0.54"
+
 rollup-pluginutils@^2.0.1, rollup-pluginutils@^2.3.0, rollup-pluginutils@^2.3.1, rollup-pluginutils@^2.3.3:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.4.1.tgz#de43ab54965bbf47843599a7f3adceb723de38db"
@@ -16513,6 +16523,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typeface-oswald@0.0.54:
+  version "0.0.54"
+  resolved "https://registry.yarnpkg.com/typeface-oswald/-/typeface-oswald-0.0.54.tgz#1e253011622cdd50f580c04e7d625e7f449763d7"
+  integrity sha512-U1WMNp4qfy4/3khIfHMVAIKnNu941MXUfs3+H9R8PFgnoz42Hh9pboSFztWr86zut0eXC8byalmVhfkiKON/8Q==
 
 ua-parser-js@^0.7.18:
   version "0.7.19"

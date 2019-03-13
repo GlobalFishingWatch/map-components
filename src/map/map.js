@@ -35,8 +35,8 @@ const mapReducer = combineReducers({
 })
 
 let composeEnhancers = compose
-
-if (REDUX_REMOTE_DEBUG && process.env.NODE_ENV === 'development') {
+console.log('alablalba')
+if (MAP_REDUX_REMOTE_DEBUG && process.env.NODE_ENV === 'development') {
   const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
   composeEnhancers = composeWithDevTools({
     name: 'Map module',
