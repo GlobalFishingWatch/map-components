@@ -18,12 +18,12 @@ export const initStyle = ({ glyphsPath }) => ({
   },
 })
 
-const setMapStyle = style => ({
+const setMapStyle = (style) => ({
   type: SET_MAP_STYLE,
   payload: style,
 })
 
-export const applyTemporalExtent = temporalExtent => (dispatch, getState) => {
+export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   const state = getState().map.style
   let style = state.mapStyle
   const currentStyle = style.toJS()
@@ -79,7 +79,7 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
   const glType = currentGlLayer.type
   const defaultStyles = currentStyle.metadata['gfw:styles']
   const metadata = currentGlLayer.metadata
-  ;['selected', 'highlighted'].forEach(styleType => {
+  ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
     const applyStyleToAllFeatures = refLayer[styleType]
@@ -99,7 +99,7 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
         const layerColorRgb = hexToRgb(refLayer.color)
         const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
         // go through each applicable gl paint property
-        Object.keys(allPaintProperties).forEach(glPaintProperty => {
+        Object.keys(allPaintProperties).forEach((glPaintProperty) => {
           const selectedValue = allPaintProperties[glPaintProperty][0]
           const fallbackValue = allPaintProperties[glPaintProperty][1]
           const glPaintFinalValue =
@@ -140,8 +140,8 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
   const currentStyleLayers = currentStyle.layers
   let newStyle = style
 
-  const glLayerIndex = currentStyleLayers.findIndex(l => l.id === glLayerId)
-  const glLayer = currentStyleLayers.find(l => l.id === glLayerId)
+  const glLayerIndex = currentStyleLayers.findIndex((l) => l.id === glLayerId)
+  const glLayer = currentStyleLayers.find((l) => l.id === glLayerId)
 
   // visibility
   newStyle = toggleLayerVisibility(newStyle, refLayer, glLayerIndex)
@@ -150,7 +150,7 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     return newStyle
   }
 
-  const initialGLLayer = GL_STYLE.layers.find(l => l.id === glLayerId)
+  const initialGLLayer = GL_STYLE.layers.find((l) => l.id === glLayerId)
   const refLayerOpacity = refLayer.opacity === undefined ? 1 : refLayer.opacity
 
   // color/opacity
@@ -236,7 +236,7 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
     style = style.setIn(['sources', layerId], fromJS(source))
   }
 
-  if (currentStyle.layers.find(glLayer => glLayer.id === layerId) === undefined) {
+  if (currentStyle.layers.find((glLayer) => glLayer.id === layerId) === undefined) {
     const glType = subtype === CUSTOM_LAYERS_SUBTYPES.geojson ? getMainGeomType(data) : subtype
     const glLayer = fromJS({
       id: layerId,
@@ -251,9 +251,9 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
           currentStyle.layers.length -
           1 -
           currentStyle.layers
-            .filter(l => l.id !== 'labels')
+            .filter((l) => l.id !== 'labels')
             .reverse()
-            .findIndex(l => l.type === 'raster')
+            .findIndex((l) => l.type === 'raster')
         : currentStyle.layers.length - 1
     style = style.set('layers', style.get('layers').splice(layerIndex, 0, glLayer))
   }
@@ -261,18 +261,18 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
   dispatch(setMapStyle(style))
 }
 
-const addWorkspaceGLLayers = workspaceGLLayers => (dispatch, getState) => {
+const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   const state = getState()
   let style = state.map.style.mapStyle
 
-  workspaceGLLayers.forEach(workspaceGLLayer => {
+  workspaceGLLayers.forEach((workspaceGLLayer) => {
     const id = workspaceGLLayer.id
     const gl = workspaceGLLayer.gl
     const finalSource = fromJS(gl.source)
     style = style.setIn(['sources', id], finalSource)
 
     const layers = []
-    gl.layers.forEach(srcGlLayer => {
+    gl.layers.forEach((srcGlLayer) => {
       const glLayer = {
         ...srcGlLayer,
         source: id,
@@ -296,9 +296,9 @@ const getCartoLayerInstanciatePromise = ({ sourceId, sourceCartoSQL }) => {
   const mapConfigURL = encodeURIComponent(JSON.stringify(mapConfig))
   const cartoAnonymousMapUrl = STATIC_LAYERS_CARTO_ENDPOINT.replace('$MAPCONFIG', mapConfigURL)
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     fetch(cartoAnonymousMapUrl)
-      .then(res => {
+      .then((res) => {
         if (res.status >= 400) {
           console.warn(`loading of layer failed ${sourceId}`)
           Promise.reject()
@@ -306,30 +306,30 @@ const getCartoLayerInstanciatePromise = ({ sourceId, sourceCartoSQL }) => {
         }
         return res.json()
       })
-      .then(data => {
+      .then((data) => {
         resolve({
           layergroupid: data.layergroupid,
           sourceId,
         })
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn(err)
       })
   })
 }
 
-const instanciateCartoLayers = layers => (dispatch, getState) => {
+const instanciateCartoLayers = (layers) => (dispatch, getState) => {
   dispatch({
     type: MARK_CARTO_LAYERS_AS_INSTANCIATED,
-    payload: layers.map(layer => layer.sourceId),
+    payload: layers.map((layer) => layer.sourceId),
   })
-  const cartoLayersPromises = layers.map(layer => getCartoLayerInstanciatePromise(layer))
-  const cartoLayersPromisesPromise = Promise.all(cartoLayersPromises.map(p => p.catch(e => e)))
+  const cartoLayersPromises = layers.map((layer) => getCartoLayerInstanciatePromise(layer))
+  const cartoLayersPromisesPromise = Promise.all(cartoLayersPromises.map((p) => p.catch((e) => e)))
   cartoLayersPromisesPromise
-    .then(instanciatedCartoLayers => {
+    .then((instanciatedCartoLayers) => {
       let style = getState().map.style.mapStyle
       const currentStyle = style.toJS()
-      instanciatedCartoLayers.forEach(cartoLayer => {
+      instanciatedCartoLayers.forEach((cartoLayer) => {
         const tilesURL = STATIC_LAYERS_CARTO_TILES_ENDPOINT.replace(
           '$LAYERGROUPID',
           cartoLayer.layergroupid
@@ -350,7 +350,7 @@ const instanciateCartoLayers = layers => (dispatch, getState) => {
           if (glLayer.source === cartoLayer.sourceId) {
             style = style.setIn(['layers', glLayerIndex, 'source'], newSourceId)
             style = style.setIn(['layers', glLayerIndex, 'metadata', 'gfw:id'], cartoLayer.sourceId)
-            const refLayer = layers.find(l => l.refLayer.id === cartoLayer.sourceId).refLayer
+            const refLayer = layers.find((l) => l.refLayer.id === cartoLayer.sourceId).refLayer
             style = updateGLLayer(style, glLayer.id, refLayer)
           }
         })
@@ -358,7 +358,7 @@ const instanciateCartoLayers = layers => (dispatch, getState) => {
 
       dispatch(setMapStyle(style))
     })
-    .catch(err => {
+    .catch((err) => {
       console.warn(err)
     })
 }
@@ -375,13 +375,13 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
     payload: basemapLayers,
   })
 
-  const layers = [...staticLayers, ...basemapLayers.map(bl => ({ ...bl, isBasemap: true }))]
+  const layers = [...staticLayers, ...basemapLayers.map((bl) => ({ ...bl, isBasemap: true }))]
 
   const currentGLSources = getState().map.style.mapStyle.toJS().sources
 
   // collect layers declared in workspace but not in original gl style
   const workspaceGLLayers = layers.filter(
-    layer => layer.gl !== undefined && currentGLSources[layer.id] === undefined
+    (layer) => layer.gl !== undefined && currentGLSources[layer.id] === undefined
   )
   if (workspaceGLLayers.length) {
     dispatch(addWorkspaceGLLayers(workspaceGLLayers))
@@ -389,10 +389,10 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
 
   // instanciate custom layers if needed
   const customLayers = layers.filter(
-    layer => layer.isCustom === true && currentGLSources[layer.id] === undefined
+    (layer) => layer.isCustom === true && currentGLSources[layer.id] === undefined
   )
   if (customLayers.length) {
-    customLayers.forEach(layer => {
+    customLayers.forEach((layer) => {
       dispatch(addCustomGLLayer(layer.subtype, layer.id, layer.url, layer.data))
     })
   }
@@ -411,7 +411,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
     const glSource = glSources[sourceId]
     const layerId = (glLayer.metadata !== undefined && glLayer.metadata['gfw:id']) || sourceId
 
-    const refLayer = layers.find(l => l.id === layerId)
+    const refLayer = layers.find((l) => l.id === layerId)
 
     if (refLayer === undefined) {
       if (glLayer.type !== 'background') {
@@ -429,7 +429,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
       if (
         refLayer.visible === true &&
         !cartoLayerInstanciated &&
-        !cartoLayersToInstanciate.find(l => l.sourceId === sourceId)
+        !cartoLayersToInstanciate.find((l) => l.sourceId === sourceId)
       ) {
         cartoLayersToInstanciate.push({ sourceId, sourceCartoSQL, refLayer })
       }

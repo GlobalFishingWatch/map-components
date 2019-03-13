@@ -6,9 +6,9 @@ const TYPES = [
   { gl: 'circle', geoJSON: ['Point', 'MultiPoint'] },
 ]
 
-export default geoJSON => {
+export default (geoJSON) => {
   // collect all geoJSON geom types
-  const allGeoJSONTypes = geoJSON.features.map(feature => {
+  const allGeoJSONTypes = geoJSON.features.map((feature) => {
     const geom = feature.geometry
     if (geom === undefined) {
       return null
@@ -17,9 +17,9 @@ export default geoJSON => {
   })
 
   // collect number of geometries by GL geom types
-  const numByGLType = TYPES.map(type => {
+  const numByGLType = TYPES.map((type) => {
     let num = 0
-    allGeoJSONTypes.forEach(geoJSONType => {
+    allGeoJSONTypes.forEach((geoJSONType) => {
       if (type.geoJSON.indexOf(geoJSONType) > -1) {
         num++
       }
@@ -30,7 +30,7 @@ export default geoJSON => {
   // get feature types with the higher count
   let glType = 'fill'
   let glTypeMax = 0
-  numByGLType.forEach(t => {
+  numByGLType.forEach((t) => {
     if (t.num > glTypeMax) {
       glType = t.gl
       glTypeMax = t.num

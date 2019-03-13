@@ -44,7 +44,7 @@ if (MAP_REDUX_REMOTE_DEBUG && process.env.NODE_ENV === 'development') {
     hostname: 'localhost',
     port: 8000,
     maxAge: 30,
-    stateSanitizer: state => ({ ...state, map: { ...state.map, heatmap: 'NOT_SERIALIZED' } }),
+    stateSanitizer: (state) => ({ ...state, map: { ...state.map, heatmap: 'NOT_SERIALIZED' } }),
   })
 }
 

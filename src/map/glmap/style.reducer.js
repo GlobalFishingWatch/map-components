@@ -11,8 +11,8 @@ import {
 
 const attributions = uniq(
   Object.keys(GL_STYLE.sources)
-    .map(sourceKey => GL_STYLE.sources[sourceKey].attribution)
-    .filter(source => source !== undefined)
+    .map((sourceKey) => GL_STYLE.sources[sourceKey].attribution)
+    .filter((source) => source !== undefined)
 )
 
 const initialState = {

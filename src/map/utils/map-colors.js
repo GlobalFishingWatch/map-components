@@ -21,7 +21,7 @@ export const COLOR_HUES = {
 // FIXME mark explicitely as legacy. Check all usages.
 export const getKeyByValue = (obj, value) => {
   let result = null
-  Object.entries(obj).forEach(entry => {
+  Object.entries(obj).forEach((entry) => {
     if (entry[1] === value) result = entry[0]
   })
   return result
@@ -94,16 +94,16 @@ export const hsvToRgb = (h_, s_, v_) => {
 }
 
 // returns an rgb string with default saturation and luminance values
-const hueToRgbDefaults = hue => hsvToRgb(hue, 50, 100)
+const hueToRgbDefaults = (hue) => hsvToRgb(hue, 50, 100)
 
-export const hueToRgbString = hue => {
+export const hueToRgbString = (hue) => {
   const rgb = hueToRgbDefaults(hue)
   return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 }
 
 export const rgbToHexString = (rgb, css) => {
   const str = ['r', 'g', 'b']
-    .map(channelName => {
+    .map((channelName) => {
       const channelValue = rgb[channelName]
       let channelStr = channelValue.toString(16)
       if (channelValue < 16) {
@@ -124,14 +124,14 @@ export const hueToRgbHexString = (hue, css) => {
 const closestNumber = (numberArray, goal) =>
   numberArray.reduce((prev, curr) => (Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev))
 
-export const hueToClosestColor = hue => {
+export const hueToClosestColor = (hue) => {
   if (hue === undefined || hue === null) return undefined
-  const colorHueValues = Object.keys(COLOR_HUES).map(key => COLOR_HUES[key])
+  const colorHueValues = Object.keys(COLOR_HUES).map((key) => COLOR_HUES[key])
   const closestHue = closestNumber(colorHueValues, hue)
   return getKeyByValue(COLOR_HUES, closestHue)
 }
 
-export const hexToRgb = hex => {
+export const hexToRgb = (hex) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   return result
     ? {
@@ -154,11 +154,12 @@ export const hexToRgba = (hex, opacity) => {
   return rgbToRgbaString(rgb, opacity)
 }
 
-export const hueIncrementToHue = hueIncrement => hueIncrement * VESSELS_HUES_INCREMENT
+export const hueIncrementToHue = (hueIncrement) => hueIncrement * VESSELS_HUES_INCREMENT
 
-export const hueToHueIncrement = hue => Math.round((hue / 360) * (VESSELS_HUES_INCREMENTS_NUM - 1))
+export const hueToHueIncrement = (hue) =>
+  Math.round((hue / 360) * (VESSELS_HUES_INCREMENTS_NUM - 1))
 
-export const wrapHue = hue => hue % 360
+export const wrapHue = (hue) => hue % 360
 
 export const hueOrColorToHexColor = (color, hue) => {
   if (hue !== undefined) {

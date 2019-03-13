@@ -17,7 +17,7 @@ export const RELEASE_MARKED_TILES_UIDS = 'RELEASE_MARKED_TILES_UIDS'
 
 // restrict tilecover to a single zoom level
 // could be customized to load less or more detailed tiles
-const getTilecoverLimits = viewportZoom => {
+const getTilecoverLimits = (viewportZoom) => {
   let zoom = Math.ceil(viewportZoom + TILES_LOAD_ZOOM_OFFSET)
   let tilesAvailable = true
   if (zoom > ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING) {
@@ -48,7 +48,7 @@ const flushToReleaseTiles = () => (dispatch, getState) => {
   }
 }
 
-export const markTileAsLoaded = tileUids => dispatch => {
+export const markTileAsLoaded = (tileUids) => (dispatch) => {
   dispatch({
     type: MARK_TILES_UIDS_AS_LOADED,
     payload: tileUids,
@@ -68,27 +68,27 @@ const flushTileState = (forceLoadingAllVisibleTiles = false) => (dispatch, getSt
   } else {
     const currentLoadedTiles = state.map.heatmapTiles.currentLoadedTiles
 
-    currentVisibleTiles.forEach(visibleTile => {
-      if (currentLoadedTiles.find(t => t.uid === visibleTile.uid) === undefined) {
+    currentVisibleTiles.forEach((visibleTile) => {
+      if (currentLoadedTiles.find((t) => t.uid === visibleTile.uid) === undefined) {
         tilesToLoad.push(visibleTile)
       }
     })
 
-    currentLoadedTiles.forEach(loadedTile => {
-      if (currentVisibleTiles.find(t => t.uid === loadedTile.uid) === undefined) {
+    currentLoadedTiles.forEach((loadedTile) => {
+      if (currentVisibleTiles.find((t) => t.uid === loadedTile.uid) === undefined) {
         tilesToReleaseUids.push(loadedTile.uid)
       }
     })
   }
 
-  const tilesToLoadUids = tilesToLoad.map(t => t.uid)
+  const tilesToLoadUids = tilesToLoad.map((t) => t.uid)
   // console.log('force loading:', forceLoadingAllVisibleTiles)
   // console.log('visible', currentVisibleTiles.map(t => t.uid))
   // console.log('load', tilesToLoadUids)
   // console.log('release', tilesToReleaseUids)
   // console.log('----')
 
-  tilesToLoad.forEach(tile => {
+  tilesToLoad.forEach((tile) => {
     dispatch(getTile(tile))
   })
   dispatch({
@@ -108,7 +108,7 @@ const flushTileState = (forceLoadingAllVisibleTiles = false) => (dispatch, getSt
   dispatch(flushToReleaseTiles())
 }
 
-const _debouncedFlushState = dispatch => {
+const _debouncedFlushState = (dispatch) => {
   dispatch(flushTileState())
 }
 const debouncedFlushState = debounce(_debouncedFlushState, 500)
@@ -218,9 +218,9 @@ export const queryHeatmapVessels = (coords, temporalExtentIndexes) => (dispatch,
   // get quadkey for tile at current zoom level, but also neighbouring zoom levels,
   // in case current zoom level tiles has not been loaded yet
   const uids = [zoom, zoom - 1, zoom + 1]
-    .map(z => getTilecoverLimits(z))
-    .map(limits => tilecover.indexes(geom, limits))
-    .map(indexes => indexes[0])
+    .map((z) => getTilecoverLimits(z))
+    .map((limits) => tilecover.indexes(geom, limits))
+    .map((indexes) => indexes[0])
 
   const query = {
     ...coords,

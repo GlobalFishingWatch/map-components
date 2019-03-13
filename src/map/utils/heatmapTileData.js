@@ -65,8 +65,8 @@ export const getTilePromises = (tilesetUrl, token, temporalExtents, params) => {
   return promises
 }
 
-export const getCleanVectorArrays = rawTileData =>
-  rawTileData.filter(vectorArray => vectorArray !== null)
+export const getCleanVectorArrays = (rawTileData) =>
+  rawTileData.filter((vectorArray) => vectorArray !== null)
 
 /**
  * As data will come in multiple arrays (1 per API query/year basically), they need to be merged here
@@ -78,9 +78,9 @@ export const getCleanVectorArrays = rawTileData =>
 export const groupData = (cleanVectorArrays, columns) => {
   const data = {}
 
-  const totalVectorArraysLength = sumBy(cleanVectorArrays, a => a.longitude.length)
+  const totalVectorArraysLength = sumBy(cleanVectorArrays, (a) => a.longitude.length)
 
-  const filteredColumns = columns.filter(column => {
+  const filteredColumns = columns.filter((column) => {
     if (cleanVectorArrays[0] && cleanVectorArrays[0][column] === undefined) {
       console.warn(`column ${column} is present in layerHeader.colsByName but not in tile data`)
       return false
@@ -88,14 +88,14 @@ export const groupData = (cleanVectorArrays, columns) => {
     return true
   })
 
-  filteredColumns.forEach(key => {
+  filteredColumns.forEach((key) => {
     data[key] = new Float32Array(totalVectorArraysLength)
   })
 
   let currentArray
   let cumulatedOffsets = 0
 
-  const appendValues = key => {
+  const appendValues = (key) => {
     data[key].set(currentArray[key], cumulatedOffsets)
   }
 
@@ -132,7 +132,7 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, pr
   // store all available columns as object keys
   const columns = {}
   const columnsArr = Object.keys(colsByName)
-  columnsArr.forEach(c => {
+  columnsArr.forEach((c) => {
     columns[c] = true
   })
 
@@ -150,7 +150,7 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, pr
 
   // omit values that will be transformed before being stored to playback data (ie lat -> worldY)
   // only if hidden: true flag is set on header
-  ;['latitude', 'longitude', 'datetime'].forEach(col => {
+  ;['latitude', 'longitude', 'datetime'].forEach((col) => {
     if (colsByName[col] === undefined || colsByName[col].hidden === true) {
       pull(storedColumns, col)
     }
@@ -174,7 +174,7 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, pr
       point.latitude = geom[1]
     } else {
       point = {}
-      columnsArr.forEach(c => {
+      columnsArr.forEach((c) => {
         point[c] = data[c][index]
       })
     }
@@ -204,21 +204,21 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, pr
 
     if (!tilePlaybackData[timeIndex]) {
       const frame = {}
-      storedColumns.forEach(column => {
+      storedColumns.forEach((column) => {
         frame[column] = [point[column]]
       })
       tilePlaybackData[timeIndex] = frame
       continue
     }
     const frame = tilePlaybackData[timeIndex]
-    storedColumns.forEach(column => {
+    storedColumns.forEach((column) => {
       frame[column].push(point[column])
     })
   }
   return tilePlaybackData
 }
 
-export const addTracksPointsRenderingData = data => {
+export const addTracksPointsRenderingData = (data) => {
   data.hasFishing = []
   data.worldX = []
   data.worldY = []
@@ -237,7 +237,7 @@ export const addTracksPointsRenderingData = data => {
  * Converts Vector Array data to Playback format (organized by days) and stores it locally
  * @param vectorArray the source data before indexing by day
  */
-export const getTracksPlaybackData = vectorArray => {
+export const getTracksPlaybackData = (vectorArray) => {
   const playbackData = []
 
   for (let index = 0, length = vectorArray.series.length; index < length; index++) {
@@ -264,7 +264,7 @@ export const getTracksPlaybackData = vectorArray => {
 }
 
 export const vesselSatisfiesFilters = (frame, index, filterValues) => {
-  const satisfiesFilters = Object.keys(filterValues).every(field => {
+  const satisfiesFilters = Object.keys(filterValues).every((field) => {
     if (frame[field] === undefined) {
       // this field is not available on this layer. This can happen in an edge case described
       // here: https://github.com/GlobalFishingWatch/map-client/issues/661#issuecomment-334496469
@@ -277,8 +277,8 @@ export const vesselSatisfiesFilters = (frame, index, filterValues) => {
 
 const vesselSatisfiesAllFilters = (frame, index, filters) => {
   const satisfiesAllFilters = filters
-    .filter(f => f.pass !== true)
-    .some(filter => vesselSatisfiesFilters(frame, index, filter.filterValues))
+    .filter((f) => f.pass !== true)
+    .some((filter) => vesselSatisfiesFilters(frame, index, filter.filterValues))
   return satisfiesAllFilters
 }
 
@@ -303,7 +303,7 @@ export const selectVesselsAt = (tileData, tileQuery, startIndex, endIndex, curre
       ) {
         const vessel = {}
 
-        Object.keys(frame).forEach(key => {
+        Object.keys(frame).forEach((key) => {
           vessel[key] = frame[key][i]
         })
         vessels.push(vessel)

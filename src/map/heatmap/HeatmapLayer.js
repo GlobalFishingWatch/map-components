@@ -75,7 +75,7 @@ class HeatmapLayer extends React.Component {
       return
     }
     this.renderingStyleIndex = newStyleIndex
-    Object.values(this.subLayers).forEach(subLayer => {
+    Object.values(this.subLayers).forEach((subLayer) => {
       subLayer.setRenderingStyleIndex(this.renderingStyleIndex)
     })
   }
@@ -103,8 +103,8 @@ class HeatmapLayer extends React.Component {
         ? filters
             // pass is set to true by filterGroupActions when none of the filters fields
             // in the filter group is supported by the layer headers
-            .filter(f => f.pass !== true)
-            .map(f => (f.hue === undefined ? '0' : f.hue.toString()))
+            .filter((f) => f.pass !== true)
+            .map((f) => (f.hue === undefined ? '0' : f.hue.toString()))
         : [defaultHue.toString()]
     const currentlyUsedHues = Object.keys(this.subLayers)
 
@@ -127,7 +127,7 @@ class HeatmapLayer extends React.Component {
     }
 
     if (!allHuesToRender.length) return
-    tiles.forEach(tile => {
+    tiles.forEach((tile) => {
       this._setSubLayersSpritePropsForTile({
         data: tile.data,
         numFilters: filters.length,
@@ -135,7 +135,7 @@ class HeatmapLayer extends React.Component {
       })
     })
 
-    allHuesToRender.forEach(hueToRender => {
+    allHuesToRender.forEach((hueToRender) => {
       this.subLayers[hueToRender].render()
     })
   }

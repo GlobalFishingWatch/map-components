@@ -5,7 +5,7 @@ node_modules
 
 # builds
 build
-components
+/components
 stats.html
 
 # misc

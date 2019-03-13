@@ -71,7 +71,7 @@ export default function(state = initialState, action) {
       const newTile = action.payload.tile
       const layer = { ...state.heatmapLayers[layerId] }
       let layerTiles = [...layer.tiles]
-      const tileIndex = layerTiles.findIndex(t => t.uid === newTile.uid)
+      const tileIndex = layerTiles.findIndex((t) => t.uid === newTile.uid)
       if (tileIndex === -1) {
         layerTiles.push(newTile)
       } else {
@@ -88,10 +88,10 @@ export default function(state = initialState, action) {
       // remove tiles
       const layerIds = Object.keys(state.heatmapLayers)
       const heatmapLayers = { ...state.heatmapLayers }
-      layerIds.forEach(layerId => {
+      layerIds.forEach((layerId) => {
         const prevLayer = { ...heatmapLayers[layerId] }
-        uids.forEach(tileUid => {
-          const releasedTileIndex = prevLayer.tiles.findIndex(tile => tile.uid === tileUid)
+        uids.forEach((tileUid) => {
+          const releasedTileIndex = prevLayer.tiles.findIndex((tile) => tile.uid === tileUid)
           if (releasedTileIndex > -1) {
             // console.log('releasing', layerId, tileUid);
             prevLayer.tiles.splice(releasedTileIndex, 1)
@@ -101,8 +101,8 @@ export default function(state = initialState, action) {
 
       // remove reference tiles
       let referenceTiles = [...state.referenceTiles]
-      uids.forEach(tileUid => {
-        const releasedRefTileIndex = referenceTiles.findIndex(tile => tile.uid === tileUid)
+      uids.forEach((tileUid) => {
+        const releasedRefTileIndex = referenceTiles.findIndex((tile) => tile.uid === tileUid)
         if (releasedRefTileIndex > -1) {
           referenceTiles = [
             ...referenceTiles.slice(0, releasedRefTileIndex),

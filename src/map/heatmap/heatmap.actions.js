@@ -78,8 +78,8 @@ function loadLayerTile(
   })
   const allLayerPromises = Promise.all(pelagosPromises)
 
-  const layerTilePromise = new Promise(resolve => {
-    allLayerPromises.then(rawTileData => {
+  const layerTilePromise = new Promise((resolve) => {
+    allLayerPromises.then((rawTileData) => {
       resolve({
         loadedLayerId: layerId,
         rawTileData,
@@ -142,19 +142,19 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
     const token = state.map.module.token
     const heatmapLayers = state.map.heatmap.heatmapLayers
     const tilesByLayer = {}
-    layerIds.forEach(id => {
+    layerIds.forEach((id) => {
       tilesByLayer[id] = [...heatmapLayers[id].tiles]
     })
     const allPromises = []
 
-    layerIds.forEach(layerId => {
+    layerIds.forEach((layerId) => {
       const heatmapLayerHeader = heatmapLayers[layerId].header
       const { temporalExtents, temporalExtentsLess, isPBF, colsByName } = { ...heatmapLayerHeader }
       const url = heatmapLayerHeader.endpoints.tiles
 
-      referenceTiles.forEach(referenceTile => {
+      referenceTiles.forEach((referenceTile) => {
         // check if tile does not already exist first
-        let tile = tilesByLayer[layerId].find(t => t.uid === referenceTile.uid)
+        let tile = tilesByLayer[layerId].find((t) => t.uid === referenceTile.uid)
         if (!tile) {
           // console.log('create tile ', referenceTile.uid)
           tile = {
@@ -216,7 +216,7 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
 
     Promise.all(allPromises).then(() => {
       dispatch(completeLoader(loaderID))
-      dispatch(markTileAsLoaded(referenceTiles.map(tile => tile.uid)))
+      dispatch(markTileAsLoaded(referenceTiles.map((tile) => tile.uid)))
     })
   }
 }
@@ -235,7 +235,7 @@ export function getTile(referenceTile) {
     })
     const visibleHeatmapLayers = getState().map.heatmap.heatmapLayers
     const visibleHeatmapLayersIds = Object.keys(visibleHeatmapLayers).filter(
-      id => visibleHeatmapLayers[id].visible === true
+      (id) => visibleHeatmapLayers[id].visible === true
     )
 
     if (visibleHeatmapLayersIds.length) {
@@ -248,7 +248,7 @@ export function getTile(referenceTile) {
  * releaseTiles - This action is emitted when an existing tile is removed from panning or zooming the map
  * @param  {array} uids tile ref uids to release
  */
-export const releaseTiles = uids => ({
+export const releaseTiles = (uids) => ({
   type: RELEASE_HEATMAP_TILES,
   payload: uids,
 })
@@ -266,7 +266,7 @@ function loadAllTilesForLayer(layerId) {
   }
 }
 
-export const addHeatmapLayer = (layer, loadTemporalExtent) => dispatch => {
+export const addHeatmapLayer = (layer, loadTemporalExtent) => (dispatch) => {
   const layerTemporalExtents = layer.header.temporalExtents
   dispatch({
     type: ADD_HEATMAP_LAYER,
@@ -285,7 +285,7 @@ export const addHeatmapLayer = (layer, loadTemporalExtent) => dispatch => {
   }
 }
 
-export const removeHeatmapLayer = id => dispatch => {
+export const removeHeatmapLayer = (id) => (dispatch) => {
   dispatch({
     type: REMOVE_HEATMAP_LAYER,
     payload: {
@@ -305,7 +305,7 @@ export function updateLayerLoadTemporalExtents(loadTemporalExtent) {
     const state = getState()
     const heatmapLayers = state.map.heatmap.heatmapLayers
     const indicesToAddByLayer = {}
-    Object.keys(heatmapLayers).forEach(layerId => {
+    Object.keys(heatmapLayers).forEach((layerId) => {
       const heatmapLayer = heatmapLayers[layerId]
       const temporalExtents = heatmapLayer.header.temporalExtents
       const oldVisibleTemporalExtentsIndices = heatmapLayer.visibleTemporalExtentsIndices
@@ -353,13 +353,13 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
   const endIndex = temporalExtentIndexes[1]
   const layersVessels = []
 
-  Object.keys(layers).forEach(layerId => {
+  Object.keys(layers).forEach((layerId) => {
     const layer = layers[layerId]
-    const allPossibleTilesByPreference = tileQuery.uids.map(uid =>
-      layer.tiles.find(tile => tile.uid === uid)
+    const allPossibleTilesByPreference = tileQuery.uids.map((uid) =>
+      layer.tiles.find((tile) => tile.uid === uid)
     )
     const availableTiles = allPossibleTilesByPreference.filter(
-      tile => tile !== undefined && tile.data !== undefined
+      (tile) => tile !== undefined && tile.data !== undefined
     )
 
     const currentFilters = layer.filters
@@ -372,7 +372,9 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
     }
   })
 
-  const layersVesselsResults = layersVessels.filter(layerVessels => layerVessels.vessels.length > 0)
+  const layersVesselsResults = layersVessels.filter(
+    (layerVessels) => layerVessels.vessels.length > 0
+  )
 
   // it's a cluster because of aggregation on the server side
   let isCluster
@@ -383,7 +385,8 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
   let foundVessels
 
   const hasEncounters =
-    layersVesselsResults.filter(layerVessel => layerVessel.layer.subtype === ENCOUNTERS).length > 0
+    layersVesselsResults.filter((layerVessel) => layerVessel.layer.subtype === ENCOUNTERS).length >
+    0
 
   if (layersVesselsResults.length === 0) {
     isEmpty = true
@@ -395,7 +398,7 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
     // if we have a hit with an encounters layer, use it in priority
     // if not the layersVesselsResults should contain a single result
     layerVesselsResult = hasEncounters
-      ? layersVesselsResults.find(layerVessel => layerVessel.layer.subtype === ENCOUNTERS)
+      ? layersVesselsResults.find((layerVessel) => layerVessel.layer.subtype === ENCOUNTERS)
       : layersVesselsResults[0]
 
     // we can get multiple points with similar series and seriesgroup, in which case
@@ -406,11 +409,11 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
       isEmpty = true
     } else {
       // look up for any negatives seriesgroup (clusters on the server side)
-      const clusteredVessels = vessels.filter(v => v.seriesgroup < 0)
+      const clusteredVessels = vessels.filter((v) => v.seriesgroup < 0)
       if (clusteredVessels.length) {
         isCluster = true
       } else {
-        foundVessels = uniqBy(vessels, v => v.series)
+        foundVessels = uniqBy(vessels, (v) => v.series)
         isMouseCluster = foundVessels.length > 1
       }
     }
@@ -481,7 +484,7 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
   const prevLayersDict = getState().map.heatmap.heatmapLayers
 
   // add and update layers
-  newLayers.forEach(newLayer => {
+  newLayers.forEach((newLayer) => {
     const layerId = newLayer.id
     const prevLayer = prevLayersDict[layerId]
     if (prevLayer === undefined) {
@@ -515,8 +518,8 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
   })
 
   // clean up unused layers
-  Object.keys(prevLayersDict).forEach(prevLayerId => {
-    if (!newLayers.find(l => l.id === prevLayerId)) {
+  Object.keys(prevLayersDict).forEach((prevLayerId) => {
+    if (!newLayers.find((l) => l.id === prevLayerId)) {
       dispatch(removeHeatmapLayer(prevLayerId))
     }
   })

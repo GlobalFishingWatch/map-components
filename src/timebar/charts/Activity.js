@@ -20,15 +20,15 @@ class Activity extends Component {
     const middle = TOP_MARGIN + finalHeight / 2
 
     const areaGenerator = area()
-      .x(d => outerScale(d.date))
-      .y0(d => middle - (finalHeight * d.value) / 2)
-      .y1(d => middle + (finalHeight * d.value) / 2)
+      .x((d) => outerScale(d.date))
+      .y0((d) => middle - (finalHeight * d.value) / 2)
+      .y1((d) => middle + (finalHeight * d.value) / 2)
       .curve(curveStepAfter)
 
     return (
       <svg width={outerWidth} height={graphHeight} className={styles.Activity}>
         <Spring native immediate={immediate} to={{ d: areaGenerator([...activity, addedLastDay]) }}>
-          {style => <animated.path d={style.d} fill="pink" fillOpacity={0.9} />}
+          {(style) => <animated.path d={style.d} fill="pink" fillOpacity={0.9} />}
         </Spring>
       </svg>
     )

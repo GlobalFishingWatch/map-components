@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-export const getTime = dateISO => new Date(dateISO).getTime()
+export const getTime = (dateISO) => new Date(dateISO).getTime()
 
 export const clampToAbsoluteBoundaries = (
   start,

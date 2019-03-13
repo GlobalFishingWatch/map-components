@@ -94,7 +94,7 @@ class Timeline extends Component {
     )
   }
 
-  onEnterFrame = timestamp => {
+  onEnterFrame = (timestamp) => {
     if (this.frameTimestamp === undefined) {
       this.frameTimestamp = timestamp
     }
@@ -147,7 +147,7 @@ class Timeline extends Component {
     })
   }
 
-  onMouseMove = event => {
+  onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange } = this.props
     const { dragging, outerX } = this.state
     const clientX = event.clientX || event.changedTouches[0].clientX
@@ -180,7 +180,7 @@ class Timeline extends Component {
     }
   }
 
-  onMouseUp = event => {
+  onMouseUp = (event) => {
     const { start, end, onChange } = this.props
     const { dragging, outerX, innerStartPx } = this.state
 
@@ -272,17 +272,17 @@ class Timeline extends Component {
         )}
         <div
           className={styles.graphContainer}
-          ref={ref => {
+          ref={(ref) => {
             this.graphContainer = ref
           }}
         >
           {/* // TODO separated drag area? */}
           <div
             className={styles.graph}
-            onMouseDown={event => {
+            onMouseDown={(event) => {
               this.onMouseDown(event, DRAG_INNER)
             }}
-            onTouchStart={event => {
+            onTouchStart={(event) => {
               this.onMouseDown(event, DRAG_INNER)
             }}
           >
@@ -315,10 +315,10 @@ class Timeline extends Component {
           }}
         />
         <Handler
-          onMouseDown={event => {
+          onMouseDown={(event) => {
             this.onMouseDown(event, DRAG_START)
           }}
-          onTouchStart={event => {
+          onTouchStart={(event) => {
             this.onMouseDown(event, DRAG_START)
           }}
           dragging={this.state.dragging === DRAG_START}
@@ -326,10 +326,10 @@ class Timeline extends Component {
           mouseX={this.state.handlerMouseX}
         />
         <Handler
-          onMouseDown={event => {
+          onMouseDown={(event) => {
             this.onMouseDown(event, DRAG_END)
           }}
-          onTouchStart={event => {
+          onTouchStart={(event) => {
             this.onMouseDown(event, DRAG_END)
           }}
           dragging={this.state.dragging === DRAG_END}
@@ -346,7 +346,7 @@ class Timeline extends Component {
           }}
         />
         <Spring native immediate={immediate} to={{ left: outerScale(new Date(absoluteEnd)) }}>
-          {style => (
+          {(style) => (
             <animated.div className={styles.absoluteEnd} style={style}>
               <div className={styles.lastUpdateLabel}>Last Update</div>
               <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
