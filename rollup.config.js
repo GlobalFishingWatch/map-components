@@ -10,7 +10,6 @@ import { terser } from 'rollup-plugin-terser'
 import multiInput from 'rollup-plugin-multi-input'
 import replace from 'rollup-plugin-replace'
 import visualizer from 'rollup-plugin-visualizer'
-
 import pkg from './package.json'
 
 require('dotenv').config()
@@ -36,8 +35,15 @@ export default {
     url(),
     babel({ exclude: 'node_modules/**' }),
     resolve(),
-    commonjs(),
-    replace({ MAP_REDUX_REMOTE_DEBUG: process.env.MAP_REDUX_REMOTE_DEBUG === 'true' }),
+    commonjs({
+      include: 'node_modules/**',
+      namedExports: {
+        'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+      },
+    }),
+    replace({
+      'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
+    }),
     bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
     isProduction && terser(),
   ],
