@@ -1,16 +1,11 @@
 import difference from 'lodash/difference'
 import uniq from 'lodash/uniq'
 import uniqBy from 'lodash/uniqBy'
-import {
-  getTilePromises,
-  getCleanVectorArrays,
-  groupData,
-  getTilePlaybackData,
-  selectVesselsAt,
-} from '../utils/heatmapTileData'
+import { selectVesselsAt, getTilePromises } from '../utils/heatmapTileData'
 import { ENCOUNTERS } from '../constants'
 import { markTileAsLoaded } from './heatmapTiles.actions'
 import { startLoader, completeLoader } from '../module/module.actions'
+import heatMapWorkers from './heatmap.workers.js'
 
 export const ADD_HEATMAP_LAYER = 'ADD_HEATMAP_LAYER'
 export const UPDATE_HEATMAP_LAYER_STYLE = 'UPDATE_HEATMAP_LAYER_STYLE'
@@ -91,44 +86,6 @@ function loadLayerTile(
 }
 
 /**
- * parseLayerTile - parses an heatmap tile to a playback-ready format.
- *
- * @param  {Object} rawTileData          the raw tile data, loaded either from the pelagos client or as a MVT/PBF vector tile
- * @param  {array} colsByName            names of the columns present in the raw tiles that need to be included in the final playback data
- * @param  {object} tileCoordinates      tile coordinates from reference tile
- * @param  {array} prevPlaybackData      (optional) in case some time extent was already loaded for this tile, append to this data
- * @return {Object}                      playback-ready merged data
- */
-function parseLayerTile(rawTileData, colsByName, isPBF, tileCoordinates, prevPlaybackData) {
-  let data
-  if (isPBF === true) {
-    if (
-      rawTileData === undefined ||
-      !rawTileData.length ||
-      rawTileData[0] === undefined ||
-      !Object.keys(rawTileData[0].layers).length
-    ) {
-      return []
-    }
-    data = rawTileData[0].layers.points
-  } else {
-    const cleanVectorArrays = getCleanVectorArrays(rawTileData)
-    data = groupData(cleanVectorArrays, Object.keys(colsByName))
-    if (Object.keys(data).length === 0) {
-      return []
-    }
-  }
-  const playbackData = getTilePlaybackData(
-    data,
-    colsByName,
-    tileCoordinates,
-    isPBF,
-    prevPlaybackData
-  )
-  return playbackData
-}
-
-/**
  * getTiles - loads a bunch of heatmap tiles
  * @param  {array} layerIds                 list of layer Ids that need to be loaded for this/these tiles
  * @param  {array} referenceTiles           list of reference tiles (tile data regardless of layer) that need to be loaded
@@ -156,7 +113,6 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
         // check if tile does not already exist first
         let tile = tilesByLayer[layerId].find((t) => t.uid === referenceTile.uid)
         if (!tile) {
-          // console.log('create tile ', referenceTile.uid)
           tile = {
             uid: referenceTile.uid,
             temporalExtentsIndicesLoaded: [],
@@ -195,21 +151,25 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
           tile.temporalExtentsIndicesLoaded = uniq(
             tile.temporalExtentsIndicesLoaded.concat(temporalExtentsIndicesToLoad)
           )
-          tile.data = parseLayerTile(
-            rawTileData,
-            colsByName,
-            isPBF,
-            referenceTile.tileCoordinates,
-            tile.data
-          )
-
-          dispatch({
-            type: UPDATE_HEATMAP_TILE,
-            payload: {
-              layerId: loadedLayerId,
-              tile,
-            },
-          })
+          heatMapWorkers
+            .parseLayerTile(
+              rawTileData,
+              colsByName,
+              isPBF,
+              referenceTile.tileCoordinates,
+              tile.data
+            )
+            .then((data) => {
+              debugger
+              tile.data = data
+              dispatch({
+                type: UPDATE_HEATMAP_TILE,
+                payload: {
+                  layerId: loadedLayerId,
+                  tile,
+                },
+              })
+            })
         })
       })
     })
@@ -495,7 +455,6 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
     const layerId = newLayer.id
     const prevLayer = prevLayersDict[layerId]
     if (prevLayer === undefined) {
-      // console.log('adding', layerId)
       dispatch(addHeatmapLayer(newLayer, currentLoadTemporalExtent))
     } else {
       if (prevLayer.visible !== newLayer.visible && newLayer.visible === true) {
@@ -508,7 +467,6 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
         prevLayer.filters !== newLayer.filters ||
         prevLayer.interactive !== newLayer.interactive
       ) {
-        // console.log('updating', layerId, ' with visibilty', newLayer.visible)
         dispatch({
           type: UPDATE_HEATMAP_LAYER_STYLE,
           payload: {
