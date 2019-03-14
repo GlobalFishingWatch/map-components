@@ -35,12 +35,7 @@ export default {
     url(),
     babel({ exclude: 'node_modules/**' }),
     resolve(),
-    commonjs({
-      include: 'node_modules/**',
-      namedExports: {
-        'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-      },
-    }),
+    commonjs({ include: 'node_modules/**' }),
     replace({
       'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
     }),
