@@ -159,6 +159,7 @@ class VesselEvents extends Component {
         <Layer {...this.props} events={backgrounds} className={styles.backgrounds} y={0}>
           {(props) => (
             <g
+              key={props.event.id}
               className={classNames(styles[props.event.type], {
                 [styles._highlighted]: props.event.isHighlighted,
               })}
@@ -172,6 +173,7 @@ class VesselEvents extends Component {
         <Layer {...this.props} events={lines} className={styles.lines} y={y}>
           {(props) => (
             <line
+              key={props.event.id}
               className={styles[props.event.type]}
               y={0}
               x1={props.style.x1}
@@ -185,6 +187,7 @@ class VesselEvents extends Component {
               className={classNames(styles[props.event.type], {
                 [styles._highlighted]: props.event.isHighlighted,
               })}
+              key={props.event.id}
               onMouseEnter={() => onEventHighlighted(props.event)}
               onMouseLeave={() => onEventHighlighted()}
             >

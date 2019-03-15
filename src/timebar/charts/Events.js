@@ -10,7 +10,6 @@ const TOP_MARGIN = 5
 class Events extends Component {
   getFinalEvents = memoize(
     (events, showFishing) => {
-      console.warn('Calculating events derived data again')
       let { labels, counts } = events.series
 
       if (showFishing !== true) {
@@ -98,7 +97,11 @@ class Events extends Component {
     return (
       <svg width={outerWidth} height={graphHeight} className={styles.Events}>
         {finalEvents.map((eventsForKey) => (
-          <path d={areaGenerator(eventsForKey)} className={styles[eventsForKey.key]} />
+          <path
+            key={eventsForKey.key}
+            d={areaGenerator(eventsForKey)}
+            className={styles[eventsForKey.key]}
+          />
         ))}
       </svg>
     )
