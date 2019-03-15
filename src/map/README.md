@@ -27,7 +27,9 @@ This module does not deal with:
 
 ## Dependencies
 
-Pixi.js can't be bundled easily so there is a need to include `pixi.js` as a dependency of your own package.json project.
+- Pixi.js can't be bundled easily so there is a need to include `pixi.js` as a dependency of your own package.json project.
+
+- [react-map-gl](https://github.com/uber/react-map-gl) version ^4.1.1
 
 # API
 
