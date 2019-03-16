@@ -1,7 +1,7 @@
 {
   "version": 8,
-  "glyphs": "//globalfishingwatch.org/map/gl-fonts/{fontstack}/{range}.pbf",
-  "sprites": "//raw.githubusercontent.com/GlobalFishingWatch/map-sprites/master/out/sprites",
+  "glyphs": "//github.com/GlobalFishingWatch/map-gl-glyphs/blob/master/_output/{fontstack}/{range}.pbf?raw=true",
+  "sprite": "https://raw.githubusercontent.com/GlobalFishingWatch/map-sprites/master/out/sprites",
   "metadata": {
     "gfw:basemap-layers": [
       { "id": "satellite", "label": "Satellite" },
@@ -20,7 +20,7 @@
         },
         "circle": {
           "circle-stroke-width": [
-            2,
+            0,
             0
           ],
           "circle-radius": [
@@ -288,6 +288,9 @@
     },
     {
       "id": "mpant-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "mpant",
       "source-layer": "mpant",
@@ -311,6 +314,9 @@
     },
     {
       "id": "mparu-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "mparu",
       "source-layer": "mparu",
@@ -334,6 +340,9 @@
     },
     {
       "id": "eez-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "eez",
       "source-layer": "eez",
@@ -357,6 +366,9 @@
     },
     {
       "id": "highseas-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "highseas",
       "source-layer": "highseas",
@@ -380,6 +392,9 @@
     },
     {
       "id": "rfmo-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "rfmo",
       "source-layer": "rfmo",
@@ -403,6 +418,9 @@
     },
     {
       "id": "6-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "6",
       "source-layer": "6",
@@ -426,6 +444,9 @@
     },
     {
       "id": "protectedplanet-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "protectedplanet",
       "source-layer": "protectedplanet",
@@ -449,6 +470,9 @@
     },
     {
       "id": "falklands_conservation-labels",
+      "metadata": {
+        "gfw:isLabel": true
+      },
       "type": "symbol",
       "source": "falklands_conservation",
       "source-layer": "falklands_conservation",
@@ -481,20 +505,44 @@
     },
     {
       "id": "events_encounter",
-      "type": "circle",
-      "source": "events_encounter",
-      "source-layer": "default",
       "metadata": {
         "gfw:temporal": true
       },
+      "type": "circle",
+      "source": "events_encounter",
+      "source-layer": "default",
       "layout": {
-        "visibility": "none"
+        "visibility": "visible"
       },
       "paint": {
         "circle-radius": 3,
         "circle-color": "#E5647D",
         "circle-stroke-width": 0.5
       },
+      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+    },
+    {
+      "id": "events_encounter_icons",
+      "metadata": {
+        "gfw:temporal": true,
+        "gfw:styles": {
+          "selected": {
+            "icon-size": [
+              1,
+              0
+            ]
+          }
+        }
+      },
+      "type": "symbol",
+      "source": "events_encounter",
+      "source-layer": "default",
+      "layout": {
+          "icon-image": "encounter",
+          "icon-size": 0,
+          "icon-allow-overlap": true
+      },
+      "paint": {},
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
     {
@@ -513,6 +561,30 @@
         "circle-color": "#FFE7A0",
         "circle-stroke-width": 0.5
       },
+      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+    },
+    {
+      "id": "events_gap_icons",
+      "type": "symbol",
+      "metadata": {
+        "gfw:temporal": true,
+        "gfw:styles": {
+          "selected": {
+            "icon-size": [
+              1,
+              0
+            ]
+          }
+        }
+      },
+      "source": "events_gap",
+      "source-layer": "default",
+      "layout": {
+          "icon-image": "gap",
+          "icon-size": 0,
+          "icon-allow-overlap": true
+      },
+      "paint": {},
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
     {
@@ -536,11 +608,23 @@
     {
       "id": "events_port_icons",
       "type": "symbol",
-      "metadata": {},
+      "metadata": {
+        "gfw:temporal": true,
+        "gfw:styles": {
+          "selected": {
+            "icon-size": [
+              1,
+              0
+            ]
+          }
+        }
+      },
       "source": "events_port",
       "source-layer": "default",
       "layout": {
-          "icon-image": "port"
+          "icon-image": "port",
+          "icon-size": 0,
+          "icon-allow-overlap": true
       },
       "paint": {},
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]

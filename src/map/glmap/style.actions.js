@@ -76,6 +76,9 @@ const applyLayerFilters = (style, refLayer, currentGlLayer, glLayerIndex) => {
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
   let newStyle = style
   const currentStyle = style.toJS()
+  if (currentGlLayer.id === 'events_port_icons') {
+    // debugger
+  }
   const glType = currentGlLayer.type
   const defaultStyles = currentStyle.metadata['gfw:styles']
   const metadata = currentGlLayer.metadata
@@ -89,11 +92,7 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
     ) {
       const defaultStyle = defaultStyles[styleType][glType] || {}
       const layerStyle =
-        (metadata &&
-          metadata['gfw:styles'] &&
-          metadata['gfw:styles'][styleType] &&
-          metadata['gfw:styles'][styleType][glType]) ||
-        {}
+        (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
       const allPaintProperties = { ...defaultStyle, ...layerStyle }
       if (Object.keys(allPaintProperties).length) {
         const layerColorRgb = hexToRgb(refLayer.color)
@@ -119,14 +118,17 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
                     ? fallbackValue
                     : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
                 ]
+
+          const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
           newStyle = newStyle.setIn(
-            ['layers', glLayerIndex, 'paint', glPaintProperty],
+            ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
             glPaintFinalValue
           )
         })
       }
     }
   })
+  // console.log(newStyle.toJS())
   return newStyle
 }
 
@@ -168,15 +170,19 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
         .setIn(['layers', glLayerIndex, 'paint', 'line-color'], refLayer.color)
       break
     }
-    // Symbol layers are only used for labels layers (they exist on the GL style but not in workspace)
     case 'symbol': {
-      const parentLayerIsVisible =
-        newStyle.getIn(['layers', glLayerIndex, 'layout', 'visibility']) === 'visible'
-      const labelsVisibility =
-        parentLayerIsVisible && refLayer.showLabels === true ? 'visible' : 'none'
-      newStyle = newStyle.setIn(['layers', glLayerIndex, 'layout', 'visibility'], labelsVisibility)
-      if (refLayer.showLabels !== true) {
-        break
+      if (glLayer.metadata && glLayer.metadata['gfw:isLabel'] === true) {
+        const parentLayerIsVisible =
+          newStyle.getIn(['layers', glLayerIndex, 'layout', 'visibility']) === 'visible'
+        const labelsVisibility =
+          parentLayerIsVisible && refLayer.showLabels === true ? 'visible' : 'none'
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, 'layout', 'visibility'],
+          labelsVisibility
+        )
+        if (refLayer.showLabels !== true) {
+          break
+        }
       }
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
