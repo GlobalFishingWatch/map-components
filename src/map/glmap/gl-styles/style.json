@@ -190,15 +190,30 @@
     },
     "events_encounter": {
       "type": "vector",
-      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/encounter/tiles/{z},{x},{y}"]
+      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/encounter/tiles/{z},{x},{y}"],
+      "metadata": {
+        "gfw:popups": [
+          { "id": "event_id" }
+        ]
+      }
     },
     "events_gap": {
       "type": "vector",
-      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/gap/tiles/{z},{x},{y}"]
+      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/gap/tiles/{z},{x},{y}"],
+      "metadata": {
+        "gfw:popups": [
+          { "id": "event_id" }
+        ]
+      }
     },
     "events_port": {
       "type": "vector",
-      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/port/tiles/{z},{x},{y}"]
+      "tiles": ["https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/port/tiles/{z},{x},{y}"],
+      "metadata": {
+        "gfw:popups": [
+          { "id": "event_id" }
+        ]
+      }
     }
   },
   "layers": [

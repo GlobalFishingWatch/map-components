@@ -429,7 +429,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
     // check if layer is served from Carto, which means we need to instanciate it first
     // TODO BUG: check if layer is not instanciatING too
     const sourceCartoSQL = glSource.metadata !== undefined && glSource.metadata['gfw:carto-sql']
-    if (sourceCartoSQL !== false) {
+    if (sourceCartoSQL !== false && sourceCartoSQL !== undefined) {
       // only if layer is visible and has not been instanciated yet
       const cartoLayerInstanciated = state.cartoLayersInstanciated.indexOf(sourceId) > -1
       if (
