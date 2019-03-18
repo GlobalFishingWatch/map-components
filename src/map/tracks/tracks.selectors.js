@@ -1,7 +1,20 @@
 import { createSelector } from 'reselect'
-import { getTemporalExtent } from '../module/module.selectors.js'
+import { getTemporalExtent, getHighlightTemporalExtent } from '../module/module.selectors'
 
 export const getTracksData = (state) => state.map.tracks.data
+export const getGeojsonTracks = createSelector(
+  getTracksData,
+  (tracks) => tracks.filter((t) => t.type === 'geojson')
+)
+export const getGeojsonTracksReady = createSelector(
+  getGeojsonTracks,
+  (tracks) => tracks.filter((t) => t.data !== undefined)
+)
+
+const mergeStyles = (style1, style2) => ({
+  sources: { ...style1.sources, ...style2.sources },
+  layers: [...style1.layers, ...style2.layers],
+})
 
 const filterGeojsonByTimerange = (geojson, { start, end }) => {
   if (!geojson || !geojson.features) return null
@@ -48,19 +61,18 @@ const filterGeojsonByTimerange = (geojson, { start, end }) => {
   return geojsonFiltered
 }
 
-export const getTracksStyles = createSelector(
-  [getTemporalExtent, getTracksData],
+const getFullTracksStyles = createSelector(
+  [getTemporalExtent, getGeojsonTracksReady],
   (temporalExtent, tracks) => {
-    const filteredTracks = tracks.filter((t) => t.type === 'geojson')
     const hasTemporalExtent = temporalExtent && temporalExtent.length > 0
-    const hasTracks = filteredTracks && filteredTracks.length > 0
+    const hasTracks = tracks && tracks.length > 0
     if (!hasTemporalExtent || !hasTracks) return null
 
     const timerange = {
       start: temporalExtent[0].getTime(),
       end: temporalExtent[1].getTime(),
     }
-    const styles = filteredTracks.reduce(
+    const styles = tracks.reduce(
       (acc, track) => {
         if (!track.data) return acc
 
@@ -96,16 +108,62 @@ export const getTracksStyles = createSelector(
             },
           ],
         }
-        return {
-          sources: {
-            ...acc.sources,
-            ...style.sources,
-          },
-          layers: [...acc.layers, ...style.layers],
-        }
+        return mergeStyles(acc, style)
       },
       { sources: {}, layers: [] }
     )
     return styles
+  }
+)
+
+const getHighlightedTrackStyles = createSelector(
+  [getHighlightTemporalExtent, getGeojsonTracksReady],
+  (highlightTemporalExtent, tracks) => {
+    const hasTemporalExtent = highlightTemporalExtent && highlightTemporalExtent.length > 0
+    const hasTracks = tracks && tracks.length > 0
+    if (!hasTemporalExtent || !hasTracks) return null
+
+    const timerange = {
+      start: highlightTemporalExtent[0].getTime(),
+      end: highlightTemporalExtent[1].getTime(),
+    }
+    const styles = tracks.reduce(
+      (acc, track) => {
+        if (!track.data) return acc
+
+        const source = `${track.id}HighlightedTrack`
+        const style = {
+          sources: {
+            [source]: {
+              type: 'geojson',
+              data: filterGeojsonByTimerange(track.data, timerange),
+            },
+          },
+          layers: [
+            {
+              id: `${track.id}HighlightedLines`,
+              source,
+              type: 'line',
+              layout: {},
+              paint: {
+                'line-width': 1,
+                'line-color': '#fff',
+              },
+            },
+          ],
+        }
+        return mergeStyles(acc, style)
+      },
+      { sources: {}, layers: [] }
+    )
+    return styles
+  }
+)
+
+export const getTracksStyles = createSelector(
+  [getFullTracksStyles, getHighlightedTrackStyles],
+  (trackStyles, highlightedTrackStyles) => {
+    if (!highlightedTrackStyles) return trackStyles
+    return mergeStyles(trackStyles, highlightedTrackStyles)
   }
 )

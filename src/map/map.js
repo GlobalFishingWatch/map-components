@@ -36,7 +36,10 @@ const mapReducer = combineReducers({
 
 let composeEnhancers = compose
 
-if (process.env.MAP_REDUX_REMOTE_DEBUG && process.env.NODE_ENV === 'development') {
+if (
+  (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
+  process.env.NODE_ENV === 'development'
+) {
   const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
   composeEnhancers = composeWithDevTools({
     name: 'Map module',
@@ -119,6 +122,13 @@ class MapModule extends React.Component {
           onAttributionsChange: this.props.onAttributionsChange,
         })
       )
+    }
+
+    if (
+      this.props.highlightTemporalExtent !== undefined &&
+      this.props.highlightTemporalExtent.length
+    ) {
+      store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
     }
 
     if (

@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import convert from '@globalfishingwatch/map-convert'
 import { exportNativeViewport } from '../glmap/viewport.actions'
+import { getTemporalExtent, getHighlightTemporalExtent } from '../module/module.selectors'
 import ActivityLayers from './ActivityLayers'
 import { queryHeatmapVessels } from '../heatmap/heatmapTiles.actions'
 import { MIN_FRAME_LENGTH_MS } from '../config'
@@ -30,9 +31,6 @@ const getTracksWithData = createSelector(
     return tracksWithData
   }
 )
-
-const getTemporalExtent = (state) => state.map.module.temporalExtent
-const getHighlightTemporalExtent = (state) => state.map.module.highlightTemporalExtent
 
 const getTemporalExtentIndexes = createSelector(
   [getTemporalExtent],
