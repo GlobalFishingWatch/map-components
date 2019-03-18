@@ -76,59 +76,59 @@ const applyLayerFilters = (style, refLayer, currentGlLayer, glLayerIndex) => {
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
   let newStyle = style
   const currentStyle = style.toJS()
-  if (currentGlLayer.id === 'events_port_icons') {
-    // debugger
-  }
   const glType = currentGlLayer.type
   const defaultStyles = currentStyle.metadata['gfw:styles']
   const metadata = currentGlLayer.metadata
   ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
+    const hasFeatures = features !== null && features !== undefined && features.values.length
     const applyStyleToAllFeatures = refLayer[styleType]
-    if (
-      applyStyleToAllFeatures === true ||
-      (features !== null && features !== undefined && features.values.length)
-    ) {
-      const defaultStyle = defaultStyles[styleType][glType] || {}
-      const layerStyle =
-        (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
-      const allPaintProperties = { ...defaultStyle, ...layerStyle }
-      if (Object.keys(allPaintProperties).length) {
-        const layerColorRgb = hexToRgb(refLayer.color)
-        const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
-        // go through each applicable gl paint property
-        Object.keys(allPaintProperties).forEach((glPaintProperty) => {
-          const selectedValue = allPaintProperties[glPaintProperty][0]
-          const fallbackValue = allPaintProperties[glPaintProperty][1]
-          const glPaintFinalValue =
-            applyStyleToAllFeatures === true
-              ? // if the whole layer is selected or highlighted, the paint value
-                // will always be the same for every feature
-                selectedValue
-              : // if some features are selected or highlighted, apply a GL expression to filter them
-                [
-                  'match',
-                  ['get', features.field],
-                  features.values,
-                  typeof selectedValue !== 'string'
-                    ? selectedValue
-                    : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
-                  typeof fallbackValue !== 'string'
-                    ? fallbackValue
-                    : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
-                ]
 
-          const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
-          newStyle = newStyle.setIn(
-            ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
-            glPaintFinalValue
-          )
-        })
-      }
+    const defaultStyle = defaultStyles[styleType][glType] || {}
+    const layerStyle =
+      (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
+    const allPaintProperties = { ...defaultStyle, ...layerStyle }
+    if (Object.keys(allPaintProperties).length) {
+      const layerColorRgb = hexToRgb(refLayer.color)
+      const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
+      // go through each applicable gl paint property
+      Object.keys(allPaintProperties).forEach((glPaintProperty) => {
+        const selectedValue = allPaintProperties[glPaintProperty][0]
+        const fallbackValue = allPaintProperties[glPaintProperty][1]
+        const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
+        let glPaintFinalValue
+        if (
+          hasFeatures === false &&
+          applyStyleToAllFeatures !== true &&
+          applyStyleToAllFeatures !== false
+        ) {
+          // style reset when no features filter is declared and neither is applyAll
+          const originalLayerStyle = GL_STYLE.layers.find((l) => l.id === currentGlLayer.id)
+          glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+        } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
+          glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
+        } else {
+          glPaintFinalValue = [
+            'match',
+            ['get', features.field],
+            features.values,
+            typeof selectedValue !== 'string'
+              ? selectedValue
+              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+            typeof fallbackValue !== 'string'
+              ? fallbackValue
+              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+          ]
+        }
+
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
+          glPaintFinalValue
+        )
+      })
     }
   })
-  // console.log(newStyle.toJS())
   return newStyle
 }
 

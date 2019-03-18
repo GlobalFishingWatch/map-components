@@ -20,8 +20,12 @@
         },
         "circle": {
           "circle-stroke-width": [
-            0,
-            0
+            2,
+            0.5
+          ],
+          "circle-stroke-color": [
+            "rgba(0,0,0,0)",
+            "rgba(0,0,0,0)"
           ],
           "circle-radius": [
             15,
@@ -31,10 +35,6 @@
       },
       "highlighted": {
         "circle": {
-          "circle-stroke-width": [
-            2,
-            0
-          ],
           "circle-stroke-color": [
             "#fff",
             "#000"
@@ -514,7 +514,8 @@
       "paint": {
         "circle-radius": 3,
         "circle-color": "#FE81EB",
-        "circle-stroke-width": 0.5
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#000000"
       },
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
@@ -532,7 +533,8 @@
       "paint": {
         "circle-radius": 3,
         "circle-color": "#E5647D",
-        "circle-stroke-width": 0.5
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#000000"
       },
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
@@ -574,7 +576,8 @@
       "paint": {
         "circle-radius": 3,
         "circle-color": "#FFE7A0",
-        "circle-stroke-width": 0.5
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#000000"
       },
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
@@ -616,7 +619,8 @@
       "paint": {
         "circle-radius": 3,
         "circle-color": "#44A1B9",
-        "circle-stroke-width": 0.5
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#000000"
       },
       "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
     },
