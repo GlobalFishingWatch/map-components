@@ -9,7 +9,7 @@ import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
-} from '@globalfishingwatch/map-components/components/timebar'
+} from '@globalfishingwatch/map-components/src/timebar'
 
 import './timebar.css'
 
@@ -17,14 +17,14 @@ import './timebar.css'
 const maxActivity = activityMock.reduce((acc, current) => Math.max(acc, current.value), 0)
 // const activity = {};
 // activityMock.forEach((d) => { activity[dayjs(d.date).format('YYYY-MM-DD')] = d.value / maxActivity; });
-const activity = activityMock.map(d => ({
+const activity = activityMock.map((d) => ({
   date: d.date,
   id: dayjs(d.date).format('YYYY-MM-DD'),
   value: d.value / maxActivity,
 }))
 // ---
 
-const getTime = dateISO => new Date(dateISO).getTime()
+const getTime = (dateISO) => new Date(dateISO).getTime()
 const getDeltaMs = (start, end) => getTime(end) - getTime(start)
 const getDeltaDays = (start, end) => getDeltaMs(start, end) / 1000 / 60 / 60 / 24
 const isMoreThanADay = (start, end) => getDeltaDays(start, end) >= 1
@@ -72,7 +72,7 @@ class TimebarContainer extends Component {
     })
   }
 
-  setHighlightedEvents = eventIDs => {
+  setHighlightedEvents = (eventIDs) => {
     this.setState({
       highlightedEventIDs: eventIDs,
     })
@@ -94,7 +94,7 @@ class TimebarContainer extends Component {
         <div className="tools">
           <div>
             <select
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({ currentChart: event.target.value })
               }}
             >
@@ -120,7 +120,7 @@ class TimebarContainer extends Component {
             type="button"
             onMouseEnter={() => {
               this.setHighlightedEvents(
-                groupedVesselEvents.filter(e => e.type === 'encounter').map(e => e.id)
+                groupedVesselEvents.filter((e) => e.type === 'encounter').map((e) => e.id)
               )
             }}
             onMouseLeave={() => this.setHighlightedEvents([])}
@@ -145,7 +145,7 @@ class TimebarContainer extends Component {
           //   // <Activity key="activity" {...props} activity={activity} />,
           //   <Events key="events" {...props} events={eventsMock} />
           // ]
-          props => {
+          (props) => {
             if (currentChart === 'events') {
               return (
                 <TimebarEvents key="events" {...props} events={eventsMock} showFishing={false} />
@@ -158,7 +158,7 @@ class TimebarContainer extends Component {
                   {...props}
                   events={groupedVesselEvents}
                   highlightedEventIDs={highlightedEventIDs}
-                  onEventHighlighted={event =>
+                  onEventHighlighted={(event) =>
                     this.setHighlightedEvents(event === undefined ? [] : [event.id])
                   }
                 />
