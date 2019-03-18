@@ -82,7 +82,7 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
   ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
-    const hasFeatures = features !== null && features !== undefined && features.values.length
+    const hasFeatures = features !== null && features !== undefined && features.values.length > 0
     const applyStyleToAllFeatures = refLayer[styleType]
 
     const defaultStyle = defaultStyles[styleType][glType] || {}
