@@ -11,10 +11,10 @@ import {
   isMoreThanADay,
   stickToClosestUnit,
 } from '../utils'
-import Bookmark from './Bookmark'
-import TimelineUnits from './TimelineUnits'
-import Handler from './TimelineHandler'
-import styles from './Timeline.css'
+import Bookmark from './bookmark'
+import TimelineUnits from './timeline-units'
+import Handler from './timeline-handler'
+import styles from './timeline.module.css'
 
 const DRAG_INNER = 'DRAG_INNER'
 const DRAG_START = 'DRAG_START'

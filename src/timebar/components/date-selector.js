@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import styles from './DateSelector.css'
+import styles from './date-selector.module.css'
 import { ReactComponent as IconArrowUp } from '../icons/arrowUp.svg'
 import { ReactComponent as IconArrowDown } from '../icons/arrowDown.svg'
 
