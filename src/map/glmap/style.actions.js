@@ -82,49 +82,51 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
   ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
+    const hasFeatures = features !== null && features !== undefined && features.values.length > 0
     const applyStyleToAllFeatures = refLayer[styleType]
-    if (
-      applyStyleToAllFeatures === true ||
-      (features !== null && features !== undefined && features.values.length)
-    ) {
-      const defaultStyle = defaultStyles[styleType][glType] || {}
-      const layerStyle =
-        (metadata &&
-          metadata['gfw:styles'] &&
-          metadata['gfw:styles'][styleType] &&
-          metadata['gfw:styles'][styleType][glType]) ||
-        {}
-      const allPaintProperties = { ...defaultStyle, ...layerStyle }
-      if (Object.keys(allPaintProperties).length) {
-        const layerColorRgb = hexToRgb(refLayer.color)
-        const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
-        // go through each applicable gl paint property
-        Object.keys(allPaintProperties).forEach((glPaintProperty) => {
-          const selectedValue = allPaintProperties[glPaintProperty][0]
-          const fallbackValue = allPaintProperties[glPaintProperty][1]
-          const glPaintFinalValue =
-            applyStyleToAllFeatures === true
-              ? // if the whole layer is selected or highlighted, the paint value
-                // will always be the same for every feature
-                selectedValue
-              : // if some features are selected or highlighted, apply a GL expression to filter them
-                [
-                  'match',
-                  ['get', features.field],
-                  features.values,
-                  typeof selectedValue !== 'string'
-                    ? selectedValue
-                    : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
-                  typeof fallbackValue !== 'string'
-                    ? fallbackValue
-                    : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
-                ]
-          newStyle = newStyle.setIn(
-            ['layers', glLayerIndex, 'paint', glPaintProperty],
-            glPaintFinalValue
-          )
-        })
-      }
+
+    const defaultStyle = defaultStyles[styleType][glType] || {}
+    const layerStyle =
+      (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
+    const allPaintProperties = { ...defaultStyle, ...layerStyle }
+    if (Object.keys(allPaintProperties).length) {
+      const layerColorRgb = hexToRgb(refLayer.color)
+      const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
+      // go through each applicable gl paint property
+      Object.keys(allPaintProperties).forEach((glPaintProperty) => {
+        const selectedValue = allPaintProperties[glPaintProperty][0]
+        const fallbackValue = allPaintProperties[glPaintProperty][1]
+        const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
+        let glPaintFinalValue
+        if (
+          hasFeatures === false &&
+          applyStyleToAllFeatures !== true &&
+          applyStyleToAllFeatures !== false
+        ) {
+          // style reset when no features filter is declared and neither is applyAll
+          const originalLayerStyle = GL_STYLE.layers.find((l) => l.id === currentGlLayer.id)
+          glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+        } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
+          glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
+        } else {
+          glPaintFinalValue = [
+            'match',
+            ['get', features.field],
+            features.values,
+            typeof selectedValue !== 'string'
+              ? selectedValue
+              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+            typeof fallbackValue !== 'string'
+              ? fallbackValue
+              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+          ]
+        }
+
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
+          glPaintFinalValue
+        )
+      })
     }
   })
   return newStyle
@@ -168,15 +170,19 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
         .setIn(['layers', glLayerIndex, 'paint', 'line-color'], refLayer.color)
       break
     }
-    // Symbol layers are only used for labels layers (they exist on the GL style but not in workspace)
     case 'symbol': {
-      const parentLayerIsVisible =
-        newStyle.getIn(['layers', glLayerIndex, 'layout', 'visibility']) === 'visible'
-      const labelsVisibility =
-        parentLayerIsVisible && refLayer.showLabels === true ? 'visible' : 'none'
-      newStyle = newStyle.setIn(['layers', glLayerIndex, 'layout', 'visibility'], labelsVisibility)
-      if (refLayer.showLabels !== true) {
-        break
+      if (glLayer.metadata && glLayer.metadata['gfw:isLabel'] === true) {
+        const parentLayerIsVisible =
+          newStyle.getIn(['layers', glLayerIndex, 'layout', 'visibility']) === 'visible'
+        const labelsVisibility =
+          parentLayerIsVisible && refLayer.showLabels === true ? 'visible' : 'none'
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, 'layout', 'visibility'],
+          labelsVisibility
+        )
+        if (refLayer.showLabels !== true) {
+          break
+        }
       }
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
@@ -423,7 +429,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
     // check if layer is served from Carto, which means we need to instanciate it first
     // TODO BUG: check if layer is not instanciatING too
     const sourceCartoSQL = glSource.metadata !== undefined && glSource.metadata['gfw:carto-sql']
-    if (sourceCartoSQL !== false) {
+    if (sourceCartoSQL !== false && sourceCartoSQL !== undefined) {
       // only if layer is visible and has not been instanciated yet
       const cartoLayerInstanciated = state.cartoLayersInstanciated.indexOf(sourceId) > -1
       if (
