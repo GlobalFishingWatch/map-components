@@ -71,7 +71,7 @@ class VesselEvents extends Component {
   addHighlightInfo = memoize((events, highlightedEventIDs) => {
     const eventsWithHighlight = events.map((event) => ({
       ...event,
-      isHighlighted: highlightedEventIDs.indexOf(event.id) > -1,
+      isHighlighted: highlightedEventIDs !== null && highlightedEventIDs.indexOf(event.id) > -1,
     }))
 
     const highlighted = [
@@ -98,7 +98,7 @@ class VesselEvents extends Component {
 
   renderTooltip(events) {
     const { highlightedEventIDs, outerScale } = this.props
-    if (highlightedEventIDs.length !== 1) {
+    if (highlightedEventIDs === null || highlightedEventIDs.length !== 1) {
       return null
     }
     const highlightedEvent = events.find((event) => event.id === highlightedEventIDs[0])
@@ -232,7 +232,7 @@ VesselEvents.propTypes = {
 }
 
 VesselEvents.defaultProps = {
-  highlightedEventIDs: [],
+  highlightedEventIDs: null,
 }
 
 export default VesselEvents
