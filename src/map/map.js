@@ -124,10 +124,7 @@ class MapModule extends React.Component {
       )
     }
 
-    if (
-      this.props.highlightTemporalExtent !== undefined &&
-      this.props.highlightTemporalExtent.length
-    ) {
+    if (this.props.highlightTemporalExtent !== null && this.props.highlightTemporalExtent.length) {
       store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
     }
 
@@ -201,18 +198,19 @@ class MapModule extends React.Component {
     }
 
     // highlightTemporalExtent
-    if (
-      this.props.highlightTemporalExtent !== undefined &&
-      this.props.highlightTemporalExtent.length
-    ) {
+    if (this.props.highlightTemporalExtent !== null && this.props.highlightTemporalExtent.length) {
       if (
-        prevProps.highlightTemporalExtent === undefined ||
+        prevProps.highlightTemporalExtent === null ||
         !prevProps.highlightTemporalExtent.length ||
         this.props.highlightTemporalExtent[0].getTime() !==
           prevProps.highlightTemporalExtent[0].getTime() ||
         this.props.highlightTemporalExtent[1].getTime() !==
           prevProps.highlightTemporalExtent[1].getTime()
       ) {
+        store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
+      }
+    } else {
+      if (this.props.highlightTemporalExtent !== prevProps.highlightTemporalExtent) {
         store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
       }
     }
@@ -284,6 +282,10 @@ MapModule.propTypes = {
   onHover: PropTypes.func,
   onAttributionsChange: PropTypes.func,
   onClosePopup: PropTypes.func,
+}
+
+MapModule.defaultProps = {
+  highlightTemporalExtent: null,
 }
 
 export default MapModule

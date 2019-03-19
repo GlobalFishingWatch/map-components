@@ -51,6 +51,7 @@ class MapPage extends Component {
   }
 
   render() {
+    const { highlightTemporalExtent } = this.state
     return (
       <div>
         <MapModule
@@ -58,7 +59,7 @@ class MapPage extends Component {
           viewport={this.viewport}
           temporalExtent={this.temporalExtent}
           loadTemporalExtent={this.loadTemporalExtent}
-          highlightTemporalExtent={this.state.highlightTemporalExtent}
+          highlightTemporalExtent={highlightTemporalExtent}
           onViewportChange={this.onViewportChange}
           staticLayers={[]}
         />
