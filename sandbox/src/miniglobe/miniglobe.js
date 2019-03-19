@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import MiniGlobe from '@globalfishingwatch/map-components/components/miniglobe'
+import MiniGlobe from '@globalfishingwatch/map-components/src/miniglobe'
 
 class MiniGlobePage extends Component {
   render() {

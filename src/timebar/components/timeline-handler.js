@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import styles from './TimelineHandler.css'
+import styles from './timeline-handler.module.css'
 import { ReactComponent as IconDrag } from '../icons/drag.svg'
 
 const Handler = (props) => (

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import { animated, Transition } from 'react-spring'
 import { getTime, getDeltaDays } from '../utils'
-import styles from './TimelineUnits.css'
+import styles from './timeline-units.module.css'
 
 const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
   /* eslint key-spacing: 0, no-multi-spaces: 0 */

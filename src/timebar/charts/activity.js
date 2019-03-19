@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { area, curveStepAfter } from 'd3-shape'
 import { animated, Spring } from 'react-spring'
 import { getTime } from '../utils'
-import styles from './Activity.css'
+import styles from './activity.module.css'
 
 const TOP_MARGIN = 5
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import MapModule from '@globalfishingwatch/map-components/components/map'
+import MapModule from '@globalfishingwatch/map-components/src/map'
 
 class MapPage extends Component {
   loadTemporalExtent = [new Date(2018, 0, 1), new Date(2018, 11, 31)]

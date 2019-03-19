@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { getTime } from '../utils'
-import DateSelector from './DateSelector'
-import styles from './TimeRangeSelector.css'
+import DateSelector from './date-selector'
+import styles from './timerange-selector.module.css'
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24 - 1
 

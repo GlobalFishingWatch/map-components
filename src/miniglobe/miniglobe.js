@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { geoOrthographic, geoPath } from 'd3-geo' // eslint-disable-line
 import { feature } from 'topojson-client'
-import styles from './miniglobe.css'
+import styles from './miniglobe.module.css'
 import jsonData from './ne_110m_land.json'
 
 const DEFAULT_SETTINGS = {

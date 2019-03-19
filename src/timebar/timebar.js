@@ -9,9 +9,9 @@ import {
   isMoreThanADay,
   getHumanizedDates,
 } from './utils'
-import styles from './timebar.css'
-import TimeRangeSelector from './components/TimeRangeSelector'
-import Timeline from './components/Timeline'
+import styles from './timebar.module.css'
+import TimeRangeSelector from './components/timerange-selector'
+import Timeline from './components/timeline'
 import { ReactComponent as IconLoop } from './icons/loop.svg'
 import { ReactComponent as IconBack } from './icons/back.svg'
 import { ReactComponent as IconPlay } from './icons/play.svg'
