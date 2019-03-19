@@ -13,6 +13,8 @@ import Timebar, {
 
 import './timebar.css'
 
+const HOVER_DELTA = 50
+
 // --- TODO This should be inside Activity.jsx - let's have charts deal with data formats
 const maxActivity = activityMock.reduce((acc, current) => Math.max(acc, current.value), 0)
 // const activity = {};
@@ -63,6 +65,12 @@ class TimebarContainer extends Component {
       humanizedStart,
       humanizedEnd,
     })
+  }
+
+  onMouseMove = (clientX, scale) => {
+    const startRange = scale(clientX + HOVER_DELTA)
+    const endRange = scale(clientX - HOVER_DELTA)
+    console.log('Range', [startRange, endRange])
   }
 
   updateBookmark = (bookmarkStart, bookmarkEnd) => {
@@ -138,6 +146,7 @@ class TimebarContainer extends Component {
           bookmarkEnd={bookmarkEnd}
           // enablePlayback
           onChange={this.update}
+          onMouseMove={this.onMouseMove}
           onBookmarkChange={this.updateBookmark}
         >
           {// props => [

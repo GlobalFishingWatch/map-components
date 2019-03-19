@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
+import throttle from 'lodash/throttle'
 import { animated, Spring } from 'react-spring'
 import {
   getTime,
@@ -147,11 +148,19 @@ class Timeline extends Component {
     })
   }
 
+  throttledMouseMove = throttle((clientX, scale) => {
+    this.props.onMouseMove(clientX, scale)
+  }, 16)
+
   onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange } = this.props
     const { dragging, outerX } = this.state
     const clientX = event.clientX || event.changedTouches[0].clientX
     const x = clientX - outerX
+    const isMovingInside = this.node.contains(event.target)
+    if (isMovingInside) {
+      this.throttledMouseMove(x, this.innerScale.invert)
+    }
     if (dragging === DRAG_INNER) {
       const currentDeltaMs = getDeltaMs(start, end)
       // Calculates x movement from last event since TouchEvent doesn't have the movementX property
@@ -253,7 +262,7 @@ class Timeline extends Component {
     const immediate = this.state.dragging !== null
 
     return (
-      <div className={styles.Timeline}>
+      <div ref={(node) => (this.node = node)} className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
           <Bookmark
             scale={outerScale}
@@ -360,6 +369,7 @@ class Timeline extends Component {
 
 Timeline.propTypes = {
   onChange: PropTypes.func.isRequired,
+  onMouseMove: PropTypes.func.isRequired,
   children: PropTypes.func.isRequired,
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
