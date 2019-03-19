@@ -15,8 +15,28 @@ const attributions = uniq(
     .filter((source) => source !== undefined)
 )
 
+const setStyleDefaults = (style) => {
+  style.layers.forEach((layer) => {
+    if (layer.layout === undefined) {
+      layer.layout = {}
+    }
+    if (layer.paint === undefined) {
+      layer.paint = {}
+    }
+    // initialize time filter for time-filterable layers
+    if (layer.metadata && layer.metadata['gfw:temporal'] === true) {
+      layer.filter = ['all', ['>', 'timestamp', 0], ['<', 'timestamp', 999999999999]]
+    }
+    // set all layers to not visible except layers explicitely marked as visible (default basemap)
+    if (layer.layout.visibility !== 'visible') {
+      layer.layout.visibility = 'none'
+    }
+  })
+  return style
+}
+
 const initialState = {
-  mapStyle: fromJS(GL_STYLE),
+  mapStyle: fromJS(setStyleDefaults(GL_STYLE)),
   cartoLayersInstanciated: [],
   staticLayers: [],
   basemapLayers: [],
