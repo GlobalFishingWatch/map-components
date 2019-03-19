@@ -100,10 +100,12 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
     }
   }
 
-  dispatch({
-    type: SET_MAP_CURSOR,
-    payload: cursor,
-  })
+  if (cursor !== state.interaction.cursor) {
+    dispatch({
+      type: SET_MAP_CURSOR,
+      payload: cursor,
+    })
+  }
 
   if (state.module.onHover) {
     state.module.onHover({
