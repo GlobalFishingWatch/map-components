@@ -52,7 +52,7 @@ class TimebarContainer extends Component {
     bookmarkStart: null,
     bookmarkEnd: null,
     currentChart: 'events',
-    highlightedEventIDs: [],
+    highlightedEventIDs: null,
   }
 
   update = (start, end) => {
