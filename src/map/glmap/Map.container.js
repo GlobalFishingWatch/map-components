@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
-import { mergeDeep, fromJS } from 'immutable'
+import { fromJS } from 'immutable'
+import { TRACKS_LAYER_IN_FRONT_OF_GROUP } from '../config'
 import { closePopup } from '../module/module.actions.js'
 import { getTracksStyles } from '../tracks/tracks.selectors.js'
 import { mapHover, mapClick } from './interaction.actions.js'
@@ -23,7 +24,20 @@ const getMapStyle = createSelector(
   (mapStyles, trackStyles) => {
     if (!trackStyles) return mapStyles
 
-    return mergeDeep(mapStyles, fromJS(trackStyles))
+    const currentLayerGroups = mapStyles
+      .toJS()
+      .layers.filter((l) => l.metadata !== undefined)
+      .map((l) => l.metadata['mapbox:group'])
+    const trackLayersIndex = currentLayerGroups.lastIndexOf(TRACKS_LAYER_IN_FRONT_OF_GROUP) + 1
+
+    let finalMapStyles = mapStyles.mergeIn(['sources'], trackStyles.sources)
+    let mapStylesLayers = mapStyles.get('layers')
+    trackStyles.layers.forEach((trackLayer, i) => {
+      mapStylesLayers = mapStylesLayers.insert(trackLayersIndex + i, fromJS(trackLayer))
+    })
+    finalMapStyles = finalMapStyles.set('layers', mapStylesLayers)
+
+    return finalMapStyles
   }
 )
 

@@ -45,3 +45,5 @@ export const STATIC_LAYERS_CARTO_ENDPOINT =
   'https://carto.globalfishingwatch.org/user/admin/api/v1/map?config=$MAPCONFIG'
 export const STATIC_LAYERS_CARTO_TILES_ENDPOINT =
   'https://carto.globalfishingwatch.org/user/admin/api/v1/map/$LAYERGROUPID/{z}/{x}/{y}.mvt'
+
+export const TRACKS_LAYER_IN_FRONT_OF_GROUP = 'static'
