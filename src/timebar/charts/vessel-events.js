@@ -123,7 +123,7 @@ class VesselEvents extends Component {
           </div>
           {
             {
-              port: 'Docked at ???',
+              port: 'Docked',
               encounter: 'Had an encounter with ???',
               gap: 'Failed to register ??? reports',
               fishing: 'Fished',

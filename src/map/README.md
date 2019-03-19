@@ -178,8 +178,8 @@ Boolean. Display the associated labels layer, if available.
 ### `staticLayer.selectedFeatures`
 
 A filter to apply specific rules per polygon. Polygon filter is defined as:	Object. Defines which features will appear selected on the map. The default appearance of the selected features is defined per GL feature type (fill, circle, etc). It can be overriden.
-- `field`: String. A filterabl field.	- `field`: String. A filterable field.
-- `values`: an array of all possible values (using OR).	- `values`: Array. All selected values (logical OR).
+- `field`: String. A filterable field.
+- `values`: Array. All selected values (logical OR).
 - `style`: [NOT IMPLEMENTED] Object. Defines for each GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
 ```
 style: {
