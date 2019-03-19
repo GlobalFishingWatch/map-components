@@ -3,6 +3,13 @@
   "glyphs": "//github.com/GlobalFishingWatch/map-gl-glyphs/blob/master/_output/{fontstack}/{range}.pbf?raw=true",
   "sprite": "https://raw.githubusercontent.com/GlobalFishingWatch/map-sprites/master/out/sprites",
   "metadata": {
+    "mapbox:groups": {
+      "basemap-background": {"name": "basemap-background"},
+      "static": {"name": "static"},
+      "temporal": {"name": "temporal"},
+      "tracks": {"name": "tracks"},
+      "basemap-foreground": {"name": "basemap-foreground"}
+    },
     "gfw:basemap-layers": [
       { "id": "satellite", "label": "Satellite" },
       { "id": "north-star", "label": "North Star" },
@@ -219,6 +226,9 @@
   "layers": [
     {
       "id": "background",
+      "metadata": {
+        "mapbox:group": "basemap-background"
+      },
       "type": "background",
       "layout": {
         "visibility": "visible"
@@ -229,6 +239,9 @@
     },
     {
       "id": "satellite",
+      "metadata": {
+        "mapbox:group": "basemap-background"
+      },
       "type": "raster",
       "source": "satellite",
       "layout": {
@@ -237,11 +250,17 @@
     },
     {
       "id": "north-star",
+      "metadata": {
+        "mapbox:group": "basemap-background"
+      },
       "type": "raster",
       "source": "north-star"
     },
     {
       "id": "bathymetry",
+      "metadata": {
+        "mapbox:group": "basemap-background"
+      },
       "type": "fill",
       "source": "bathymetry",
       "source-layer": "bathymetry",
@@ -288,6 +307,9 @@
     },
     {
       "id": "mpant",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "mpant",
       "source-layer": "mpant"
@@ -295,7 +317,8 @@
     {
       "id": "mpant-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "mpant",
@@ -310,6 +333,9 @@
     },
     {
       "id": "mparu",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "mparu",
       "source-layer": "mparu"
@@ -317,7 +343,8 @@
     {
       "id": "mparu-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "mparu",
@@ -332,6 +359,9 @@
     },
     {
       "id": "eez",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "eez",
       "source-layer": "eez"
@@ -339,7 +369,8 @@
     {
       "id": "eez-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "eez",
@@ -354,6 +385,9 @@
     },
     {
       "id": "highseas",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "highseas",
       "source-layer": "highseas"
@@ -361,7 +395,8 @@
     {
       "id": "highseas-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "highseas",
@@ -376,6 +411,9 @@
     },
     {
       "id": "rfmo",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "rfmo",
       "source-layer": "rfmo"
@@ -383,7 +421,8 @@
     {
       "id": "rfmo-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "rfmo",
@@ -398,6 +437,9 @@
     },
     {
       "id": "6",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "6",
       "source-layer": "6"
@@ -405,7 +447,8 @@
     {
       "id": "6-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "6",
@@ -420,6 +463,9 @@
     },
     {
       "id": "protectedplanet",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "protectedplanet",
       "source-layer": "protectedplanet"
@@ -427,7 +473,8 @@
     {
       "id": "protectedplanet-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "protectedplanet",
@@ -442,6 +489,9 @@
     },
     {
       "id": "falklands_conservation",
+      "metadata": {
+        "mapbox:group": "static"
+      },
       "type": "fill",
       "source": "falklands_conservation",
       "source-layer": "falklands_conservation"
@@ -449,7 +499,8 @@
     {
       "id": "falklands_conservation-labels",
       "metadata": {
-        "gfw:isLabel": true
+        "gfw:isLabel": true,
+        "mapbox:group": "static"
       },
       "type": "symbol",
       "source": "falklands_conservation",
@@ -465,7 +516,8 @@
     {
       "id": "events_fishing",
       "metadata": {
-        "gfw:temporal": true
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
       },
       "type": "circle",
       "source": "events_fishing",
@@ -480,7 +532,8 @@
     {
       "id": "events_encounter",
       "metadata": {
-        "gfw:temporal": true
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
       },
       "type": "circle",
       "source": "events_encounter",
@@ -503,7 +556,8 @@
               0
             ]
           }
-        }
+        },
+        "mapbox:group": "temporal"
       },
       "type": "symbol",
       "source": "events_encounter",
@@ -520,7 +574,8 @@
       "source": "events_gap",
       "source-layer": "default",
       "metadata": {
-        "gfw:temporal": true
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
       },
       "paint": {
         "circle-radius": 3,
@@ -541,7 +596,8 @@
               0
             ]
           }
-        }
+        },
+        "mapbox:group": "temporal"
       },
       "source": "events_gap",
       "source-layer": "default",
@@ -557,7 +613,8 @@
       "source": "events_port",
       "source-layer": "default",
       "metadata": {
-        "gfw:temporal": true
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
       },
       "paint": {
         "circle-radius": 3,
@@ -577,7 +634,8 @@
               1,
               0
             ]
-          }
+          },
+          "mapbox:group": "temporal"
         }
       },
       "source": "events_port",
@@ -590,6 +648,9 @@
     },
     {
       "id": "graticules-lines",
+      "metadata": {
+        "mapbox:group": "basemap-foreground"
+      },
       "type": "line",
       "source": "graticules",
       "source-layer": "graticules",
@@ -622,6 +683,9 @@
   },
   {
       "id": "graticules-labels",
+      "metadata": {
+        "mapbox:group": "basemap-foreground"
+      },
       "type": "symbol",
       "source": "graticules",
       "source-layer": "graticules",
@@ -693,6 +757,9 @@
     },
     {
       "id": "labels",
+      "metadata": {
+        "mapbox:group": "basemap-foreground"
+      },
       "type": "raster",
       "source": "labels"
     }
