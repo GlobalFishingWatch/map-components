@@ -238,19 +238,13 @@
     {
       "id": "north-star",
       "type": "raster",
-      "source": "north-star",
-      "layout": {
-        "visibility": "none"
-      }
+      "source": "north-star"
     },
     {
       "id": "bathymetry",
       "type": "fill",
       "source": "bathymetry",
       "source-layer": "bathymetry",
-      "layout": {
-          "visibility": "none"
-      },
       "paint": {
           "fill-color": [
               "step",
@@ -296,10 +290,7 @@
       "id": "mpant",
       "type": "fill",
       "source": "mpant",
-      "source-layer": "mpant",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "mpant"
     },
     {
       "id": "mpant-labels",
@@ -310,7 +301,6 @@
       "source": "mpant",
       "source-layer": "mpant",
       "layout": {
-        "visibility": "none",
         "text-field": "{name}",
         "text-font": [
           "Roboto Mono Light"
@@ -322,10 +312,7 @@
       "id": "mparu",
       "type": "fill",
       "source": "mparu",
-      "source-layer": "mparu",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "mparu"
     },
     {
       "id": "mparu-labels",
@@ -336,7 +323,6 @@
       "source": "mparu",
       "source-layer": "mparu",
       "layout": {
-        "visibility": "none",
         "text-field": "{name}",
         "text-font": [
           "Roboto Mono Light"
@@ -348,10 +334,7 @@
       "id": "eez",
       "type": "fill",
       "source": "eez",
-      "source-layer": "eez",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "eez"
     },
     {
       "id": "eez-labels",
@@ -362,7 +345,6 @@
       "source": "eez",
       "source-layer": "eez",
       "layout": {
-        "visibility": "none",
         "text-field": "{name}",
         "text-font": [
           "Roboto Mono Light"
@@ -374,10 +356,7 @@
       "id": "highseas",
       "type": "fill",
       "source": "highseas",
-      "source-layer": "highseas",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "highseas"
     },
     {
       "id": "highseas-labels",
@@ -388,7 +367,6 @@
       "source": "highseas",
       "source-layer": "highseas",
       "layout": {
-        "visibility": "none",
         "text-field": "{regionid}",
         "text-font": [
           "Roboto Mono Light"
@@ -400,10 +378,7 @@
       "id": "rfmo",
       "type": "fill",
       "source": "rfmo",
-      "source-layer": "rfmo",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "rfmo"
     },
     {
       "id": "rfmo-labels",
@@ -414,7 +389,6 @@
       "source": "rfmo",
       "source-layer": "rfmo",
       "layout": {
-        "visibility": "none",
         "text-field": "{reporting_name}",
         "text-font": [
           "Roboto Mono Light"
@@ -426,10 +400,7 @@
       "id": "6",
       "type": "fill",
       "source": "6",
-      "source-layer": "6",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "6"
     },
     {
       "id": "6-labels",
@@ -440,7 +411,6 @@
       "source": "6",
       "source-layer": "6",
       "layout": {
-        "visibility": "none",
         "text-field": "{nama}",
         "text-font": [
           "Roboto Mono Light"
@@ -452,10 +422,7 @@
       "id": "protectedplanet",
       "type": "fill",
       "source": "protectedplanet",
-      "source-layer": "protectedplanet",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "protectedplanet"
     },
     {
       "id": "protectedplanet-labels",
@@ -466,7 +433,6 @@
       "source": "protectedplanet",
       "source-layer": "protectedplanet",
       "layout": {
-        "visibility": "none",
         "text-field": "{name}",
         "text-font": [
           "Roboto Mono Light"
@@ -478,10 +444,7 @@
       "id": "falklands_conservation",
       "type": "fill",
       "source": "falklands_conservation",
-      "source-layer": "falklands_conservation",
-      "layout": {
-       "visibility": "none"
-      }
+      "source-layer": "falklands_conservation"
     },
     {
       "id": "falklands_conservation-labels",
@@ -492,7 +455,6 @@
       "source": "falklands_conservation",
       "source-layer": "falklands_conservation",
       "layout": {
-        "visibility": "none",
         "text-field": "{full_name}",
         "text-font": [
           "Roboto Mono Light"
@@ -502,22 +464,18 @@
     },
     {
       "id": "events_fishing",
-      "type": "circle",
-      "source": "events_fishing",
-      "source-layer": "default",
       "metadata": {
         "gfw:temporal": true
       },
-      "layout": {
-        "visibility": "none"
-      },
+      "type": "circle",
+      "source": "events_fishing",
+      "source-layer": "default",
       "paint": {
         "circle-radius": 3,
         "circle-color": "#FE81EB",
         "circle-stroke-width": 0.5,
         "circle-stroke-color": "#000000"
-      },
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_encounter",
@@ -527,16 +485,12 @@
       "type": "circle",
       "source": "events_encounter",
       "source-layer": "default",
-      "layout": {
-        "visibility": "visible"
-      },
       "paint": {
         "circle-radius": 3,
         "circle-color": "#E5647D",
         "circle-stroke-width": 0.5,
         "circle-stroke-color": "#000000"
-      },
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_encounter_icons",
@@ -558,9 +512,7 @@
           "icon-image": "encounter",
           "icon-size": 0,
           "icon-allow-overlap": true
-      },
-      "paint": {},
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_gap",
@@ -570,16 +522,12 @@
       "metadata": {
         "gfw:temporal": true
       },
-      "layout": {
-        "visibility": "none"
-      },
       "paint": {
         "circle-radius": 3,
         "circle-color": "#FFE7A0",
         "circle-stroke-width": 0.5,
         "circle-stroke-color": "#000000"
-      },
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_gap_icons",
@@ -601,9 +549,7 @@
           "icon-image": "gap",
           "icon-size": 0,
           "icon-allow-overlap": true
-      },
-      "paint": {},
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_port",
@@ -613,16 +559,12 @@
       "metadata": {
         "gfw:temporal": true
       },
-      "layout": {
-        "visibility": "none"
-      },
       "paint": {
         "circle-radius": 3,
         "circle-color": "#44A1B9",
         "circle-stroke-width": 0.5,
         "circle-stroke-color": "#000000"
-      },
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "events_port_icons",
@@ -644,9 +586,7 @@
           "icon-image": "port",
           "icon-size": 0,
           "icon-allow-overlap": true
-      },
-      "paint": {},
-      "filter": ["all", [">", "timestamp", 0], ["<", "timestamp", 999999999999]]
+      }
     },
     {
       "id": "graticules-lines",
@@ -658,9 +598,6 @@
           "$type",
           "LineString"
       ],
-      "layout": {
-          "visibility": "none"
-      },
       "paint": {
           "line-color": "#174084",
           "line-opacity": {
@@ -694,7 +631,6 @@
           "LineString"
       ],
       "layout": {
-          "visibility": "none",
           "text-field": "{degrees}º",
           "text-font": [
               "Roboto Medium Italic"
@@ -758,10 +694,7 @@
     {
       "id": "labels",
       "type": "raster",
-      "source": "labels",
-      "layout": {
-        "visibility": "none"
-      }
+      "source": "labels"
     }
   ]
 }
