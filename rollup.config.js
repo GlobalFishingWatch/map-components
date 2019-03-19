@@ -40,6 +40,6 @@ export default {
       'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
     }),
     bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
-    isProduction && terser(),
+    // isProduction && terser(),
   ],
 }
