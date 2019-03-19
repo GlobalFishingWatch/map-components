@@ -300,12 +300,18 @@ class Timeline extends Component {
                 outerEnd,
                 outerWidth,
                 outerHeight,
-                graphHeight: outerHeight - 20,
                 immediate,
+                graphHeight: outerHeight - 20,
+                tooltipContainer: this.tooltipContainer,
                 ...this.props,
               })}
           </div>
         </div>
+        <div
+          ref={(el) => {
+            this.tooltipContainer = el
+          }}
+        />
         <div
           className={classNames(styles.veilLeft, styles.veil, {
             [styles._immediate]: dragging === DRAG_START,
