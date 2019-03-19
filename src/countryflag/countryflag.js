@@ -11,7 +11,7 @@ class CountryFlag extends Component {
     }
     const flag = countryflag(iso2)
     return svg === true || flag.emoji === null ? (
-      <img style={{ height: size }} alt={flag.name} src={flag.svg} />
+      <img style={{ height: size, marginRight: '0.2em' }} alt={flag.name} src={flag.svg} />
     ) : (
       <span style={{ fontSize: size }} role="img" aria-label={flag.name}>
         {flag.emoji}
