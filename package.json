@@ -17,6 +17,7 @@
     "docz:build": "docz build",
     "docz:deploy": "npm run docz:build && gh-pages -d .docz/dist",
     "prepublish": "npm run build",
+    "postpublish": "docz:deploy",
     "debug-server": "./src/map/redux-debug-server.js"
   },
   "dependencies": {
