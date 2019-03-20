@@ -159,7 +159,7 @@ class Timeline extends Component {
     const x = clientX - outerX
     const isMovingInside = this.node.contains(event.target)
     if (isMovingInside) {
-      this.throttledMouseMove(x, this.innerScale.invert)
+      this.throttledMouseMove(x, this.outerScale.invert)
     }
     if (dragging === DRAG_INNER) {
       const currentDeltaMs = getDeltaMs(start, end)
@@ -255,7 +255,7 @@ class Timeline extends Component {
     const outerStart = this.innerScale.invert(-innerStartPx).toISOString()
     const outerEnd = this.innerScale.invert(outerWidth - innerStartPx).toISOString()
 
-    const outerScale = scaleTime()
+    this.outerScale = scaleTime()
       .domain([new Date(outerStart), new Date(outerEnd)])
       .range([0, this.state.outerWidth])
 
@@ -265,7 +265,7 @@ class Timeline extends Component {
       <div ref={(node) => (this.node = node)} className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
           <Bookmark
-            scale={outerScale}
+            scale={this.outerScale}
             bookmarkStart={bookmarkStart}
             bookmarkEnd={bookmarkEnd}
             minX={-outerX}
@@ -297,14 +297,14 @@ class Timeline extends Component {
           >
             <TimelineUnits
               {...this.props}
-              outerScale={outerScale}
+              outerScale={this.outerScale}
               outerStart={outerStart}
               outerEnd={outerEnd}
               immediate={immediate}
             />
             {this.props.children &&
               this.props.children({
-                outerScale,
+                outerScale: this.outerScale,
                 outerStart,
                 outerEnd,
                 outerWidth,
@@ -354,7 +354,7 @@ class Timeline extends Component {
             width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
           }}
         />
-        <Spring native immediate={immediate} to={{ left: outerScale(new Date(absoluteEnd)) }}>
+        <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
           {(style) => (
             <animated.div className={styles.absoluteEnd} style={style}>
               <div className={styles.lastUpdateLabel}>Last Update</div>
