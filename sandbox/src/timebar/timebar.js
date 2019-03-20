@@ -51,7 +51,7 @@ class TimebarContainer extends Component {
     end: initialEnd,
     bookmarkStart: null,
     bookmarkEnd: null,
-    currentChart: 'events',
+    currentChart: 'vesselEvents',
     highlightedEventIDs: null,
   }
 

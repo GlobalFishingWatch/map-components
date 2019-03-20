@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import classNames from 'classnames'
@@ -143,6 +144,7 @@ class VesselEvents extends Component {
       outerWidth,
       graphHeight,
       onEventHighlighted,
+      tooltipContainer,
     } = this.props
 
     const preparedEvents = this.addHighlightInfo(this.getEvents(events), highlightedEventIDs)
@@ -154,64 +156,66 @@ class VesselEvents extends Component {
 
     const tooltip = this.renderTooltip(filteredEvents)
 
-    return [
-      <svg width={outerWidth} height={graphHeight} className={styles.Events} key="svg">
-        <Layer {...this.props} events={backgrounds} className={styles.backgrounds} y={0}>
-          {(props) => (
-            <g
-              key={props.event.id}
-              className={classNames(styles[props.event.type], {
-                [styles._highlighted]: props.event.isHighlighted,
-              })}
-              onMouseEnter={() => onEventHighlighted(props.event)}
-              onMouseLeave={() => onEventHighlighted()}
-            >
-              <rect x={props.style.x1} y={0} width={props.style.width} height={graphHeight} />
-            </g>
-          )}
-        </Layer>
-        <Layer {...this.props} events={lines} className={styles.lines} y={y}>
-          {(props) => (
-            <line
-              key={props.event.id}
-              className={styles[props.event.type]}
-              y={0}
-              x1={props.style.x1}
-              x2={props.style.x2}
-            />
-          )}
-        </Layer>
-        <Layer {...this.props} events={overlays} className={styles.overlays} y={y}>
-          {(props) => (
-            <g
-              className={classNames(styles[props.event.type], {
-                [styles._highlighted]: props.event.isHighlighted,
-              })}
-              key={props.event.id}
-              onMouseEnter={() => onEventHighlighted(props.event)}
-              onMouseLeave={() => onEventHighlighted()}
-            >
-              {props.event.type !== 'port' && (
-                <rect
-                  x={props.style.x1}
-                  y={-props.height / 2}
-                  width={props.style.width}
-                  height={props.height}
-                  rx={props.height / 2}
-                  ry={props.height / 2}
-                  fillOpacity={props.style.fillOpacity}
-                />
-              )}
-              {props.event.type === 'port' && [
-                <circle r={3} cx={props.style.x1} />,
-                <circle r={3} cx={props.style.x2} />,
-              ]}
-            </g>
-          )}
-        </Layer>
-      </svg>,
-      tooltip,
-    ]
+    return (
+      <Fragment>
+        <svg width={outerWidth} height={graphHeight} className={styles.Events} key="svg">
+          <Layer {...this.props} events={backgrounds} className={styles.backgrounds} y={0}>
+            {(props) => (
+              <g
+                key={props.event.id}
+                className={classNames(styles[props.event.type], {
+                  [styles._highlighted]: props.event.isHighlighted,
+                })}
+                onMouseEnter={() => onEventHighlighted(props.event)}
+                // onMouseLeave={() => onEventHighlighted()}
+              >
+                <rect x={props.style.x1} y={0} width={props.style.width} height={graphHeight} />
+              </g>
+            )}
+          </Layer>
+          <Layer {...this.props} events={lines} className={styles.lines} y={y}>
+            {(props) => (
+              <line
+                key={props.event.id}
+                className={styles[props.event.type]}
+                y={0}
+                x1={props.style.x1}
+                x2={props.style.x2}
+              />
+            )}
+          </Layer>
+          <Layer {...this.props} events={overlays} className={styles.overlays} y={y}>
+            {(props) => (
+              <g
+                className={classNames(styles[props.event.type], {
+                  [styles._highlighted]: props.event.isHighlighted,
+                })}
+                key={props.event.id}
+                onMouseEnter={() => onEventHighlighted(props.event)}
+                // onMouseLeave={() => onEventHighlighted()}
+              >
+                {props.event.type !== 'port' && (
+                  <rect
+                    x={props.style.x1}
+                    y={-props.height / 2}
+                    width={props.style.width}
+                    height={props.height}
+                    rx={props.height / 2}
+                    ry={props.height / 2}
+                    fillOpacity={props.style.fillOpacity}
+                  />
+                )}
+                {props.event.type === 'port' && [
+                  <circle r={3} cx={props.style.x1} />,
+                  <circle r={3} cx={props.style.x2} />,
+                ]}
+              </g>
+            )}
+          </Layer>
+        </svg>
+        {tooltipContainer && ReactDOM.createPortal(tooltip, tooltipContainer)}
+      </Fragment>
+    )
   }
 }
 
@@ -229,6 +233,7 @@ VesselEvents.propTypes = {
   outerWidth: PropTypes.number.isRequired,
   outerHeight: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
+  tooltipContainer: PropTypes.instanceOf(Element),
 }
 
 VesselEvents.defaultProps = {
