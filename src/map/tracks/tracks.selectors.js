@@ -89,7 +89,6 @@ const getFullTracksStyles = createSelector(
               id: `${track.id}Lines`,
               source,
               type: 'line',
-              layout: {},
               paint: {
                 'line-width': 1,
                 'line-color': track.color,
@@ -100,7 +99,6 @@ const getFullTracksStyles = createSelector(
               source,
               type: 'circle',
               filter: ['match', ['geometry-type'], ['', 'Point'], true, false],
-              layout: {},
               paint: {
                 'circle-radius': 4,
                 'circle-color': track.color,
@@ -144,7 +142,6 @@ const getHighlightedTrackStyles = createSelector(
               id: `${track.id}HighlightedLines`,
               source,
               type: 'line',
-              layout: {},
               paint: {
                 'line-width': 1,
                 'line-color': '#fff',
