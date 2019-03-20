@@ -13,7 +13,7 @@ import Timebar, {
 
 import './timebar.css'
 
-const HOVER_DELTA = 50
+const HOVER_DELTA = 10
 
 // --- TODO This should be inside Activity.jsx - let's have charts deal with data formats
 const maxActivity = activityMock.reduce((acc, current) => Math.max(acc, current.value), 0)
@@ -68,9 +68,12 @@ class TimebarContainer extends Component {
   }
 
   onMouseMove = (clientX, scale) => {
-    const startRange = scale(clientX + HOVER_DELTA)
-    const endRange = scale(clientX - HOVER_DELTA)
-    console.log('Range', [startRange, endRange])
+    const hoverStart = scale(clientX - HOVER_DELTA)
+    const hoverEnd = scale(clientX + HOVER_DELTA)
+    this.setState({
+      hoverStart,
+      hoverEnd,
+    })
   }
 
   updateBookmark = (bookmarkStart, bookmarkEnd) => {
@@ -96,6 +99,8 @@ class TimebarContainer extends Component {
       humanizedEnd,
       currentChart,
       highlightedEventIDs,
+      hoverStart,
+      hoverEnd,
     } = this.state
     return (
       <div className="mainContainer">
@@ -135,7 +140,9 @@ class TimebarContainer extends Component {
           >
             Hover to highlight encounter events
           </button>
-          <div className="humanizedTimeSpan">{`${humanizedStart} - ${humanizedEnd}`}</div>
+          <div className="dates">{`${humanizedStart} - ${humanizedEnd}`}</div>
+          <div className="dates">hover start: {hoverStart && hoverStart.toString()}</div>
+          <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
         </div>
         <Timebar
           start={start}
