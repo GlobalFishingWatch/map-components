@@ -38,6 +38,7 @@ export default {
     commonjs({ include: 'node_modules/**' }),
     replace({
       'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
     // isProduction && terser(),
