@@ -36,7 +36,10 @@ const mapReducer = combineReducers({
 
 let composeEnhancers = compose
 
-if (process.env.MAP_REDUX_REMOTE_DEBUG && process.env.NODE_ENV === 'development') {
+if (
+  (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
+  process.env.NODE_ENV === 'development'
+) {
   const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
   composeEnhancers = composeWithDevTools({
     name: 'Map module',
@@ -121,6 +124,10 @@ class MapModule extends React.Component {
       )
     }
 
+    if (this.props.highlightTemporalExtent !== null && this.props.highlightTemporalExtent.length) {
+      store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
+    }
+
     if (
       (this.props.basemapLayers !== undefined && this.props.basemapLayers.length) ||
       (this.props.staticLayers !== undefined && this.props.staticLayers.length)
@@ -191,18 +198,19 @@ class MapModule extends React.Component {
     }
 
     // highlightTemporalExtent
-    if (
-      this.props.highlightTemporalExtent !== undefined &&
-      this.props.highlightTemporalExtent.length
-    ) {
+    if (this.props.highlightTemporalExtent !== null && this.props.highlightTemporalExtent.length) {
       if (
-        prevProps.highlightTemporalExtent === undefined ||
+        prevProps.highlightTemporalExtent === null ||
         !prevProps.highlightTemporalExtent.length ||
         this.props.highlightTemporalExtent[0].getTime() !==
           prevProps.highlightTemporalExtent[0].getTime() ||
         this.props.highlightTemporalExtent[1].getTime() !==
           prevProps.highlightTemporalExtent[1].getTime()
       ) {
+        store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
+      }
+    } else {
+      if (this.props.highlightTemporalExtent !== prevProps.highlightTemporalExtent) {
         store.dispatch(setHighlightTemporalExtent(this.props.highlightTemporalExtent))
       }
     }
@@ -274,6 +282,10 @@ MapModule.propTypes = {
   onHover: PropTypes.func,
   onAttributionsChange: PropTypes.func,
   onClosePopup: PropTypes.func,
+}
+
+MapModule.defaultProps = {
+  highlightTemporalExtent: null,
 }
 
 export default MapModule

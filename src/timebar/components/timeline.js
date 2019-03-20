@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
+import throttle from 'lodash/throttle'
 import { animated, Spring } from 'react-spring'
 import {
   getTime,
@@ -147,11 +148,19 @@ class Timeline extends Component {
     })
   }
 
+  throttledMouseMove = throttle((clientX, scale) => {
+    this.props.onMouseMove(clientX, scale)
+  }, 16)
+
   onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange } = this.props
     const { dragging, outerX } = this.state
     const clientX = event.clientX || event.changedTouches[0].clientX
     const x = clientX - outerX
+    const isMovingInside = this.node.contains(event.target)
+    if (isMovingInside) {
+      this.throttledMouseMove(x, this.outerScale.invert)
+    }
     if (dragging === DRAG_INNER) {
       const currentDeltaMs = getDeltaMs(start, end)
       // Calculates x movement from last event since TouchEvent doesn't have the movementX property
@@ -246,17 +255,17 @@ class Timeline extends Component {
     const outerStart = this.innerScale.invert(-innerStartPx).toISOString()
     const outerEnd = this.innerScale.invert(outerWidth - innerStartPx).toISOString()
 
-    const outerScale = scaleTime()
+    this.outerScale = scaleTime()
       .domain([new Date(outerStart), new Date(outerEnd)])
       .range([0, this.state.outerWidth])
 
     const immediate = this.state.dragging !== null
 
     return (
-      <div className={styles.Timeline}>
+      <div ref={(node) => (this.node = node)} className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
           <Bookmark
-            scale={outerScale}
+            scale={this.outerScale}
             bookmarkStart={bookmarkStart}
             bookmarkEnd={bookmarkEnd}
             minX={-outerX}
@@ -288,14 +297,14 @@ class Timeline extends Component {
           >
             <TimelineUnits
               {...this.props}
-              outerScale={outerScale}
+              outerScale={this.outerScale}
               outerStart={outerStart}
               outerEnd={outerEnd}
               immediate={immediate}
             />
             {this.props.children &&
               this.props.children({
-                outerScale,
+                outerScale: this.outerScale,
                 outerStart,
                 outerEnd,
                 outerWidth,
@@ -351,7 +360,7 @@ class Timeline extends Component {
             width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
           }}
         />
-        <Spring native immediate={immediate} to={{ left: outerScale(new Date(absoluteEnd)) }}>
+        <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
           {(style) => (
             <animated.div className={styles.absoluteEnd} style={style}>
               <div className={styles.lastUpdateLabel}>Last Update</div>
@@ -366,6 +375,7 @@ class Timeline extends Component {
 
 Timeline.propTypes = {
   onChange: PropTypes.func.isRequired,
+  onMouseMove: PropTypes.func.isRequired,
   children: PropTypes.func.isRequired,
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
