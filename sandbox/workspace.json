@@ -1,0 +1,20 @@
+{
+  "workspace": {
+    "map": {
+      "center": [
+        10.026,
+        123.62
+      ],
+      "zoom": 2,
+      "layers": [
+        {
+          "id": "protectedplanet",
+          "type": "CartoDBAnimation",
+          "visible": true,
+          "opacity": 1,
+          "color": "#80ffb5"
+        }
+      ]
+    }
+  }
+}
