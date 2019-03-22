@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import activityMock from './mocks/activity'
 import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
-import groupVesselEvents from './mocks/groupVesselEvents'
+// import groupVesselEvents from './mocks/groupVesselEvents'
 
 import Timebar, {
   TimebarActivity,
@@ -37,7 +37,7 @@ const getHumanizedDates = (start, end) => {
   return { humanizedStart, humanizedEnd }
 }
 
-const groupedVesselEvents = groupVesselEvents(vesselEventsMock)
+// const groupedVesselEvents = groupVesselEvents(vesselEventsMock)
 // console.log(groupedVesselEvents)
 // console.log(groupedVesselEvents.map(e => e.type))
 
@@ -129,17 +129,7 @@ class TimebarContainer extends Component {
           >
             add 10 days
           </button>
-          <button
-            type="button"
-            onMouseEnter={() => {
-              this.setHighlightedEvents(
-                groupedVesselEvents.filter((e) => e.type === 'encounter').map((e) => e.id)
-              )
-            }}
-            onMouseLeave={() => this.setHighlightedEvents([])}
-          >
-            Hover to highlight encounter events
-          </button>
+
           <div className="dates">{`${humanizedStart} - ${humanizedEnd}`}</div>
           <div className="dates">hover start: {hoverStart && hoverStart.toString()}</div>
           <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
@@ -172,7 +162,7 @@ class TimebarContainer extends Component {
                 <TimebarVesselEvents
                   key="vesselEvents"
                   {...props}
-                  events={groupedVesselEvents}
+                  events={vesselEventsMock}
                   highlightedEventIDs={highlightedEventIDs}
                   onEventHighlighted={(event) =>
                     this.setHighlightedEvents(event === undefined ? [] : [event.id])

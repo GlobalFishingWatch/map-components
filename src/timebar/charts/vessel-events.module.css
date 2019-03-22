@@ -15,6 +15,11 @@
   cursor: pointer;
 }
 
+.overlays rect {
+  stroke: var(--timebar-main-background-color);
+  stroke-width: 1px;
+}
+
 .overlays ._highlighted rect {
   stroke: var(--timebar-white);
   stroke-width: 2px;
@@ -33,25 +38,36 @@
   fill-opacity: 0.5;
 }
 
-.lines line.port {
-  stroke: var(--timebar-fishing-color);
-  stroke-dasharray: 4;
-  stroke-linecap: butt;
-  stroke-width: 2px;
-}
-
-.overlays .port circle {
+.overlays .port rect {
   fill: var(--timebar-main-background-color);
   stroke: var(--timebar-fishing-color);
   stroke-width: 2px;
 }
 
-.backgrounds .port rect {
+.overlays .port._highlighted rect {
   fill: var(--timebar-white);
-  fill-opacity: 0.1;
+}
+
+.lines line {
+  stroke: var(--timebar-fishing-color);
+  stroke-width: 2px;
+}
+
+.lines line.port {
+  stroke-dasharray: 4;
+  stroke-linecap: butt;
+}
+
+.lines line.portBg {
+  stroke: var(--timebar-main-background-color-white-overlay);
+}
+
+.backgrounds .port rect {
+  fill: var(--timebar-main-background-color-white-overlay);
 }
 
 .backgrounds .port._highlighted rect {
+  fill: var(--timebar-white);
   fill-opacity: 0.2;
 }
 

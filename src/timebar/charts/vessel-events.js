@@ -23,9 +23,9 @@ const Layer = (props) => {
   return (
     <g transform={`translate(0, ${y})`} className={className}>
       {events.map((event) => {
-        const x1 = outerScale(event.start)
-        const x2 = outerScale(event.end)
         const height = event.isThick ? 8 : 6
+        const x1 = outerScale(event.start)
+        const x2 = event.end === null ? x1 : outerScale(event.end)
         const width = Math.max(height, x2 - x1)
 
         return children({
@@ -57,17 +57,14 @@ Layer.propTypes = {
 }
 
 class VesselEvents extends Component {
-  getEvents = memoize((events) =>
-    events
-      // .filter(event => ['encounter', 'gap', 'fishing'].indexOf(event.type) > -1)
-      // .filter(event => event.type !== 'port')
-      .map((event) => ({
-        ...event,
-        isThick: ['encounter', 'gap'].indexOf(event.type) > -1,
-        start: new Date(event.start),
-        end: new Date(event.end),
-      }))
-  )
+  getEvents = memoize((events) => {
+    return events.map((event) => ({
+      ...event,
+      isThick: ['encounter', 'gap'].indexOf(event.type) > -1,
+      start: new Date(event.start),
+      end: event.end === null ? null : new Date(event.end),
+    }))
+  })
 
   addHighlightInfo = memoize((events, highlightedEventIDs) => {
     const eventsWithHighlight = events.map((event) => ({
@@ -93,9 +90,55 @@ class VesselEvents extends Component {
     return filteredEvents
   })
 
-  getBackgrounds = memoize((events) => events.filter((event) => event.type === 'port'))
+  getBackgrounds = memoize((events) =>
+    events.filter((event) => event.end !== null).filter((event) => event.type === 'port')
+  )
 
-  getLines = memoize((events) => events.filter((event) => event.type === 'port'))
+  getLines = memoize((events) => {
+    let newEvents = events
+      .filter((event) => event.end !== null)
+      .filter((event) => ['port', 'track'].includes(event.type))
+
+    // port events have a secondary background line
+    newEvents
+      .filter((e) => e.type === 'port')
+      .forEach((event) => {
+        newEvents.push({ ...event, type: 'portBg', id: `${event.id}-bg` })
+      })
+
+    newEvents = newEvents.map((event) => ({
+      ...event,
+      order: ['track', 'portBg', 'port'].indexOf(event.type),
+    }))
+
+    newEvents.sort((a, b) => a.order - b.order)
+
+    return newEvents
+  })
+
+  getOverlays = memoize((events) => {
+    const overlays = []
+    events
+      .filter((event) => ['port', 'encounter', 'gap'].includes(event.type))
+      .forEach((event) => {
+        const newEvent = { ...event }
+        if (event.type === 'port') {
+          if (event.end === null) {
+            newEvent.interactive = true
+          } else {
+            // put another point at event end
+            overlays.push({
+              ...newEvent,
+              start: newEvent.end,
+              uid: `${newEvent.id}-end}`,
+            })
+            newEvent.end = newEvent.start
+          }
+        }
+        overlays.push(newEvent)
+      })
+    return overlays
+  })
 
   renderTooltip(events) {
     const { highlightedEventIDs, outerScale } = this.props
@@ -108,8 +151,25 @@ class VesselEvents extends Component {
     }
 
     const left = outerScale(highlightedEvent.start)
-    const width = outerScale(highlightedEvent.end) - left
+    const width =
+      highlightedEvent.end === null || highlightedEvent === undefined
+        ? 0
+        : outerScale(highlightedEvent.end) - left
     const center = left + width / 2
+
+    let title = {
+      port: 'Docked',
+      encounter: 'Had an encounter with {value}',
+      gap: 'Failed to register ??? reports',
+      fishing: 'Fished',
+    }[highlightedEvent.type]
+
+    if (highlightedEvent.type === 'encounter') {
+      title = title.replace(
+        '{value}',
+        [highlightedEvent.encounteredVessel.slice(0, 15), '...'].join('')
+      )
+    }
 
     return (
       <div
@@ -122,14 +182,7 @@ class VesselEvents extends Component {
           <div className={styles.tooltipDate}>
             {dayjs(highlightedEvent.start).format('MMM D YYYY')}
           </div>
-          {
-            {
-              port: 'Docked',
-              encounter: 'Had an encounter with ???',
-              gap: 'Failed to register ??? reports',
-              fishing: 'Fished',
-            }[highlightedEvent.type]
-          }
+          {title}
         </div>
       </div>
     )
@@ -151,9 +204,8 @@ class VesselEvents extends Component {
     const filteredEvents = this.filterEvents(preparedEvents, outerStart, outerEnd)
     const backgrounds = this.getBackgrounds(filteredEvents)
     const lines = this.getLines(filteredEvents)
-    const overlays = filteredEvents
+    const overlays = this.getOverlays(filteredEvents)
     const y = 5 + graphHeight / 2
-
     const tooltip = this.renderTooltip(filteredEvents)
 
     return (
@@ -167,7 +219,7 @@ class VesselEvents extends Component {
                   [styles._highlighted]: props.event.isHighlighted,
                 })}
                 onMouseEnter={() => onEventHighlighted(props.event)}
-                // onMouseLeave={() => onEventHighlighted()}
+                onMouseLeave={() => onEventHighlighted()}
               >
                 <rect x={props.style.x1} y={0} width={props.style.width} height={graphHeight} />
               </g>
@@ -190,25 +242,19 @@ class VesselEvents extends Component {
                 className={classNames(styles[props.event.type], {
                   [styles._highlighted]: props.event.isHighlighted,
                 })}
-                key={props.event.id}
+                key={props.event.uid || props.event.id}
                 onMouseEnter={() => onEventHighlighted(props.event)}
-                // onMouseLeave={() => onEventHighlighted()}
+                onMouseLeave={() => onEventHighlighted()}
               >
-                {props.event.type !== 'port' && (
-                  <rect
-                    x={props.style.x1}
-                    y={-props.height / 2}
-                    width={props.style.width}
-                    height={props.height}
-                    rx={props.height / 2}
-                    ry={props.height / 2}
-                    fillOpacity={props.style.fillOpacity}
-                  />
-                )}
-                {props.event.type === 'port' && [
-                  <circle r={3} cx={props.style.x1} />,
-                  <circle r={3} cx={props.style.x2} />,
-                ]}
+                <rect
+                  x={props.style.x1}
+                  y={-props.height / 2}
+                  width={props.style.width}
+                  height={props.height}
+                  rx={props.height / 2}
+                  ry={props.height / 2}
+                  fillOpacity={props.style.fillOpacity}
+                />
               </g>
             )}
           </Layer>
