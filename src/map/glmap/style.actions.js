@@ -122,10 +122,12 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
           ]
         }
 
-        newStyle = newStyle.setIn(
-          ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
-          glPaintFinalValue
-        )
+        if (glPaintFinalValue !== undefined) {
+          newStyle = newStyle.setIn(
+            ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
+            glPaintFinalValue
+          )
+        }
       })
     }
   })
