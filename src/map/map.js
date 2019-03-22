@@ -36,20 +36,21 @@ const mapReducer = combineReducers({
 
 let composeEnhancers = compose
 
-if (
-  (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
-  process.env.NODE_ENV === 'development'
-) {
-  const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
-  composeEnhancers = composeWithDevTools({
-    name: 'Map module',
-    realtime: true,
-    hostname: 'localhost',
-    port: 8000,
-    maxAge: 30,
-    stateSanitizer: (state) => ({ ...state, map: { ...state.map, heatmap: 'NOT_SERIALIZED' } }),
-  })
-}
+// TODO: use when minify fixed as we want to get rid of remote-redux-devtools on production
+// if (
+//   (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
+//   process.env.NODE_ENV === 'development'
+// ) {
+//   const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
+//   composeEnhancers = composeWithDevTools({
+//     name: 'Map module',
+//     realtime: true,
+//     hostname: 'localhost',
+//     port: 8000,
+//     maxAge: 30,
+//     stateSanitizer: (state) => ({ ...state, map: { ...state.map, heatmap: 'NOT_SERIALIZED' } }),
+//   })
+// }
 
 const store = createStore(
   combineReducers({
