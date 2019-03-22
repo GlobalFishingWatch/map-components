@@ -3,7 +3,7 @@
     "map": {
       "center": [
         10.026,
-        123.62
+        20.62
       ],
       "zoom": 2,
       "layers": [
@@ -12,7 +12,22 @@
           "type": "CartoDBAnimation",
           "visible": true,
           "opacity": 1,
-          "color": "#80ffb5"
+          "color": "#ff00ff"
+        },
+        {
+          "id": "eez",
+          "type": "CartoDBAnimation",
+          "visible": true,
+          "opacity": 1,
+          "color": "#00ffff",
+          "showLabels": true
+        },
+        {
+          "id": "rfmo",
+          "type": "CartoDBAnimation",
+          "visible": true,
+          "opacity": 1,
+          "color": "#ffff00"
         }
       ]
     }

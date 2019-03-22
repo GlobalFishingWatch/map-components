@@ -123,6 +123,7 @@ class MapPage extends Component {
       workspaceError,
       map,
     } = this.state
+    console.log(map)
     return (
       <div className="Container">
         <div className="WorkspacePanel">
