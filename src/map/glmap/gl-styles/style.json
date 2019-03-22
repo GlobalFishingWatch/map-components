@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "glyphs": "//github.com/GlobalFishingWatch/map-gl-glyphs/blob/master/_output/{fontstack}/{range}.pbf?raw=true",
+  "glyphs": "https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-glyphs/master/_output/{fontstack}/{range}.pbf?raw=true",
   "sprite": "https://raw.githubusercontent.com/GlobalFishingWatch/map-sprites/master/out/sprites",
   "metadata": {
     "mapbox:groups": {
