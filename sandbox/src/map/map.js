@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
 import MapModule from '@globalfishingwatch/map-components/src/map'
-import './map.css'
+import styles from './map.module.css'
 
 class MapPage extends Component {
   state = {
@@ -147,11 +147,11 @@ class MapPage extends Component {
     const finalStaticLayers = map !== undefined ? map.staticLayers : []
 
     return (
-      <div className="Container">
-        <div className="WorkspacePanel">
+      <div className={styles.Container}>
+        <div className={styles.WorkspacePanel}>
           Workspace url:
           <input
-            className="workspaceUrl"
+            className={styles.workspaceUrl}
             type="text"
             onChange={this.onWorkspaceUrlChange}
             value={workspaceUrl}
@@ -162,10 +162,10 @@ class MapPage extends Component {
             checked={this.state.workspaceAuto}
           />
           auto
-          <span className={cx('workspaceStatus', workspaceStatus)} />
-          <div className={workspaceStatus}>{workspaceError}</div>
+          <span className={cx(styles.workspaceStatus, styles[workspaceStatus])} />
+          <div className={styles[workspaceStatus]}>{workspaceError}</div>
         </div>
-        <div className="MapWrapper">
+        <div className={styles.MapWrapper}>
           <MapModule
             viewport={finalViewport}
             onViewportChange={this.onViewportChange}
