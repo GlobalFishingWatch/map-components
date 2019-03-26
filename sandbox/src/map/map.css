@@ -9,7 +9,7 @@
 }
 
 .WorkspacePanel {
-  background: #233;
+  background: rgba(10, 10, 30, 0.5);
   color: #fff;
   position: absolute;
   z-index: 10;

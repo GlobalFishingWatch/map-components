@@ -21,3 +21,7 @@ It happens as different version is found higher in the tree as this is a subproj
     1. Create .env file
     2. Add `SKIP_PREFLIGHT_CHECK=true`
     3. Run `yarn start` again
+
+### Test workspace
+
+The map sandbox has the possibility to "livereload" a workspace. Tou will need remote URL (with CORS enabled) or alternatively a local workskpace than can be served using `npm start serve-workspace`, then using a URL such as `http://localhost:3333/workspace.json`

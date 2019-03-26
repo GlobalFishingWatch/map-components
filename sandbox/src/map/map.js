@@ -11,6 +11,7 @@ class MapPage extends Component {
       zoom: 5,
     },
     workspaceUrl: 'http://localhost:3333/workspace.json',
+    workspaceAuto: false,
     workspaceStatus: 'ok',
     workspaceError: null,
   }
@@ -30,7 +31,6 @@ class MapPage extends Component {
 
   componentDidMount = () => {
     setInterval(this.increaseHighlightDay, 1000)
-    setInterval(this.fetchWorkspace, 1000)
   }
 
   componentDidUpdate = () => {
@@ -50,20 +50,34 @@ class MapPage extends Component {
   }
 
   onViewportChange = ({ zoom, center }) => {
-    this.setState({ zoom, center })
+    if (this.state.workspaceAuto === false) {
+      this.setState({ viewport: { zoom, center } })
+    }
+  }
+
+  onWorkspaceAutoChange = (event) => {
+    this.setState({
+      workspaceAuto: event.target.checked,
+    })
+    if (event.target.checked === true) {
+      this.fetchWorkspace()
+    }
   }
 
   onWorkspaceUrlChange = (event) => {
     const workspaceUrl = event.target.value
-    this.setState({
-      workspaceUrl,
-    })
-    this.fetchWorkspace()
+    this.setState(
+      {
+        workspaceUrl,
+      },
+      this.fetchWorkspace
+    )
   }
 
   fetchWorkspace = () => {
     const { workspaceUrl } = this.state
     this.setState({
+      workspaceUrl,
       workspaceStatus: 'loading',
     })
     fetch(workspaceUrl)
@@ -81,6 +95,9 @@ class MapPage extends Component {
         try {
           const data = JSON.parse(text)
           this.loadWorkspace(data)
+          if (this.state.workspaceAuto === true) {
+            window.setTimeout(this.fetchWorkspace, 1000)
+          }
           this.setState({
             workspaceStatus: 'ok',
             workspaceError: null,
@@ -117,13 +134,18 @@ class MapPage extends Component {
 
   render() {
     const {
+      viewport,
       highlightTemporalExtent,
       workspaceUrl,
       workspaceStatus,
       workspaceError,
+      workspaceAuto,
       map,
     } = this.state
-    console.log(map)
+
+    const finalViewport = map !== undefined && workspaceAuto === true ? map.viewport : viewport
+    const finalStaticLayers = map !== undefined ? map.staticLayers : []
+
     return (
       <div className="Container">
         <div className="WorkspacePanel">
@@ -134,23 +156,25 @@ class MapPage extends Component {
             onChange={this.onWorkspaceUrlChange}
             value={workspaceUrl}
           />
+          <input
+            type="checkbox"
+            onChange={this.onWorkspaceAutoChange}
+            checked={this.state.workspaceAuto}
+          />
+          auto
           <span className={cx('workspaceStatus', workspaceStatus)} />
           <div className={workspaceStatus}>{workspaceError}</div>
         </div>
         <div className="MapWrapper">
-          {map === undefined ? (
-            <MapModule />
-          ) : (
-            <MapModule
-              viewport={map.viewport}
-              // tracks={this.tracks}
-              // temporalExtent={this.temporalExtent}
-              // loadTemporalExtent={this.loadTemporalExtent}
-              // highlightTemporalExtent={highlightTemporalExtent}
-              // onViewportChange={this.onViewportChange}
-              staticLayers={map.staticLayers}
-            />
-          )}
+          <MapModule
+            viewport={finalViewport}
+            onViewportChange={this.onViewportChange}
+            staticLayers={finalStaticLayers}
+            tracks={this.tracks}
+            temporalExtent={this.temporalExtent}
+            loadTemporalExtent={this.loadTemporalExtent}
+            highlightTemporalExtent={highlightTemporalExtent}
+          />
         </div>
       </div>
     )
