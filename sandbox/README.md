@@ -24,4 +24,4 @@ It happens as different version is found higher in the tree as this is a subproj
 
 ### Test workspace
 
-The map sandbox has the possibility to "livereload" a workspace. Tou will need remote URL (with CORS enabled) or alternatively a local workskpace than can be served using `npm start serve-workspace`, then using a URL such as `http://localhost:3333/workspace.json`
+The map sandbox has the possibility to "livereload" a workspace. You will need remote URL (with CORS enabled) or alternatively a local workskpace than can be served using `yarn start serve-workspace`, then using a URL such as `http://localhost:3333/workspace.json`
