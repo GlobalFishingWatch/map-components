@@ -1,0 +1,50 @@
+.Container {
+  position: relative;
+}
+
+.MapWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.WorkspacePanel {
+  background: rgba(10, 10, 30, 0.5);
+  color: #fff;
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  padding: 10px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+}
+
+.workspaceUrl {
+  width: 400px;
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+}
+
+.workspaceStatus {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 99px;
+  margin-left: 5px;
+}
+
+.ok {
+  background: green;
+}
+
+.loading {
+  background: purple;
+}
+
+.json {
+  background: orangered;
+}
+
+.fetch {
+  background: red;
+}
