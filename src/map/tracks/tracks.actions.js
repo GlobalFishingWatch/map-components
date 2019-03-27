@@ -97,81 +97,87 @@ const getOldTrackBoundsFormat = (data, addOffset = false) => {
   }
 }
 
-function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color }) {
+function loadTrack(track) {
   return (dispatch, getState) => {
+    const { id, url, type, fitBoundsOnLoad, layerTemporalExtents, color, data } = track
     const state = getState()
-    const loaderID = startLoader(dispatch, state)
     if (state.map.tracks.data.find((t) => t.id === id)) {
       return
     }
 
-    dispatch({
-      type: ADD_TRACK,
-      payload: {
-        id,
-        url,
-        type,
-        color,
-        fitBoundsOnLoad,
-      },
-    })
-    if (type !== 'geojson') {
-      // Deprecated tracks format logic to be deleted some day
-      const token = state.map.module.token
-      const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
+    const payload = {
+      id,
+      url,
+      type,
+      color,
+      fitBoundsOnLoad,
+    }
+    const trackHasData = track.data !== undefined && track.data !== null
+    if (trackHasData) {
+      payload.data = data
+    }
+    dispatch({ type: ADD_TRACK, payload })
 
-      Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
-        const cleanData = getCleanVectorArrays(rawTileData)
+    if (!trackHasData && url) {
+      const loaderID = startLoader(dispatch, state)
+      if (type !== 'geojson') {
+        // Deprecated tracks format logic to be deleted some day
+        const token = state.map.module.token
+        const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
 
-        if (!cleanData.length) {
-          return
-        }
-        const rawTrackData = groupData(cleanData, [
-          'latitude',
-          'longitude',
-          'datetime',
-          'series',
-          'weight',
-          'sigma',
-        ])
+        Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
+          const cleanData = getCleanVectorArrays(rawTileData)
 
-        const vectorArray = addTracksPointsRenderingData(rawTrackData)
-        const bounds = getOldTrackBoundsFormat(rawTrackData)
+          if (!cleanData.length) {
+            return
+          }
+          const rawTrackData = groupData(cleanData, [
+            'latitude',
+            'longitude',
+            'datetime',
+            'series',
+            'weight',
+            'sigma',
+          ])
 
-        dispatch({
-          type: UPDATE_TRACK,
-          payload: {
-            id,
-            data: getTracksPlaybackData(vectorArray),
-            geoBounds: bounds.geo,
-            timelineBounds: bounds.time,
-          },
-        })
-        dispatch(completeLoader(loaderID))
-      })
-    } else {
-      fetch(url)
-        .then((res) => {
-          if (res.status >= 400) throw new Error(res.statusText)
-          return res.json()
-        })
-        .then((data) => {
-          const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
+          const vectorArray = addTracksPointsRenderingData(rawTrackData)
+          const bounds = getOldTrackBoundsFormat(rawTrackData)
+
           dispatch({
             type: UPDATE_TRACK,
             payload: {
               id,
-              data: geojson,
-              geoBounds,
-              timelineBounds,
+              data: getTracksPlaybackData(vectorArray),
+              geoBounds: bounds.geo,
+              timelineBounds: bounds.time,
             },
           })
-          if (fitBoundsOnLoad) {
-            targetMapVessel(id)
-          }
+          dispatch(completeLoader(loaderID))
         })
-        .catch((err) => console.warn(err))
-        .finally(() => dispatch(completeLoader(loaderID)))
+      } else {
+        fetch(url)
+          .then((res) => {
+            if (res.status >= 400) throw new Error(res.statusText)
+            return res.json()
+          })
+          .then((data) => {
+            const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
+            dispatch({
+              type: UPDATE_TRACK,
+              payload: {
+                id,
+                data: geojson,
+                geoBounds,
+                timelineBounds,
+              },
+            })
+            if (fitBoundsOnLoad) {
+              targetMapVessel(id)
+            }
+          })
+          .catch((err) => console.warn(err))
+          .finally(() => dispatch(completeLoader(loaderID)))
+      }
     }
   }
 }
