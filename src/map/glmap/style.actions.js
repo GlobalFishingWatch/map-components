@@ -90,8 +90,6 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
       (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
     const allPaintProperties = { ...defaultStyle, ...layerStyle }
     if (Object.keys(allPaintProperties).length) {
-      const layerColorRgb = hexToRgb(refLayer.color)
-      const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
       // go through each applicable gl paint property
       Object.keys(allPaintProperties).forEach((glPaintProperty) => {
         const selectedValue = allPaintProperties[glPaintProperty][0]
@@ -109,6 +107,8 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
         } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
           glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
         } else {
+          const layerColorRgb = hexToRgb(refLayer.color)
+          const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
           glPaintFinalValue = [
             'match',
             ['get', features.field],
@@ -186,16 +186,17 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
           break
         }
       }
-      newStyle = newStyle
-        .setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'text-color'], refLayer.color)
+      newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
+
+      if (refLayer.color !== undefined) {
+        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'text-color'], refLayer.color)
+      }
       break
     }
     // Event layers and custom layers with point geom types
     case 'circle': {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
         .setIn(
           ['layers', glLayerIndex, 'paint', 'circle-radius'],
           initialGLLayer.paint['circle-radius']
@@ -208,6 +209,10 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
           ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
           initialGLLayer.paint['circle-stroke-width'] || 1
         )
+
+      if (refLayer.color !== undefined) {
+        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
+      }
       break
     }
     case 'raster': {
