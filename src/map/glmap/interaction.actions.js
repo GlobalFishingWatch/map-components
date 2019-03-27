@@ -83,6 +83,7 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
         }
         event.target = {
           featureTitle,
+          properties,
         }
         cursor = 'pointer'
       }
