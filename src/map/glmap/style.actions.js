@@ -51,28 +51,6 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   dispatch(setMapStyle(style))
 }
 
-const applyLayerFilters = (style, refLayer, currentGlLayer, glLayerIndex) => {
-  const isTemporal =
-    currentGlLayer.metadata !== undefined && currentGlLayer.metadata['gfw:temporal'] === true
-
-  if (refLayer.filters === undefined) {
-    if (isTemporal === true) {
-      // only keep temporal part and clean up custom filters
-      // if layer is temporal, extract the time filter part first
-      const currentFilter = currentGlLayer.filter.slice(0, 3)
-      return style.setIn(['layers', glLayerIndex, 'filter'], fromJS(currentFilter))
-    } else if (currentGlLayer.filter !== undefined) {
-      return style.deleteIn(['layers', glLayerIndex, 'filter'])
-    }
-    return style
-  }
-
-  // if layer is temporal, extract the time filter part first
-  const currentFilter = isTemporal ? currentGlLayer.filter.slice(0, 3) : ['all']
-  const newFilter = currentFilter.concat(refLayer.filters)
-  return style.setIn(['layers', glLayerIndex, 'filter'], fromJS(newFilter))
-}
-
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
   let newStyle = style
   const currentStyle = style.toJS()
@@ -227,7 +205,6 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     }
   }
 
-  // newStyle = applyLayerFilters(newStyle, refLayer, glLayer, glLayerIndex)
   newStyle = applyLayerExpressions(newStyle, refLayer, glLayer, glLayerIndex)
 
   return newStyle
