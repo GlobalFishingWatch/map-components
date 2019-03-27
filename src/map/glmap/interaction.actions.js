@@ -49,7 +49,7 @@ const findFeature = (glFeatures) => {
   return undefined
 }
 
-export const mapHover = (latitude, longitude, features) => (dispatch, getState) => {
+export const mapHover = (latitude, longitude, features, cluster) => (dispatch, getState) => {
   const state = getState().map
   const currentActivityLayersInteractionData = state.heatmap.highlightedVessels
   const { layer, isEmpty, foundVessels } = currentActivityLayersInteractionData
@@ -78,6 +78,7 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
         const mainPopupFieldId = mainPopupField.id
         const featureTitle = properties[mainPopupFieldId]
         event.type = 'static'
+        event.cluster = cluster
         event.layer = {
           id: feature.staticLayerId,
         }
@@ -116,7 +117,7 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
   }
 }
 
-export const mapClick = (latitude, longitude, features, clusterZoom) => (dispatch, getState) => {
+export const mapClick = (latitude, longitude, features, cluster) => (dispatch, getState) => {
   const state = getState().map
 
   dispatch(clearHighlightedClickedVessel())
@@ -135,9 +136,7 @@ export const mapClick = (latitude, longitude, features, clusterZoom) => (dispatc
       const metaFields = getFeatureMetaFields(feature.staticLayerId, state, feature.feature)
       let fields
       const properties = feature.feature.properties
-      if (clusterZoom !== undefined) {
-        console.log('cluster feature!', clusterZoom)
-      }
+
       if (metaFields !== null) {
         fields = metaFields.map((metaField) => {
           const id = metaField.id || metaField
@@ -151,6 +150,7 @@ export const mapClick = (latitude, longitude, features, clusterZoom) => (dispatc
       }
 
       event.type = 'static'
+      event.cluster = cluster
       event.layer = {
         id: feature.staticLayerId,
       }

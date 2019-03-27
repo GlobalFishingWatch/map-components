@@ -227,7 +227,7 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     }
   }
 
-  newStyle = applyLayerFilters(newStyle, refLayer, glLayer, glLayerIndex)
+  // newStyle = applyLayerFilters(newStyle, refLayer, glLayer, glLayerIndex)
   newStyle = applyLayerExpressions(newStyle, refLayer, glLayer, glLayerIndex)
 
   return newStyle
@@ -424,7 +424,6 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
     const sourceId = refLayer.id
     if (refLayer.data !== undefined && currentGLSources[sourceId] !== undefined) {
       style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
-      console.log(refLayer.data)
     }
   })
 

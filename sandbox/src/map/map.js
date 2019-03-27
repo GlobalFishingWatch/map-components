@@ -81,6 +81,12 @@ class MapPage extends Component {
     console.log(event)
   }
 
+  onFeatureHover = (event) => {
+    if (event.type !== null) {
+      console.log(event)
+    }
+  }
+
   fetchWorkspace = () => {
     const { workspaceUrl } = this.state
     this.setState({
@@ -186,10 +192,11 @@ class MapPage extends Component {
             //   },
             // ]}
             // tracks={this.tracks}
-            // temporalExtent={this.temporalExtent}
+            temporalExtent={this.temporalExtent}
             loadTemporalExtent={this.loadTemporalExtent}
             highlightTemporalExtent={highlightTemporalExtent}
             onClick={this.onFeatureClick}
+            onHover={this.onFeatureHover}
           />
         </div>
       </div>

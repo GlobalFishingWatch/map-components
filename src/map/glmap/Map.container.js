@@ -54,11 +54,11 @@ const mapDispatchToProps = (dispatch) => ({
   setViewport: (viewport) => {
     dispatch(setViewport(viewport))
   },
-  mapHover: (lat, long, features) => {
-    dispatch(mapHover(lat, long, features))
+  mapHover: (lat, long, features, cluster) => {
+    dispatch(mapHover(lat, long, features, cluster))
   },
-  mapClick: (lat, long, features, clusterZoom) => {
-    dispatch(mapClick(lat, long, features, clusterZoom))
+  mapClick: (lat, long, features, cluster) => {
+    dispatch(mapClick(lat, long, features, cluster))
   },
   transitionEnd: () => {
     dispatch(transitionEnd())

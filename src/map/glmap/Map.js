@@ -68,26 +68,37 @@ class Map extends React.Component {
     this.props.setViewport(viewport)
   }
 
-  onHover = (event) => {
-    this.props.mapHover(event.lngLat[1], event.lngLat[0], event.features)
-  }
-
-  onClick = (event) => {
+  onMapInteraction = (event, type) => {
+    const callback = type === 'hover' ? this.props.mapHover : this.props.mapClick
     if (this.glMap !== undefined && event.features.length) {
       const feature = event.features[0]
       if (feature.properties.cluster === true) {
         const clusterId = feature.properties.cluster_id
         const sourceId = feature.source
-        this.glMap.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, clusterZoom) => {
-          if (err) {
-            return
-          }
-          this.props.mapClick(event.lngLat[1], event.lngLat[0], event.features, clusterZoom)
+        const glSource = this.glMap.getSource(sourceId)
+        glSource.getClusterExpansionZoom(clusterId, (err1, zoom) => {
+          glSource.getClusterLeaves(clusterId, 99, 0, (err2, children) => {
+            if (err1 || err2) {
+              return
+            }
+            callback(event.lngLat[1], event.lngLat[0], event.features, {
+              zoom,
+              children,
+            })
+          })
         })
         return
       }
     }
-    this.props.mapClick(event.lngLat[1], event.lngLat[0], event.features)
+    callback(event.lngLat[1], event.lngLat[0], event.features)
+  }
+
+  onHover = (event) => {
+    this.onMapInteraction(event, 'hover')
+  }
+
+  onClick = (event) => {
+    this.onMapInteraction(event, 'click')
   }
 
   render() {
