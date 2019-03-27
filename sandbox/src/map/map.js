@@ -7,7 +7,7 @@ class MapPage extends Component {
   state = {
     highlightTemporalExtent: [new Date(2017, 11, 1), new Date(2017, 11, 31)],
     viewport: {
-      center: [0.026, 123.61],
+      center: [0, 0],
       zoom: 5,
     },
     workspaceUrl: 'http://localhost:3333/workspace.json',
@@ -72,6 +72,10 @@ class MapPage extends Component {
       },
       this.fetchWorkspace
     )
+  }
+
+  onFeatureClick = (event) => {
+    console.log(event)
   }
 
   fetchWorkspace = () => {
@@ -169,11 +173,19 @@ class MapPage extends Component {
           <MapModule
             viewport={finalViewport}
             onViewportChange={this.onViewportChange}
-            staticLayers={finalStaticLayers}
-            tracks={this.tracks}
+            // staticLayers={finalStaticLayers}
+            staticLayers={[
+              {
+                visible: true,
+                id: 'cluster_test',
+                interactive: true,
+              },
+            ]}
+            // tracks={this.tracks}
             temporalExtent={this.temporalExtent}
             loadTemporalExtent={this.loadTemporalExtent}
             highlightTemporalExtent={highlightTemporalExtent}
+            onClick={this.onFeatureClick}
           />
         </div>
       </div>

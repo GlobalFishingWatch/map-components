@@ -73,6 +73,20 @@ class Map extends React.Component {
   }
 
   onClick = (event) => {
+    if (this.glMap !== undefined && event.features.length) {
+      const feature = event.features[0]
+      if (feature.properties.cluster === true) {
+        const clusterId = feature.properties.cluster_id
+        const sourceId = feature.source
+        this.glMap.getSource(sourceId).getClusterExpansionZoom(clusterId, (err, clusterZoom) => {
+          if (err) {
+            return
+          }
+          this.props.mapClick(event.lngLat[1], event.lngLat[0], event.features, clusterZoom)
+        })
+        return
+      }
+    }
     this.props.mapClick(event.lngLat[1], event.lngLat[0], event.features)
   }
 
@@ -105,6 +119,11 @@ class Map extends React.Component {
         }}
       >
         <MapGL
+          ref={(ref) => {
+            if (ref !== null) {
+              this.glMap = ref.getMap()
+            }
+          }}
           onTransitionEnd={transitionEnd}
           onHover={this.onHover}
           onClick={this.onClick}

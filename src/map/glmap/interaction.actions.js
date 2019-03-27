@@ -116,7 +116,7 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
   }
 }
 
-export const mapClick = (latitude, longitude, features) => (dispatch, getState) => {
+export const mapClick = (latitude, longitude, features, clusterZoom) => (dispatch, getState) => {
   const state = getState().map
 
   dispatch(clearHighlightedClickedVessel())
@@ -135,6 +135,9 @@ export const mapClick = (latitude, longitude, features) => (dispatch, getState) 
       const metaFields = getFeatureMetaFields(feature.staticLayerId, state, feature.feature)
       let fields
       const properties = feature.feature.properties
+      if (clusterZoom !== undefined) {
+        console.log('cluster feature!', clusterZoom)
+      }
       if (metaFields !== null) {
         fields = metaFields.map((metaField) => {
           const id = metaField.id || metaField
