@@ -113,12 +113,13 @@ function loadTrack(track) {
       fitBoundsOnLoad,
     }
     const trackHasData = track.data !== undefined && track.data !== null
+    const trackHasUrl = url !== undefined && url !== null && url !== ''
     if (trackHasData) {
       payload.data = data
     }
     dispatch({ type: ADD_TRACK, payload })
 
-    if (!trackHasData && url) {
+    if (!trackHasData && trackHasUrl) {
       const loaderID = startLoader(dispatch, state)
       if (type !== 'geojson') {
         // Deprecated tracks format logic to be deleted some day
