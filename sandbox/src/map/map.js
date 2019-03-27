@@ -110,6 +110,7 @@ class MapPage extends Component {
             workspaceError: null,
           })
         } catch (err) {
+          window.setTimeout(this.fetchWorkspace, 1000)
           this.setState({
             workspaceStatus: 'json',
             workspaceError: 'bad JSON:' + err,
@@ -117,6 +118,7 @@ class MapPage extends Component {
         }
       })
       .catch((err) => {
+        window.setTimeout(this.fetchWorkspace, 1000)
         this.setState({
           workspaceStatus: 'fetch',
           workspaceError: 'couldnt fetch:' + err,
@@ -184,7 +186,7 @@ class MapPage extends Component {
             //   },
             // ]}
             // tracks={this.tracks}
-            temporalExtent={this.temporalExtent}
+            // temporalExtent={this.temporalExtent}
             loadTemporalExtent={this.loadTemporalExtent}
             highlightTemporalExtent={highlightTemporalExtent}
             onClick={this.onFeatureClick}
