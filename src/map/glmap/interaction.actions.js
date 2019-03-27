@@ -59,13 +59,12 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
     type: null,
   }
 
-  let properties = {}
   if (isEmpty === true) {
     const feature = findFeature(features, null)
     if (feature !== undefined) {
       const popupFields = getFeatureMetaFields(feature.staticLayerId, state, feature.feature)
       if (popupFields !== null) {
-        properties = feature.feature.properties
+        const properties = feature.feature.properties
         const mainPopupField =
           popupFields.find((f) => f.id && f.id.toLowerCase() === 'name') ||
           popupFields.find((f) => f.id && f.id.toLowerCase() === 'id') ||
@@ -84,6 +83,7 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
         }
         event.target = {
           featureTitle,
+          properties,
         }
         cursor = 'pointer'
       }
@@ -113,7 +113,6 @@ export const mapHover = (latitude, longitude, features) => (dispatch, getState) 
       ...event,
       latitude,
       longitude,
-      properties,
     })
   }
 }
@@ -131,13 +130,12 @@ export const mapClick = (latitude, longitude, features) => (dispatch, getState) 
     type: null,
   }
 
-  let properties = {}
   if (isEmpty === true) {
     const feature = findFeature(features, null)
     if (feature !== undefined) {
       const metaFields = getFeatureMetaFields(feature.staticLayerId, state, feature.feature)
       let fields
-      properties = feature.feature.properties
+      const properties = feature.feature.properties
       if (metaFields !== null) {
         fields = metaFields.map((metaField) => {
           const id = metaField.id || metaField
@@ -178,7 +176,6 @@ export const mapClick = (latitude, longitude, features) => (dispatch, getState) 
       ...event,
       latitude,
       longitude,
-      properties,
     })
   }
 }
