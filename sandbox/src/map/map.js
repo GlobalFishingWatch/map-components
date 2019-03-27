@@ -11,7 +11,7 @@ class MapPage extends Component {
       zoom: 5,
     },
     workspaceUrl: 'http://localhost:3333/workspace.json',
-    workspaceAuto: false,
+    workspaceAuto: true,
     workspaceStatus: 'ok',
     workspaceError: null,
   }
@@ -30,7 +30,10 @@ class MapPage extends Component {
   ]
 
   componentDidMount = () => {
-    setInterval(this.increaseHighlightDay, 1000)
+    // setInterval(this.increaseHighlightDay, 1000)
+    if (this.state.workspaceAuto === true) {
+      this.fetchWorkspace()
+    }
   }
 
   componentDidUpdate = () => {
@@ -149,7 +152,6 @@ class MapPage extends Component {
 
     const finalViewport = map !== undefined && workspaceAuto === true ? map.viewport : viewport
     const finalStaticLayers = map !== undefined ? map.staticLayers : []
-
     return (
       <div className={styles.Container}>
         <div className={styles.WorkspacePanel}>
@@ -173,14 +175,14 @@ class MapPage extends Component {
           <MapModule
             viewport={finalViewport}
             onViewportChange={this.onViewportChange}
-            // staticLayers={finalStaticLayers}
-            staticLayers={[
-              {
-                visible: true,
-                id: 'cluster_test',
-                interactive: true,
-              },
-            ]}
+            staticLayers={finalStaticLayers}
+            // staticLayers={[
+            //   {
+            //     visible: true,
+            //     id: 'cluster_test',
+            //     interactive: true,
+            //   },
+            // ]}
             // tracks={this.tracks}
             temporalExtent={this.temporalExtent}
             loadTemporalExtent={this.loadTemporalExtent}

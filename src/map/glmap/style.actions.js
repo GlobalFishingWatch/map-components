@@ -238,6 +238,7 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
   let style = state.map.style.mapStyle
   const currentStyle = style.toJS()
 
+  // add source if it doesn't exist yet
   if (currentStyle.sources[layerId] === undefined) {
     const source = { type: subtype }
     if (subtype === CUSTOM_LAYERS_SUBTYPES.geojson) {
@@ -417,6 +418,15 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   const glSources = currentStyle.sources
 
   const cartoLayersToInstanciate = []
+
+  // update source when needed
+  staticLayers.forEach((refLayer) => {
+    const sourceId = refLayer.id
+    if (refLayer.data !== undefined && currentGLSources[sourceId] !== undefined) {
+      style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
+      console.log(refLayer.data)
+    }
+  })
 
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]

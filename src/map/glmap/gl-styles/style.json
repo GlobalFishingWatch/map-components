@@ -228,65 +228,7 @@
       "clusterMaxZoom": 10,
       "data": {
         "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "properties": {
-              "type": "a"
-            },
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
-            }
-          },
-          {
-            "type": "Feature",
-            "properties": {"type": "b"},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                0.263671875,
-                -2.85526278436657
-              ]
-            }
-          },
-          {
-            "type": "Feature",
-            "properties": {"type": "a"},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                3.3837890625,
-                -0.5273363048115043
-              ]
-            }
-          },
-          {
-            "type": "Feature",
-            "properties": {"type": "a"},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                -8.876953125,
-                -1.537901237431487
-              ]
-            }
-          },
-          {
-            "type": "Feature",
-            "properties": {"type": "a"},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                1.4501953125,
-                -1.1425024037061522
-              ]
-            }
-          }
-        ]
+        "features": []
       }
     }
   },
@@ -716,11 +658,28 @@
     {
       "id": "cluster_test",
       "source": "cluster_test",
-      "filter": ["has", "point_count"],
       "type": "circle",
       "paint": {
         "circle-color": "#51bbd6",
-        "circle-radius": 10
+        "circle-radius": 14
+      }
+    },
+    {
+      "id": "cluster_num",
+      "source": "cluster_test",
+      "type": "symbol",
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": [
+          "Roboto Medium"
+        ],
+        "text-size": 12,
+        "text-anchor": "bottom-left",
+        "text-offset": [0.4, -0.2]
+      },
+      "paint": {
+        "text-halo-color": "hsl(0, 0%, 100%)",
+        "text-halo-width": 2
       }
     },
     {
