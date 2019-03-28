@@ -119,66 +119,68 @@ function loadTrack(track) {
     }
     dispatch({ type: ADD_TRACK, payload })
 
-    if (!trackHasData && trackHasUrl) {
-      const loaderID = startLoader(dispatch, state)
-      if (type !== 'geojson') {
-        // Deprecated tracks format logic to be deleted some day
-        const token = state.map.module.token
-        const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
+    if (trackHasData || !trackHasUrl) {
+      return
+    }
 
-        Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
-          const cleanData = getCleanVectorArrays(rawTileData)
+    const loaderID = startLoader(dispatch, state)
+    if (type !== 'geojson') {
+      // Deprecated tracks format logic to be deleted some day
+      const token = state.map.module.token
+      const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
 
-          if (!cleanData.length) {
-            return
-          }
-          const rawTrackData = groupData(cleanData, [
-            'latitude',
-            'longitude',
-            'datetime',
-            'series',
-            'weight',
-            'sigma',
-          ])
+      Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
+        const cleanData = getCleanVectorArrays(rawTileData)
 
-          const vectorArray = addTracksPointsRenderingData(rawTrackData)
-          const bounds = getOldTrackBoundsFormat(rawTrackData)
+        if (!cleanData.length) {
+          return
+        }
+        const rawTrackData = groupData(cleanData, [
+          'latitude',
+          'longitude',
+          'datetime',
+          'series',
+          'weight',
+          'sigma',
+        ])
 
+        const vectorArray = addTracksPointsRenderingData(rawTrackData)
+        const bounds = getOldTrackBoundsFormat(rawTrackData)
+
+        dispatch({
+          type: UPDATE_TRACK,
+          payload: {
+            id,
+            data: getTracksPlaybackData(vectorArray),
+            geoBounds: bounds.geo,
+            timelineBounds: bounds.time,
+          },
+        })
+        dispatch(completeLoader(loaderID))
+      })
+    } else {
+      fetch(url)
+        .then((res) => {
+          if (res.status >= 400) throw new Error(res.statusText)
+          return res.json()
+        })
+        .then((data) => {
+          const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
           dispatch({
             type: UPDATE_TRACK,
             payload: {
               id,
-              data: getTracksPlaybackData(vectorArray),
-              geoBounds: bounds.geo,
-              timelineBounds: bounds.time,
+              data: geojson,
+              geoBounds,
+              timelineBounds,
             },
           })
-          dispatch(completeLoader(loaderID))
+          if (fitBoundsOnLoad) {
+            targetMapVessel(id)
+          }
         })
-      } else {
-        fetch(url)
-          .then((res) => {
-            if (res.status >= 400) throw new Error(res.statusText)
-            return res.json()
-          })
-          .then((data) => {
-            const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
-            dispatch({
-              type: UPDATE_TRACK,
-              payload: {
-                id,
-                data: geojson,
-                geoBounds,
-                timelineBounds,
-              },
-            })
-            if (fitBoundsOnLoad) {
-              targetMapVessel(id)
-            }
-          })
-          .catch((err) => console.warn(err))
-          .finally(() => dispatch(completeLoader(loaderID)))
-      }
+        .catch((err) => console.warn(err))
+        .finally(() => dispatch(completeLoader(loaderID)))
     }
   }
 }
