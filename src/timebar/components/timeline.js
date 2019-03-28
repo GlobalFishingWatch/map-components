@@ -157,7 +157,7 @@ class Timeline extends Component {
     const { dragging, outerX } = this.state
     const clientX = event.clientX || event.changedTouches[0].clientX
     const x = clientX - outerX
-    const isMovingInside = this.node.contains(event.target)
+    const isMovingInside = this.hoverArea.contains(event.target)
     if (isMovingInside) {
       this.throttledMouseMove(x, this.outerScale.invert)
     }
@@ -236,6 +236,7 @@ class Timeline extends Component {
       bookmarkStart,
       bookmarkEnd,
       onChange,
+      onMouseLeave,
       onBookmarkChange,
     } = this.props
     const {
@@ -262,7 +263,7 @@ class Timeline extends Component {
     const immediate = this.state.dragging !== null
 
     return (
-      <div ref={(node) => (this.node = node)} className={styles.Timeline}>
+      <div className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
           <Bookmark
             scale={this.outerScale}
@@ -285,16 +286,7 @@ class Timeline extends Component {
             this.graphContainer = ref
           }}
         >
-          {/* // TODO separated drag area? */}
-          <div
-            className={styles.graph}
-            onMouseDown={(event) => {
-              this.onMouseDown(event, DRAG_INNER)
-            }}
-            onTouchStart={(event) => {
-              this.onMouseDown(event, DRAG_INNER)
-            }}
-          >
+          <div className={styles.graph}>
             <TimelineUnits
               {...this.props}
               outerScale={this.outerScale}
@@ -321,45 +313,58 @@ class Timeline extends Component {
             this.tooltipContainer = el
           }}
         />
-        <div
-          className={classNames(styles.veilLeft, styles.veil, {
-            [styles._immediate]: dragging === DRAG_START,
-          })}
-          style={{
-            width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
-          }}
-        />
-        <Handler
-          onMouseDown={(event) => {
-            this.onMouseDown(event, DRAG_START)
-          }}
-          onTouchStart={(event) => {
-            this.onMouseDown(event, DRAG_START)
-          }}
-          dragging={this.state.dragging === DRAG_START}
-          x={innerStartPx}
-          mouseX={this.state.handlerMouseX}
-        />
-        <Handler
-          onMouseDown={(event) => {
-            this.onMouseDown(event, DRAG_END)
-          }}
-          onTouchStart={(event) => {
-            this.onMouseDown(event, DRAG_END)
-          }}
-          dragging={this.state.dragging === DRAG_END}
-          x={innerEndPx}
-          mouseX={this.state.handlerMouseX}
-        />
-        <div
-          className={classNames(styles.veilRight, styles.veil, {
-            [styles._immediate]: dragging === DRAG_END,
-          })}
-          style={{
-            left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
-            width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
-          }}
-        />
+        <div className={styles.overlays}>
+          <div
+            className={classNames(styles.veilLeft, styles.veil, {
+              [styles._immediate]: dragging === DRAG_START,
+            })}
+            style={{
+              width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
+            }}
+          />
+          <Handler
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_START)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_START)
+            }}
+            dragging={this.state.dragging === DRAG_START}
+            x={innerStartPx}
+            mouseX={this.state.handlerMouseX}
+          />
+          <div
+            ref={(node) => (this.hoverArea = node)}
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_INNER)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_INNER)
+            }}
+            className={styles.hoverArea}
+            onMouseLeave={onMouseLeave}
+          />
+          <Handler
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_END)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_END)
+            }}
+            dragging={this.state.dragging === DRAG_END}
+            x={innerEndPx}
+            mouseX={this.state.handlerMouseX}
+          />
+          <div
+            className={classNames(styles.veilRight, styles.veil, {
+              [styles._immediate]: dragging === DRAG_END,
+            })}
+            style={{
+              left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
+              width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
+            }}
+          />
+        </div>
         <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
           {(style) => (
             <animated.div className={styles.absoluteEnd} style={style}>
@@ -375,7 +380,8 @@ class Timeline extends Component {
 
 Timeline.propTypes = {
   onChange: PropTypes.func.isRequired,
-  onMouseMove: PropTypes.func.isRequired,
+  onMouseLeave: PropTypes.func,
+  onMouseMove: PropTypes.func,
   children: PropTypes.func.isRequired,
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
@@ -388,6 +394,8 @@ Timeline.propTypes = {
 Timeline.defaultProps = {
   bookmarkStart: null,
   bookmarkEnd: null,
+  onMouseLeave: () => {},
+  onMouseMove: () => {},
 }
 
 export default Timeline
