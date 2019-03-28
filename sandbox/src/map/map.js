@@ -7,11 +7,11 @@ class MapPage extends Component {
   state = {
     highlightTemporalExtent: [new Date(2017, 11, 1), new Date(2017, 11, 31)],
     viewport: {
-      center: [0.026, 123.61],
+      center: [0, 0],
       zoom: 5,
     },
     workspaceUrl: 'http://localhost:3333/workspace.json',
-    workspaceAuto: false,
+    workspaceAuto: true,
     workspaceStatus: 'ok',
     workspaceError: null,
   }
@@ -31,6 +31,9 @@ class MapPage extends Component {
 
   componentDidMount = () => {
     setInterval(this.increaseHighlightDay, 1000)
+    if (this.state.workspaceAuto === true) {
+      this.fetchWorkspace()
+    }
   }
 
   componentDidUpdate = () => {
@@ -74,6 +77,16 @@ class MapPage extends Component {
     )
   }
 
+  onFeatureClick = (event) => {
+    console.log(event)
+  }
+
+  onFeatureHover = (event) => {
+    if (event.type !== null) {
+      console.log(event)
+    }
+  }
+
   fetchWorkspace = () => {
     const { workspaceUrl } = this.state
     this.setState({
@@ -103,6 +116,7 @@ class MapPage extends Component {
             workspaceError: null,
           })
         } catch (err) {
+          window.setTimeout(this.fetchWorkspace, 1000)
           this.setState({
             workspaceStatus: 'json',
             workspaceError: 'bad JSON:' + err,
@@ -110,6 +124,7 @@ class MapPage extends Component {
         }
       })
       .catch((err) => {
+        window.setTimeout(this.fetchWorkspace, 1000)
         this.setState({
           workspaceStatus: 'fetch',
           workspaceError: 'couldnt fetch:' + err,
@@ -145,7 +160,6 @@ class MapPage extends Component {
 
     const finalViewport = map !== undefined && workspaceAuto === true ? map.viewport : viewport
     const finalStaticLayers = map !== undefined ? map.staticLayers : []
-
     return (
       <div className={styles.Container}>
         <div className={styles.WorkspacePanel}>
@@ -170,10 +184,19 @@ class MapPage extends Component {
             viewport={finalViewport}
             onViewportChange={this.onViewportChange}
             staticLayers={finalStaticLayers}
-            tracks={this.tracks}
+            // staticLayers={[
+            //   {
+            //     visible: true,
+            //     id: 'cluster_test',
+            //     interactive: true,
+            //   },
+            // ]}
+            // tracks={this.tracks}
             temporalExtent={this.temporalExtent}
             loadTemporalExtent={this.loadTemporalExtent}
             highlightTemporalExtent={highlightTemporalExtent}
+            onClick={this.onFeatureClick}
+            onHover={this.onFeatureHover}
           />
         </div>
       </div>

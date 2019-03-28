@@ -51,28 +51,6 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   dispatch(setMapStyle(style))
 }
 
-const applyLayerFilters = (style, refLayer, currentGlLayer, glLayerIndex) => {
-  const isTemporal =
-    currentGlLayer.metadata !== undefined && currentGlLayer.metadata['gfw:temporal'] === true
-
-  if (refLayer.filters === undefined) {
-    if (isTemporal === true) {
-      // only keep temporal part and clean up custom filters
-      // if layer is temporal, extract the time filter part first
-      const currentFilter = currentGlLayer.filter.slice(0, 3)
-      return style.setIn(['layers', glLayerIndex, 'filter'], fromJS(currentFilter))
-    } else if (currentGlLayer.filter !== undefined) {
-      return style.deleteIn(['layers', glLayerIndex, 'filter'])
-    }
-    return style
-  }
-
-  // if layer is temporal, extract the time filter part first
-  const currentFilter = isTemporal ? currentGlLayer.filter.slice(0, 3) : ['all']
-  const newFilter = currentFilter.concat(refLayer.filters)
-  return style.setIn(['layers', glLayerIndex, 'filter'], fromJS(newFilter))
-}
-
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
   let newStyle = style
   const currentStyle = style.toJS()
@@ -90,13 +68,13 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
       (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
     const allPaintProperties = { ...defaultStyle, ...layerStyle }
     if (Object.keys(allPaintProperties).length) {
-      const layerColorRgb = hexToRgb(refLayer.color)
-      const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
       // go through each applicable gl paint property
       Object.keys(allPaintProperties).forEach((glPaintProperty) => {
         const selectedValue = allPaintProperties[glPaintProperty][0]
         const fallbackValue = allPaintProperties[glPaintProperty][1]
-        const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
+        const paintOrLayout = ['icon-size', 'icon-image'].includes(glPaintProperty)
+          ? 'layout'
+          : 'paint'
         let glPaintFinalValue
         if (
           hasFeatures === false &&
@@ -109,16 +87,21 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
         } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
           glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
         } else {
+          let layerColorRgbString = ''
+          if (refLayer.color !== null && refLayer.color !== undefined) {
+            const layerColorRgb = hexToRgb(refLayer.color)
+            layerColorRgbString = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
+          }
           glPaintFinalValue = [
             'match',
             ['get', features.field],
             features.values,
             typeof selectedValue !== 'string'
               ? selectedValue
-              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbString),
             typeof fallbackValue !== 'string'
               ? fallbackValue
-              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbString),
           ]
         }
 
@@ -186,16 +169,17 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
           break
         }
       }
-      newStyle = newStyle
-        .setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'text-color'], refLayer.color)
+      newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'text-opacity'], refLayerOpacity)
+
+      if (refLayer.color !== undefined) {
+        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'text-color'], refLayer.color)
+      }
       break
     }
     // Event layers and custom layers with point geom types
     case 'circle': {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
         .setIn(
           ['layers', glLayerIndex, 'paint', 'circle-radius'],
           initialGLLayer.paint['circle-radius']
@@ -208,6 +192,10 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
           ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
           initialGLLayer.paint['circle-stroke-width'] || 1
         )
+
+      if (refLayer.color !== undefined) {
+        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
+      }
       break
     }
     case 'raster': {
@@ -222,7 +210,6 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     }
   }
 
-  newStyle = applyLayerFilters(newStyle, refLayer, glLayer, glLayerIndex)
   newStyle = applyLayerExpressions(newStyle, refLayer, glLayer, glLayerIndex)
 
   return newStyle
@@ -233,6 +220,7 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
   let style = state.map.style.mapStyle
   const currentStyle = style.toJS()
 
+  // add source if it doesn't exist yet
   if (currentStyle.sources[layerId] === undefined) {
     const source = { type: subtype }
     if (subtype === CUSTOM_LAYERS_SUBTYPES.geojson) {
@@ -412,6 +400,14 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   const glSources = currentStyle.sources
 
   const cartoLayersToInstanciate = []
+
+  // update source when needed
+  staticLayers.forEach((refLayer) => {
+    const sourceId = refLayer.id
+    if (refLayer.data !== undefined && currentGLSources[sourceId] !== undefined) {
+      style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
+    }
+  })
 
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]

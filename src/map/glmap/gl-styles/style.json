@@ -1,7 +1,7 @@
 {
   "version": 8,
   "glyphs": "https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-glyphs/master/_output/{fontstack}/{range}.pbf?raw=true",
-  "sprite": "https://raw.githubusercontent.com/GlobalFishingWatch/map-sprites/master/out/sprites",
+  "sprite": "https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-sprites/master/out/sprites",
   "metadata": {
     "mapbox:groups": {
       "basemap-background": {"name": "basemap-background"},
@@ -220,6 +220,33 @@
         "gfw:popups": [
           { "id": "event_id" }
         ]
+      }
+    },
+    "events_encounter_vessel": {
+      "type": "geojson",
+      "cluster": true,
+      "clusterMaxZoom": 10,
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
+    },
+    "events_gap_vessel": {
+      "type": "geojson",
+      "cluster": true,
+      "clusterMaxZoom": 10,
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
+    },
+    "events_port_vessel": {
+      "type": "geojson",
+      "cluster": true,
+      "clusterMaxZoom": 10,
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
       }
     }
   },
@@ -546,29 +573,6 @@
       }
     },
     {
-      "id": "events_encounter_icons",
-      "metadata": {
-        "gfw:temporal": true,
-        "gfw:styles": {
-          "selected": {
-            "icon-size": [
-              1,
-              0
-            ]
-          }
-        },
-        "mapbox:group": "temporal"
-      },
-      "type": "symbol",
-      "source": "events_encounter",
-      "source-layer": "default",
-      "layout": {
-          "icon-image": "encounter",
-          "icon-size": 0,
-          "icon-allow-overlap": true
-      }
-    },
-    {
       "id": "events_gap",
       "type": "circle",
       "source": "events_gap",
@@ -582,29 +586,6 @@
         "circle-color": "#FFE7A0",
         "circle-stroke-width": 0.5,
         "circle-stroke-color": "#000000"
-      }
-    },
-    {
-      "id": "events_gap_icons",
-      "type": "symbol",
-      "metadata": {
-        "gfw:temporal": true,
-        "gfw:styles": {
-          "selected": {
-            "icon-size": [
-              1,
-              0
-            ]
-          }
-        },
-        "mapbox:group": "temporal"
-      },
-      "source": "events_gap",
-      "source-layer": "default",
-      "layout": {
-          "icon-image": "gap",
-          "icon-size": 0,
-          "icon-allow-overlap": true
       }
     },
     {
@@ -624,26 +605,129 @@
       }
     },
     {
-      "id": "events_port_icons",
+      "id": "events_encounter_vessel",
+      "source": "events_encounter_vessel",
       "type": "symbol",
       "metadata": {
-        "gfw:temporal": true,
+        "mapbox:group": "temporal",
         "gfw:styles": {
-          "selected": {
-            "icon-size": [
-              1,
-              0
+          "highlighted": {
+            "icon-image": [
+              "encounter_highlight",
+              "encounter"
             ]
-          },
-          "mapbox:group": "temporal"
+          }
         }
       },
-      "source": "events_port",
-      "source-layer": "default",
       "layout": {
-          "icon-image": "port",
-          "icon-size": 0,
-          "icon-allow-overlap": true
+        "icon-image": "encounter",
+        "icon-allow-overlap": true
+      }
+    },
+    {
+      "id": "events_encounter_vessel_number",
+      "source": "events_encounter_vessel",
+      "type": "symbol",
+      "metadata": {
+        "mapbox:group": "temporal"
+      },
+      "filter": ["has", "point_count"],
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": [
+          "Roboto Medium"
+        ],
+        "text-size": 12,
+        "text-anchor": "bottom-left",
+        "text-offset": [0.8, -0.2]
+      },
+      "paint": {
+        "text-halo-color": "hsl(0, 0%, 100%)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "events_gap_vessel",
+      "source": "events_gap_vessel",
+      "type": "symbol",
+      "metadata": {
+        "mapbox:group": "temporal",
+        "gfw:styles": {
+          "highlighted": {
+            "icon-image": [
+              "gap_highlight",
+              "gap"
+            ]
+          }
+        }
+      },
+      "layout": {
+        "icon-image": "gap",
+        "icon-allow-overlap": true
+      }
+    },
+    {
+      "id": "events_gap_vessel_number",
+      "source": "events_gap_vessel",
+      "type": "symbol",
+      "metadata": {
+        "mapbox:group": "temporal"
+      },
+      "filter": ["has", "point_count"],
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": [
+          "Roboto Medium"
+        ],
+        "text-size": 12,
+        "text-anchor": "bottom-left",
+        "text-offset": [0.8, -0.2]
+      },
+      "paint": {
+        "text-halo-color": "hsl(0, 0%, 100%)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "events_port_vessel",
+      "source": "events_port_vessel",
+      "type": "symbol",
+      "metadata": {
+        "mapbox:group": "temporal",
+        "gfw:styles": {
+          "highlighted": {
+            "icon-image": [
+              "port_highlight",
+              "port"
+            ]
+          }
+        }
+      },
+      "layout": {
+        "icon-image": "port",
+        "icon-allow-overlap": true
+      }
+    },
+    {
+      "id": "events_port_vessel_number",
+      "source": "events_port_vessel",
+      "type": "symbol",
+      "metadata": {
+        "mapbox:group": "temporal"
+      },
+      "filter": ["has", "point_count"],
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": [
+          "Roboto Medium"
+        ],
+        "text-size": 12,
+        "text-anchor": "bottom-left",
+        "text-offset": [0.8, -0.2]
+      },
+      "paint": {
+        "text-halo-color": "hsl(0, 0%, 100%)",
+        "text-halo-width": 2
       }
     },
     {
