@@ -26,7 +26,7 @@ const filterGeojsonByTimerange = (geojson, { start, end }) => {
       const filtered = feature.geometry.coordinates.reduce(
         (filteredCoordinates, coordinate, index) => {
           const timeCoordinate = feature.properties.coordinateProperties.times[index]
-          const isInTimeline = timeCoordinate > start && timeCoordinate < end
+          const isInTimeline = timeCoordinate >= start && timeCoordinate <= end
           if (isInTimeline) {
             filteredCoordinates.coordinates.push(coordinate)
             filteredCoordinates.times.push(timeCoordinate)
