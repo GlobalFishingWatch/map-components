@@ -70,7 +70,7 @@ class Map extends React.Component {
 
   onMapInteraction = (event, type) => {
     const callback = type === 'hover' ? this.props.mapHover : this.props.mapClick
-    if (this.glMap !== undefined && event.features.length) {
+    if (this.glMap !== undefined && event.features !== undefined && event.features.length) {
       const feature = event.features[0]
       if (feature.properties.cluster === true) {
         const clusterId = feature.properties.cluster_id

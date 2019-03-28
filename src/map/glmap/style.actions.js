@@ -72,7 +72,9 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
       Object.keys(allPaintProperties).forEach((glPaintProperty) => {
         const selectedValue = allPaintProperties[glPaintProperty][0]
         const fallbackValue = allPaintProperties[glPaintProperty][1]
-        const paintOrLayout = glPaintProperty === 'icon-size' ? 'layout' : 'paint'
+        const paintOrLayout = ['icon-size', 'icon-image'].includes(glPaintProperty)
+          ? 'layout'
+          : 'paint'
         let glPaintFinalValue
         if (
           hasFeatures === false &&
@@ -85,18 +87,21 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
         } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
           glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
         } else {
-          const layerColorRgb = hexToRgb(refLayer.color)
-          const layerColorRgbFragment = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
+          let layerColorRgbString = ''
+          if (refLayer.color !== null && refLayer.color !== undefined) {
+            const layerColorRgb = hexToRgb(refLayer.color)
+            layerColorRgbString = `${layerColorRgb.r},${layerColorRgb.g},${layerColorRgb.b}`
+          }
           glPaintFinalValue = [
             'match',
             ['get', features.field],
             features.values,
             typeof selectedValue !== 'string'
               ? selectedValue
-              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+              : selectedValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbString),
             typeof fallbackValue !== 'string'
               ? fallbackValue
-              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbFragment),
+              : fallbackValue.replace('$REFLAYER_COLOR_RGB', layerColorRgbString),
           ]
         }
 

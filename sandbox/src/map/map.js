@@ -30,7 +30,7 @@ class MapPage extends Component {
   ]
 
   componentDidMount = () => {
-    // setInterval(this.increaseHighlightDay, 1000)
+    setInterval(this.increaseHighlightDay, 1000)
     if (this.state.workspaceAuto === true) {
       this.fetchWorkspace()
     }
