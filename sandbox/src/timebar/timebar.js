@@ -110,6 +110,7 @@ class TimebarContainer extends Component {
               onChange={(event) => {
                 this.setState({ currentChart: event.target.value })
               }}
+              value={currentChart}
             >
               <option value="activity">Activity</option>
               <option value="events">Events</option>

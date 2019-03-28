@@ -97,24 +97,33 @@ const getOldTrackBoundsFormat = (data, addOffset = false) => {
   }
 }
 
-function loadTrack({ id, url, type, fitBoundsOnLoad, layerTemporalExtents, color }) {
+function loadTrack(track) {
   return (dispatch, getState) => {
+    const { id, url, type, fitBoundsOnLoad, layerTemporalExtents, color, data } = track
     const state = getState()
-    const loaderID = startLoader(dispatch, state)
     if (state.map.tracks.data.find((t) => t.id === id)) {
       return
     }
 
-    dispatch({
-      type: ADD_TRACK,
-      payload: {
-        id,
-        url,
-        type,
-        color,
-        fitBoundsOnLoad,
-      },
-    })
+    const payload = {
+      id,
+      url,
+      type,
+      color,
+      fitBoundsOnLoad,
+    }
+    const trackHasData = track.data !== undefined && track.data !== null
+    const trackHasUrl = url !== undefined && url !== null && url !== ''
+    if (trackHasData) {
+      payload.data = data
+    }
+    dispatch({ type: ADD_TRACK, payload })
+
+    if (trackHasData || !trackHasUrl) {
+      return
+    }
+
+    const loaderID = startLoader(dispatch, state)
     if (type !== 'geojson') {
       // Deprecated tracks format logic to be deleted some day
       const token = state.map.module.token
