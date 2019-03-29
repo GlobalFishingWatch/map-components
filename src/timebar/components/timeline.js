@@ -156,7 +156,10 @@ class Timeline extends Component {
   onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange, onMouseLeave } = this.props
     const { dragging, outerX, innerStartPx, innerEndPx } = this.state
-    const clientX = event.clientX || event.changedTouches[0].clientX
+    const clientX = event.clientX || (event.changedTouches && event.changedTouches[0].clientX)
+    if (clientX === undefined) {
+      return
+    }
     const x = clientX - outerX
     const isMovingInside = this.node.contains(event.target) && x > innerStartPx && x < innerEndPx
     if (isMovingInside) {
