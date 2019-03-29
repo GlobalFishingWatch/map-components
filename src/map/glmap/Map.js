@@ -69,6 +69,7 @@ class Map extends React.Component {
   }
 
   onMapInteraction = (event, type) => {
+    // console.log(type, event, event.features)
     const callback = type === 'hover' ? this.props.mapHover : this.props.mapClick
     if (this.glMap !== undefined && event.features !== undefined && event.features.length) {
       const feature = event.features[0]
@@ -114,7 +115,7 @@ class Map extends React.Component {
       cursor,
       interactiveLayerIds,
     } = this.props
-
+    // console.log('plp', interactiveLayerIds)
     return (
       <div
         id="map"
