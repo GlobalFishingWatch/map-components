@@ -11,7 +11,7 @@ export const UPDATE_POPUP_REPORT_STATUS = 'UPDATE_POPUP_REPORT_STATUS'
 const getFeatureMetaFields = (staticLayerId, state, feature) => {
   const source = state.style.mapStyle.toJS().sources[staticLayerId]
   if (source === undefined) {
-    console.warn('Couldnt find sourc when looking for fields of layer', staticLayerId)
+    console.warn('Couldnt find source when looking for fields of layer', staticLayerId)
   }
   if (source.type !== 'geojson') {
     if (source.metadata === undefined || source.metadata['gfw:popups'] === undefined) {

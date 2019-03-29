@@ -115,7 +115,6 @@ class Map extends React.Component {
       cursor,
       interactiveLayerIds,
     } = this.props
-    // console.log('plp', interactiveLayerIds)
     return (
       <div
         id="map"
