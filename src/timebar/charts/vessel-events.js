@@ -9,6 +9,7 @@ import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
 import { ReactComponent as IconGap } from '../icons/events/gap.svg'
 import { ReactComponent as IconPort } from '../icons/events/port.svg'
+import { finished } from 'stream'
 
 const ICONS = {
   encounter: <IconEncounter />,
@@ -157,18 +158,37 @@ class VesselEvents extends Component {
         : outerScale(highlightedEvent.end) - left
     const center = left + width / 2
 
-    let title = {
-      port: 'Docked',
-      encounter: 'Had an encounter with {value}',
-      gap: 'Failed to register ??? reports',
-      fishing: 'Fished',
-    }[highlightedEvent.type]
+    const start = dayjs(highlightedEvent.start)
+    const duration = highlightedEvent.end ? start.from(dayjs(highlightedEvent.end), true) : null
 
-    if (highlightedEvent.type === 'encounter') {
-      title = title.replace(
-        '{value}',
-        [highlightedEvent.encounteredVessel.slice(0, 15), '...'].join('')
-      )
+    let description
+    switch (highlightedEvent.type) {
+      case 'fishing':
+        description = `Fished (${duration})`
+        break
+      case 'gap':
+        description = `Tracking avoidance (${duration})`
+        break
+      case 'encounter':
+        const encounteredVessel =
+          highlightedEvent.encounteredVessel === undefined ||
+          highlightedEvent.encounteredVessel.name === undefined
+            ? highlightedEvent.allVessels[1].name
+            : highlightedEvent.encounteredVessel.name
+
+        description =
+          encounteredVessel === undefined || encounteredVessel === null
+            ? 'Had encounter with unknown vessel'
+            : `Had encounter with ${encounteredVessel}`
+
+        description = `${description} (${duration})`
+        break
+      case 'port':
+        const portName = highlightedEvent.port.name
+        description = portName === null ? 'Docked' : `Docked at ${portName}`
+        description = `${description} (${duration})`
+        break
+      default:
     }
 
     return (
@@ -179,10 +199,8 @@ class VesselEvents extends Component {
       >
         {ICONS[highlightedEvent.type]}
         <div className={styles.tooltipText}>
-          <div className={styles.tooltipDate}>
-            {dayjs(highlightedEvent.start).format('MMM D YYYY')}
-          </div>
-          {title}
+          <div className={styles.tooltipDate}>{start.format('MMM D YYYY h:mm a')}</div>
+          {description}
         </div>
       </div>
     )

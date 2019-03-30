@@ -6,7 +6,7 @@ class CountryFlag extends Component {
   render() {
     const { iso, iso2, svg, size } = this.props
     if (!iso && !iso2) {
-      console.error('Country flag iso (iso 3) or iso2 code is required')
+      console.error(' Country flag iso (iso 3) or iso2 code is required')
       return null
     }
     if (iso2) {

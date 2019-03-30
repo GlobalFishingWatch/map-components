@@ -21,6 +21,8 @@ import { ReactComponent as IconBookmark } from './icons/bookmark.svg'
 import { ReactComponent as IconBookmarkFilled } from './icons/bookmarkFilled.svg'
 import { ReactComponent as IconMinus } from './icons/minus.svg'
 import { ReactComponent as IconPlus } from './icons/plus.svg'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
 
