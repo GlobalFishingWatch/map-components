@@ -9,7 +9,6 @@ import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
 import { ReactComponent as IconGap } from '../icons/events/gap.svg'
 import { ReactComponent as IconPort } from '../icons/events/port.svg'
-import { finished } from 'stream'
 
 const ICONS = {
   encounter: <IconEncounter />,
@@ -19,12 +18,18 @@ const ICONS = {
   fishing: null,
 }
 
+const HEIGHTS = {
+  port: 6,
+  fishing: 5,
+  gap: 8,
+  encounter: 8,
+}
 const Layer = (props) => {
   const { outerScale, events, y, className, children } = props
   return (
     <g transform={`translate(0, ${y})`} className={className}>
       {events.map((event) => {
-        const height = event.isThick ? 8 : 6
+        const height = HEIGHTS[event.type]
         const x1 = outerScale(event.start)
         const x2 = event.end === null ? x1 : outerScale(event.end)
         const width = Math.max(height, x2 - x1)
@@ -49,7 +54,6 @@ Layer.propTypes = {
     PropTypes.shape({
       start: PropTypes.instanceOf(Date),
       end: PropTypes.instanceOf(Date),
-      isThick: PropTypes.bool,
     })
   ).isRequired,
   children: PropTypes.func.isRequired,
@@ -61,7 +65,6 @@ class VesselEvents extends Component {
   getEvents = memoize((events) => {
     return events.map((event) => ({
       ...event,
-      isThick: ['encounter', 'gap'].indexOf(event.type) > -1,
       start: new Date(event.start),
       end: event.end === null ? null : new Date(event.end),
     }))
@@ -84,7 +87,7 @@ class VesselEvents extends Component {
   filterEvents = memoize((events, outerStart, outerEnd) => {
     let filteredEvents = events
 
-    if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 300) {
+    if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 365) {
       filteredEvents = events.filter((event) => event.type !== 'fishing')
     }
 
@@ -120,7 +123,7 @@ class VesselEvents extends Component {
   getOverlays = memoize((events) => {
     const overlays = []
     events
-      .filter((event) => ['port', 'encounter', 'gap'].includes(event.type))
+      .filter((event) => ['port', 'encounter', 'gap', 'fishing'].includes(event.type))
       .forEach((event) => {
         const newEvent = { ...event }
         if (event.type === 'port') {

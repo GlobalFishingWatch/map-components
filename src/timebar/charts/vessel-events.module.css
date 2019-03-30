@@ -20,11 +20,6 @@
   stroke-width: 1px;
 }
 
-.overlays ._highlighted rect {
-  stroke: var(--timebar-white);
-  stroke-width: 2px;
-}
-
 .overlays .encounter rect {
   fill: var(--timebar-encounter-color);
 }
@@ -35,12 +30,17 @@
 
 .overlays .fishing rect {
   fill: var(--timebar-fishing-color);
-  fill-opacity: 0.5;
+  stroke: none
 }
 
 .overlays .port rect {
   fill: var(--timebar-main-background-color);
   stroke: var(--timebar-fishing-color);
+  stroke-width: 2px;
+}
+
+.overlays ._highlighted rect {
+  stroke: var(--timebar-white);
   stroke-width: 2px;
 }
 
