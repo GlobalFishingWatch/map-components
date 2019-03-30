@@ -4245,10 +4245,10 @@ cosmiconfig@^5.0.0, cosmiconfig@^5.0.2, cosmiconfig@^5.0.5, cosmiconfig@^5.0.7:
     lodash.get "^4.4.2"
     parse-json "^4.0.0"
 
-countryflag@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/countryflag/-/countryflag-1.0.3.tgz#4ce2b55454814ca980f120e3155ba26e26e12b17"
-  integrity sha512-CQIZJMyXdvMnUEMseJRH00GSTEadQP0pKTUXFOOE/JjMlLVEVPA+ZEVTB2C11hmy8b5UjT+rQT6Zp7+SDZYbjw==
+countryflag@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/countryflag/-/countryflag-2.0.0.tgz#479c364a12d05cdfd22955a378ac9748074bf8c5"
+  integrity sha512-bKHz1drMYPqZB7uyFcBzWfXb9COjwQr1Qd4bB40/uw2PkstRHSevh7dgzpmgZKRANJDYbJOLU8XlqSkVUSe8Jg==
   dependencies:
     if-emoji "^0.1.0"
     world-countries "^2.1.0"

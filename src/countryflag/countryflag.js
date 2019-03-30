@@ -4,12 +4,15 @@ import countryflag from 'countryflag'
 
 class CountryFlag extends Component {
   render() {
-    const { iso2, svg, size } = this.props
-    if (!iso2) {
-      console.error('Country flag iso2 code is required')
+    const { iso, iso2, svg, size } = this.props
+    if (!iso && !iso2) {
+      console.error('Country flag iso (iso 3) or iso2 code is required')
       return null
     }
-    const flag = countryflag(iso2)
+    if (iso2) {
+      console.warn('iso2 parameter is deprecated, use iso instead')
+    }
+    const flag = countryflag(iso || iso2)
     return svg === true || flag.emoji === null ? (
       <img style={{ height: size, marginRight: '0.2em' }} alt={flag.name} src={flag.svg} />
     ) : (
@@ -21,7 +24,7 @@ class CountryFlag extends Component {
 }
 
 CountryFlag.propTypes = {
-  iso2: PropTypes.string.isRequired,
+  iso: PropTypes.string.isRequired,
   svg: PropTypes.bool,
   size: PropTypes.string,
 }

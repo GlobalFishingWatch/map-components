@@ -6,19 +6,19 @@ class CountryFlagPage extends Component {
   render() {
     return (
       <div>
-        <CountryFlag iso2="es" />
-        <CountryFlag iso2="fr" />
-        <CountryFlag iso2="ki" />
-        <CountryFlag iso2="es" svg />
-        <CountryFlag iso2="fr" svg />
-        <CountryFlag iso2="ki" svg />
+        <CountryFlag iso="es" />
+        <CountryFlag iso="fr" />
+        <CountryFlag iso="ki" />
+        <CountryFlag iso="es" svg />
+        <CountryFlag iso="fr" svg />
+        <CountryFlag iso="ki" svg />
         <br />
-        <CountryFlag iso2="es" size="3em" />
-        <CountryFlag iso2="fr" size="3em" />
-        <CountryFlag iso2="ki" size="3em" />
-        <CountryFlag iso2="es" size="3em" svg />
-        <CountryFlag iso2="fr" size="3em" svg />
-        <CountryFlag iso2="ki" size="3em" svg />
+        <CountryFlag iso="esp" size="3em" />
+        <CountryFlag iso="fra" size="3em" />
+        <CountryFlag iso="kir" size="3em" />
+        <CountryFlag iso="esp" size="3em" svg />
+        <CountryFlag iso="fra" size="3em" svg />
+        <CountryFlag iso="kir" size="3em" svg />
       </div>
     )
   }
