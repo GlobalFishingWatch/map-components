@@ -18,12 +18,18 @@ const ICONS = {
   fishing: null,
 }
 
+const HEIGHTS = {
+  port: 6,
+  fishing: 5,
+  gap: 8,
+  encounter: 8,
+}
 const Layer = (props) => {
   const { outerScale, events, y, className, children } = props
   return (
     <g transform={`translate(0, ${y})`} className={className}>
       {events.map((event) => {
-        const height = event.isThick ? 8 : 6
+        const height = HEIGHTS[event.type]
         const x1 = outerScale(event.start)
         const x2 = event.end === null ? x1 : outerScale(event.end)
         const width = Math.max(height, x2 - x1)
@@ -48,7 +54,6 @@ Layer.propTypes = {
     PropTypes.shape({
       start: PropTypes.instanceOf(Date),
       end: PropTypes.instanceOf(Date),
-      isThick: PropTypes.bool,
     })
   ).isRequired,
   children: PropTypes.func.isRequired,
@@ -60,7 +65,6 @@ class VesselEvents extends Component {
   getEvents = memoize((events) => {
     return events.map((event) => ({
       ...event,
-      isThick: ['encounter', 'gap'].indexOf(event.type) > -1,
       start: new Date(event.start),
       end: event.end === null ? null : new Date(event.end),
     }))
@@ -83,7 +87,7 @@ class VesselEvents extends Component {
   filterEvents = memoize((events, outerStart, outerEnd) => {
     let filteredEvents = events
 
-    if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 300) {
+    if (dayjs(outerEnd).diff(dayjs(outerStart), 'day') > 365) {
       filteredEvents = events.filter((event) => event.type !== 'fishing')
     }
 
@@ -119,7 +123,7 @@ class VesselEvents extends Component {
   getOverlays = memoize((events) => {
     const overlays = []
     events
-      .filter((event) => ['port', 'encounter', 'gap'].includes(event.type))
+      .filter((event) => ['port', 'encounter', 'gap', 'fishing'].includes(event.type))
       .forEach((event) => {
         const newEvent = { ...event }
         if (event.type === 'port') {
@@ -157,18 +161,37 @@ class VesselEvents extends Component {
         : outerScale(highlightedEvent.end) - left
     const center = left + width / 2
 
-    let title = {
-      port: 'Docked',
-      encounter: 'Had an encounter with {value}',
-      gap: 'Failed to register ??? reports',
-      fishing: 'Fished',
-    }[highlightedEvent.type]
+    const start = dayjs(highlightedEvent.start)
+    const duration = highlightedEvent.end ? start.from(dayjs(highlightedEvent.end), true) : null
 
-    if (highlightedEvent.type === 'encounter') {
-      title = title.replace(
-        '{value}',
-        [highlightedEvent.encounteredVessel.slice(0, 15), '...'].join('')
-      )
+    let description
+    switch (highlightedEvent.type) {
+      case 'fishing':
+        description = `Fished (${duration})`
+        break
+      case 'gap':
+        description = `Tracking avoidance (${duration})`
+        break
+      case 'encounter':
+        const encounteredVessel =
+          highlightedEvent.encounteredVessel === undefined ||
+          highlightedEvent.encounteredVessel.name === undefined
+            ? highlightedEvent.allVessels[1].name
+            : highlightedEvent.encounteredVessel.name
+
+        description =
+          encounteredVessel === undefined || encounteredVessel === null
+            ? 'Had encounter with unknown vessel'
+            : `Had encounter with ${encounteredVessel}`
+
+        description = `${description} (${duration})`
+        break
+      case 'port':
+        const portName = highlightedEvent.port.name
+        description = portName === null ? 'Docked' : `Docked at ${portName}`
+        description = `${description} (${duration})`
+        break
+      default:
     }
 
     return (
@@ -179,10 +202,8 @@ class VesselEvents extends Component {
       >
         {ICONS[highlightedEvent.type]}
         <div className={styles.tooltipText}>
-          <div className={styles.tooltipDate}>
-            {dayjs(highlightedEvent.start).format('MMM D YYYY')}
-          </div>
-          {title}
+          <div className={styles.tooltipDate}>{start.format('MMM D YYYY h:mm a')}</div>
+          {description}
         </div>
       </div>
     )
