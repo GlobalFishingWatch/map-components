@@ -223,6 +223,7 @@ class VesselEvents extends Component {
       outerEnd,
       outerWidth,
       graphHeight,
+      onEventClick,
       onEventHighlighted,
       tooltipContainer,
     } = this.props
@@ -276,6 +277,7 @@ class VesselEvents extends Component {
                 key={props.event.uid || props.event.id}
                 onMouseEnter={() => onEventHighlighted(props.event)}
                 onMouseLeave={() => onEventHighlighted()}
+                onClick={() => onEventClick(props.event)}
               >
                 <rect
                   x={props.style.x1}
@@ -308,6 +310,8 @@ VesselEvents.propTypes = {
   selectedEventID: PropTypes.string,
   highlightedEventIDs: PropTypes.arrayOf(PropTypes.string),
   outerScale: PropTypes.func.isRequired,
+  onEventHighlighted: PropTypes.func,
+  onEventClick: PropTypes.func,
   outerWidth: PropTypes.number.isRequired,
   outerHeight: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
@@ -317,6 +321,8 @@ VesselEvents.propTypes = {
 VesselEvents.defaultProps = {
   selectedEventID: null,
   highlightedEventID: null,
+  onEventHighlighted: () => {},
+  onEventClick: () => {},
 }
 
 export default VesselEvents
