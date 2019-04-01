@@ -138,7 +138,7 @@ class MapModule extends React.Component {
       )
     }
 
-    if (this.props.tracks !== undefined) {
+    if (this.props.tracks !== null) {
       store.dispatch(updateTracks(this.props.tracks))
     }
 
@@ -287,6 +287,7 @@ MapModule.propTypes = {
 
 MapModule.defaultProps = {
   highlightTemporalExtent: null,
+  tracks: null,
 }
 
 export default MapModule
