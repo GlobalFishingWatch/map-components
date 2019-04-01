@@ -9,7 +9,6 @@ import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
 import { ReactComponent as IconGap } from '../icons/events/gap.svg'
 import { ReactComponent as IconPort } from '../icons/events/port.svg'
-import { finished } from 'stream'
 
 const ICONS = {
   encounter: <IconEncounter />,
@@ -25,6 +24,9 @@ const HEIGHTS = {
   gap: 8,
   encounter: 8,
 }
+
+const TOOLTIP_DATE_FORMAT = 'MMM D YYYY h:mm a'
+
 const Layer = (props) => {
   const { outerScale, events, y, className, children } = props
   return (
@@ -203,7 +205,7 @@ class VesselEvents extends Component {
       >
         {ICONS[highlightedEvent.type]}
         <div className={styles.tooltipText}>
-          <div className={styles.tooltipDate}>{start.format('MMM D YYYY h:mm a')}</div>
+          <div className={styles.tooltipDate}>{start.format(TOOLTIP_DATE_FORMAT)}</div>
           {description}
         </div>
       </div>
