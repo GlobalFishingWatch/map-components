@@ -32,17 +32,19 @@ const getTrackDataParsed = (geojson) => {
       }
     })
   }
+  return {
+    geojson,
+    timelineBounds: [time.start, time.end],
+  }
+}
+
+const getTrackBounds = (geojson) => {
   const bounds = tbbox(geojson)
-  const geoBounds = {
+  return {
     minLat: bounds[3],
     minLng: bounds[0],
     maxLat: bounds[1],
     maxLng: bounds[2],
-  }
-  return {
-    geojson,
-    geoBounds,
-    timelineBounds: [time.start, time.end],
   }
 }
 
@@ -116,6 +118,7 @@ function loadTrack(track) {
     const trackHasUrl = url !== undefined && url !== null && url !== ''
     if (trackHasData) {
       payload.data = data
+      payload.geoBounds = getTrackBounds(data)
     }
     dispatch({ type: ADD_TRACK, payload })
 
@@ -165,7 +168,8 @@ function loadTrack(track) {
           return res.json()
         })
         .then((data) => {
-          const { geojson, geoBounds, timelineBounds } = getTrackDataParsed(data)
+          const { geojson, timelineBounds } = getTrackDataParsed(data)
+          const geoBounds = getTrackBounds(data)
           dispatch({
             type: UPDATE_TRACK,
             payload: {
