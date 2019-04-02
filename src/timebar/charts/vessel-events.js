@@ -320,7 +320,7 @@ VesselEvents.propTypes = {
 
 VesselEvents.defaultProps = {
   selectedEventID: null,
-  highlightedEventID: null,
+  highlightedEventIDs: null,
   onEventHighlighted: () => {},
   onEventClick: () => {},
 }
