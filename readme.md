@@ -63,12 +63,7 @@ npx release major|minor|patch
 and it will update the package.json, generate the github release and push your changes and finally:
 
 ```bash
-yarn publish
-```
-
-Last step is to keep the documentation updated running:
-```bash
-yarn docz:deploy
+npm publish
 ```
 
 ## License
