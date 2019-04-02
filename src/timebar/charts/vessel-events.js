@@ -9,7 +9,6 @@ import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
 import { ReactComponent as IconGap } from '../icons/events/gap.svg'
 import { ReactComponent as IconPort } from '../icons/events/port.svg'
-import { finished } from 'stream'
 
 const ICONS = {
   encounter: <IconEncounter />,
@@ -71,11 +70,16 @@ class VesselEvents extends Component {
     }))
   })
 
-  addHighlightInfo = memoize((events, highlightedEventIDs) => {
-    const eventsWithHighlight = events.map((event) => ({
-      ...event,
-      isHighlighted: highlightedEventIDs !== null && highlightedEventIDs.indexOf(event.id) > -1,
-    }))
+  addHighlightInfo = memoize((events, highlightedEventIDs, selectedEventID) => {
+    const eventsWithHighlight = events.map((event) => {
+      const isHighlighted =
+        (highlightedEventIDs !== null && highlightedEventIDs.indexOf(event.id) > -1) ||
+        (selectedEventID !== null && selectedEventID === event.id)
+      return {
+        ...event,
+        isHighlighted,
+      }
+    })
 
     const highlighted = [
       ...eventsWithHighlight.filter((event) => event.isHighlighted === false),
@@ -213,16 +217,22 @@ class VesselEvents extends Component {
   render() {
     const {
       events,
+      selectedEventID,
       highlightedEventIDs,
       outerStart,
       outerEnd,
       outerWidth,
       graphHeight,
+      onEventClick,
       onEventHighlighted,
       tooltipContainer,
     } = this.props
 
-    const preparedEvents = this.addHighlightInfo(this.getEvents(events), highlightedEventIDs)
+    const preparedEvents = this.addHighlightInfo(
+      this.getEvents(events),
+      highlightedEventIDs,
+      selectedEventID
+    )
     const filteredEvents = this.filterEvents(preparedEvents, outerStart, outerEnd)
     const backgrounds = this.getBackgrounds(filteredEvents)
     const lines = this.getLines(filteredEvents)
@@ -267,6 +277,7 @@ class VesselEvents extends Component {
                 key={props.event.uid || props.event.id}
                 onMouseEnter={() => onEventHighlighted(props.event)}
                 onMouseLeave={() => onEventHighlighted()}
+                onClick={() => onEventClick(props.event)}
               >
                 <rect
                   x={props.style.x1}
@@ -296,8 +307,11 @@ VesselEvents.propTypes = {
       type: PropTypes.string,
     })
   ).isRequired,
+  selectedEventID: PropTypes.string,
   highlightedEventIDs: PropTypes.arrayOf(PropTypes.string),
   outerScale: PropTypes.func.isRequired,
+  onEventHighlighted: PropTypes.func,
+  onEventClick: PropTypes.func,
   outerWidth: PropTypes.number.isRequired,
   outerHeight: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
@@ -305,7 +319,10 @@ VesselEvents.propTypes = {
 }
 
 VesselEvents.defaultProps = {
+  selectedEventID: null,
   highlightedEventIDs: null,
+  onEventHighlighted: () => {},
+  onEventClick: () => {},
 }
 
 export default VesselEvents
