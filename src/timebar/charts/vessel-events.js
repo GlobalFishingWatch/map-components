@@ -149,6 +149,11 @@ class VesselEvents extends Component {
         }
         overlays.push(newEvent)
       })
+    overlays.sort((a, b) => {
+      if (a.type === 'fishing' && b.type !== 'fishing') return -1
+      else if (a.type !== 'fishing' && b.type === 'fishing') return 1
+      return 0
+    })
     return overlays
   })
 
