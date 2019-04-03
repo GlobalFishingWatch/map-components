@@ -149,8 +149,8 @@ class Timeline extends Component {
     })
   }
 
-  throttledMouseMove = throttle((clientX, scale) => {
-    this.props.onMouseMove(clientX, scale)
+  throttledMouseMove = throttle((clientX, scale, isDay) => {
+    this.props.onMouseMove(clientX, scale, isDay)
   }, 16)
 
   onMouseMove = (event) => {
@@ -164,7 +164,8 @@ class Timeline extends Component {
     const isMovingInside = this.node.contains(event.target) && x > innerStartPx && x < innerEndPx
     if (isMovingInside) {
       this.isMovingInside = true
-      this.throttledMouseMove(x, this.outerScale.invert)
+      const isDay = !isMoreThanADay(start, end)
+      this.throttledMouseMove(x, this.outerScale.invert, isDay)
     } else if (this.isMovingInside === true) {
       this.isMovingInside = false
       onMouseLeave()
