@@ -181,15 +181,10 @@ class VesselEvents extends Component {
         description = `Tracking avoidance (${duration})`
         break
       case 'encounter':
-        const encounteredVessel =
-          highlightedEvent.encounteredVessel === undefined ||
-          highlightedEvent.encounteredVessel.name === undefined
-            ? highlightedEvent.allVessels[1].name
-            : highlightedEvent.encounteredVessel.name
-
+        const encounteredVessel = highlightedEvent.vessels.encounter.name
         description =
           encounteredVessel === undefined || encounteredVessel === null
-            ? 'Had encounter with unknown vessel'
+            ? 'Had encounter with unnamed vessel'
             : `Had encounter with ${encounteredVessel}`
 
         description = `${description} (${duration})`
