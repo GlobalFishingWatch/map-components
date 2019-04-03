@@ -37,7 +37,7 @@
     "memoize-one": "^5.0.0",
     "pbf": "^3.2.0",
     "prop-types": "^15.6.2",
-    "react-spring": "^7.2.10",
+    "react-spring": "^8.0.19",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "topojson-client": "^3.0.0",

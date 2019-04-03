@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { area, curveStepAfter } from 'd3-shape'
-import { animated, Spring } from 'react-spring'
+import { animated, Spring } from 'react-spring/renderprops'
 import { getTime } from '../utils'
 import styles from './activity.module.css'
 

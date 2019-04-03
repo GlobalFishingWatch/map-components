@@ -41,6 +41,6 @@ export default {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
-    // isProduction && terser(),
+    isProduction && terser(),
   ],
 }
