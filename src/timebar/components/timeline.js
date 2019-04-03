@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
-import { animated, Spring } from 'react-spring'
+import { animated, Spring } from 'react-spring/renderprops'
 import {
   getTime,
   clampToAbsoluteBoundaries,
