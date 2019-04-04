@@ -97,7 +97,7 @@ class TimeRangeSelector extends Component {
       <div className={styles.TimeRangeSelector}>
         <div className={styles.veil} onClick={this.props.onDiscard} />
         <h2>Select a time range</h2>
-        <div className={styles.selectors}>
+        <div className={styles.selectorsContainer}>
           <div className={styles.selectorGroup}>
             <span className={styles.selectorLabel}>START</span>
             <DateSelector
