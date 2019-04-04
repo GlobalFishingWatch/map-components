@@ -30,7 +30,7 @@ h2 {
   letter-spacing: 0.1rem;
 }
 
-.selectors {
+.selectorsContainer {
   display: flex;
   margin-bottom: 2.6rem;
 }
@@ -90,7 +90,7 @@ h2 {
 }
 
 @media only screen and (max-width: 380px) {
-  .selectors {
+  .selectorsContainer {
     flex-direction: column;
   }
 

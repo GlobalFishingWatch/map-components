@@ -29,6 +29,7 @@ class Map extends React.Component {
     this.state = {
       mouseOver: true,
     }
+    this._mapContainerRef = null
   }
   componentDidMount() {
     window.addEventListener('resize', this._resize)
@@ -47,7 +48,7 @@ class Map extends React.Component {
   }
 
   _resize = () => {
-    if (this._mapContainerRef === undefined) {
+    if (this._mapContainerRef === null) {
       console.warn('Cant set viewport on a map that hasnt finished intanciating yet')
       return
     }

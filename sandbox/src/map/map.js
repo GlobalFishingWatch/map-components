@@ -16,6 +16,8 @@ class MapPage extends Component {
     workspaceError: null,
   }
 
+  timeout = null
+
   loadTemporalExtent = [new Date(2017, 12, 1), new Date(2017, 11, 31)]
   temporalExtent = [new Date(2017, 11, 1), new Date(2017, 11, 31)]
   tracks = [
@@ -39,6 +41,13 @@ class MapPage extends Component {
   componentDidUpdate = () => {
     if (this.state.highlightTemporalExtent[0].getDate() < 31) {
       clearInterval(this.increaseHighlightDay)
+    }
+  }
+
+  componentWillUnmount = () => {
+    clearInterval(this.increaseHighlightDay)
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout)
     }
   }
 
@@ -109,14 +118,14 @@ class MapPage extends Component {
           const data = JSON.parse(text)
           this.loadWorkspace(data)
           if (this.state.workspaceAuto === true) {
-            window.setTimeout(this.fetchWorkspace, 1000)
+            this.timeout = window.setTimeout(this.fetchWorkspace, 1000)
           }
           this.setState({
             workspaceStatus: 'ok',
             workspaceError: null,
           })
         } catch (err) {
-          window.setTimeout(this.fetchWorkspace, 1000)
+          this.timeout = window.setTimeout(this.fetchWorkspace, 1000)
           this.setState({
             workspaceStatus: 'json',
             workspaceError: 'bad JSON:' + err,
@@ -124,7 +133,7 @@ class MapPage extends Component {
         }
       })
       .catch((err) => {
-        window.setTimeout(this.fetchWorkspace, 1000)
+        this.timeout = window.setTimeout(this.fetchWorkspace, 1000)
         this.setState({
           workspaceStatus: 'fetch',
           workspaceError: 'couldnt fetch:' + err,
