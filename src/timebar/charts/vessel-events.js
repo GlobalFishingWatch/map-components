@@ -283,6 +283,7 @@ class VesselEvents extends Component {
                 onClick={() => onEventClick(props.event)}
               >
                 <rect
+                  class={`vessel-event -${props.event.type}`}
                   x={props.style.x1}
                   y={-props.height / 2}
                   width={props.style.width}
