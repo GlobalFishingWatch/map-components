@@ -1,8 +1,10 @@
 {
-  "extends": "react-app",
+  "extends": ["prettier", "react-app"],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "react/prop-types": "error",
+    "react/require-default-props": "error"
   },
   "globals": {}
 }
