@@ -151,7 +151,7 @@ class MapPage extends Component {
           center: map.center,
           zoom: map.zoom,
         },
-        staticLayers: layers.filter((l) => l.type === 'CartoDBAnimation'),
+        staticLayers: layers,
       },
     })
   }
