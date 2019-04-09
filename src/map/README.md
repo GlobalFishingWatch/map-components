@@ -1,6 +1,7 @@
 # GlobalFishingWatch Map Module
 
 This is a JavaScript module used to display and load fishing activity and fishing-related layers on a map, used in various GFW projects:
+
 - <a href="https://github.com/GlobalFishingWatch/map-client">GlobalFishingWatch main client</a>
 - <a href="https://github.com/GlobalFishingWatch/data-portal">Fishing events data portal</a>
 - Upcoming GFW projects: labeling tool, carrier database portal, etc
@@ -8,6 +9,7 @@ This is a JavaScript module used to display and load fishing activity and fishin
 It is usable as a React component (a wrapper around `react-map-gl`).
 
 This module is responsible for:
+
 - displaying a Mapbox GL map, including panning, zooming, etc. Managing map viewport. Managing Mapbox GL JSON style;
 - loading, displaying, and animating Activity Layers (layers with a time dimension):
   - Vessel Tracks
@@ -17,8 +19,8 @@ This module is responsible for:
 - loading and displaying Static layers and Basemap layers (native Mapbox layers) through GL JSON style;
 - dealing with user interaction on the map (highlight on hover and emitting events on hover/click).
 
-
 This module does not deal with:
+
 - workspaces import/export;
 - authentication;
 - layer headers;
@@ -64,7 +66,7 @@ String. Mandatory. Identifies track uniquely, should be UVI or seriesgroup (depr
 
 ### `track.segmentId`
 
-[NOT IMPLEMENTED] [DEPRECATED] String. Formerly `series`
+[NOT IMPLEMENTED][deprecated] String. Formerly `series`
 
 ### `track.url`
 
@@ -123,11 +125,11 @@ Boolean.
 
 Object. Mandatory. Must be passed as is - mandatory fields are:
 
-  - `endpoints` PropTypes.object,
-  - `isPBF` PropTypes.bool,
-  - `colsByName` PropTypes.object,
-  - `temporalExtents` PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  - `temporalExtentsLess` PropTypes.bool
+- `endpoints` PropTypes.object,
+- `isPBF` PropTypes.bool,
+- `colsByName` PropTypes.object,
+- `temporalExtents` PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+- `temporalExtentsLess` PropTypes.bool
 
 ### `heatmapLayer.interactive`
 
@@ -136,6 +138,7 @@ Boolean. Whether interaction is active on the layer or not. [PARTIALLY IMPLEMENT
 ## `heatmapLayer.filters`
 
 An array of filters. Heatmap filters are defined as:
+
 - `hue`: Will override layer hue if set.
 - `filterValues`: a dictionary in which each key is a filterable field, and values is an array of all possible values (using OR). ie: `filterValues: { category: [5, 6] }`.
 
@@ -177,10 +180,12 @@ Boolean. Display the associated labels layer, if available.
 
 ### `staticLayer.selectedFeatures`
 
-A filter to apply specific rules per polygon. Polygon filter is defined as:	Object. Defines which features will appear selected on the map. The default appearance of the selected features is defined per GL feature type (fill, circle, etc). It can be overriden.
+A filter to apply specific rules per polygon. Polygon filter is defined as: Object. Defines which features will appear selected on the map. The default appearance of the selected features is defined per GL feature type (fill, circle, etc). It can be overriden.
+
 - `field`: String. A filterable field.
 - `values`: Array. All selected values (logical OR).
 - `style`: [NOT IMPLEMENTED] Object. Defines for each GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
+
 ```
 style: {
 'fill-color': [
@@ -220,7 +225,10 @@ String. Mandatory if layer is custom. Can be 'geojson' or 'raster'.
 
 ### `staticLayer.url`
 
-String. Mandatory if custom layer is of subtype 'raster'. Specifies the base URL for raster tiles.
+String.
+
+- Mandatory if custom layer is of subtype 'raster'. Specifies the base URL for raster tiles.
+- Optional if layer is tile layer and it is desired to override the default url
 
 ### `staticLayer.data`
 
@@ -230,22 +238,18 @@ Object. Mandatory if custom layer is of subtype 'geojson'. Specifies GeoJSON dat
 
 Object. If specified, overrides all style info with raw Mapbox GL JSON styles, following the spec defined here: https://github.com/GlobalFishingWatch/map-client/blob/develop/documentation/workspaces.md#gl
 
-
 ## `basemapLayers`
 
 TODO
 
-  basemapLayers: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    visible: PropTypes.bool
-  })),
-
+basemapLayers: PropTypes.arrayOf(PropTypes.shape({
+id: PropTypes.string,
+visible: PropTypes.bool
+})),
 
 ## `customLayers`
 
 [NOT IMPLEMENTED] TODO
-
-
 
 ## `hoverPopup`
 
@@ -262,7 +266,6 @@ Number. Mandatory. Latitude for anchor point.
 ### `hoverPopup.longitude`
 
 Number. Mandatory. Longitude for anchor point.
-
 
 ## `clickPopup`
 
@@ -303,7 +306,6 @@ Function. TODO
 ## `onAttributionsChange`
 
 Function. Notify of attributions changes depending on layers toggled [PARTIALLY IMPLEMENTED] Will only fire at start.
-
 
 # Development
 
