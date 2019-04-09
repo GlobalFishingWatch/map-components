@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import MapGL, { Popup } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { TILES_API_URL } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
 
@@ -127,7 +128,7 @@ class Map extends React.Component {
 
   transformRequest = (url, resourceType) => {
     const { token } = this.props
-    if (token !== null && resourceType === 'Tile' && url.match('dot-world-fishing')) {
+    if (token !== null && resourceType === 'Tile' && url.match(TILES_API_URL)) {
       return {
         url: url,
         headers: { Authorization: 'Bearer ' + token },
