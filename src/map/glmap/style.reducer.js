@@ -25,6 +25,7 @@ const setStyleDefaults = (style) => {
     }
     // initialize time filter for time-filterable layers
     if (layer.metadata && layer.metadata['gfw:temporal'] === true) {
+      // is this field always called 'timestamp'
       layer.filter = ['all', ['>', 'timestamp', 0], ['<', 'timestamp', 999999999999]]
     }
     // set all layers to not visible except layers explicitely marked as visible (default basemap)
