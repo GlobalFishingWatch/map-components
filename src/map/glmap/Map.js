@@ -125,6 +125,16 @@ class Map extends React.Component {
     return cursor
   }
 
+  transformRequest = (url, resourceType) => {
+    const { token } = this.props
+    if (token !== null && resourceType === 'Tile' && url.match('dot-world-fishing')) {
+      return {
+        url: url,
+        headers: { Authorization: 'Bearer ' + token },
+      }
+    }
+  }
+
   render() {
     const {
       viewport,
@@ -153,6 +163,7 @@ class Map extends React.Component {
       >
         <MapGL
           ref={this.getRef}
+          transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
           onHover={this.onHover}
           onClick={this.onClick}
@@ -192,6 +203,7 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
+  token: PropTypes.string,
   viewport: PropTypes.object.isRequired,
   mapStyle: PropTypes.object.isRequired,
   clickPopup: PropTypes.object,
@@ -208,6 +220,7 @@ Map.propTypes = {
 }
 
 Map.defaultProps = {
+  token: null,
   clickPopup: null,
   hoverPopup: null,
   mapHover: () => {},

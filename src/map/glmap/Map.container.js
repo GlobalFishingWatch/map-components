@@ -46,6 +46,7 @@ const mapStateToProps = (state, ownProps) => ({
   maxZoom: state.map.viewport.maxZoom,
   minZoom: state.map.viewport.minZoom,
   cursor: state.map.interaction.cursor,
+  token: state.map.module.token,
   mapStyle: getMapStyle(state),
   interactiveLayerIds: getInteractiveLayerIds(state),
 })
