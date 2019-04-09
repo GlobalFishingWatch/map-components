@@ -77,6 +77,8 @@ const updateViewportFromIncomingProps = (incomingViewport) => {
 class MapModule extends React.Component {
   state = {
     initialized: false,
+    error: null,
+    errorInfo: null,
   }
 
   componentDidCatch(error, errorInfo) {
@@ -96,7 +98,7 @@ class MapModule extends React.Component {
     }
 
     // TODO
-    if (this.props.glyphsPath !== undefined) {
+    if (this.props.glyphsPath !== null) {
       store.dispatch(
         initStyle({
           glyphsPath: this.props.glyphsPath,
@@ -129,8 +131,8 @@ class MapModule extends React.Component {
     }
 
     if (
-      (this.props.basemapLayers !== undefined && this.props.basemapLayers.length) ||
-      (this.props.staticLayers !== undefined && this.props.staticLayers.length)
+      (this.props.basemapLayers !== null && this.props.basemapLayers.length) ||
+      (this.props.staticLayers !== null && this.props.staticLayers.length)
     ) {
       store.dispatch(
         commitStyleUpdates(this.props.staticLayers || [], this.props.basemapLayers || [])
@@ -143,7 +145,7 @@ class MapModule extends React.Component {
 
     // Now trigger async actions
 
-    if (this.props.temporalExtent !== undefined && this.props.temporalExtent.length) {
+    if (this.props.temporalExtent !== null && this.props.temporalExtent.length) {
       throttleApplyTemporalExtent(this.props.temporalExtent)
     }
 
@@ -166,8 +168,8 @@ class MapModule extends React.Component {
 
     // basemap / static layers
     if (
-      (this.props.basemapLayers !== undefined && this.props.basemapLayers.length) ||
-      (this.props.staticLayers !== undefined && this.props.staticLayers.length)
+      (this.props.basemapLayers !== null && this.props.basemapLayers.length) ||
+      (this.props.staticLayers !== null && this.props.staticLayers.length)
     ) {
       store.dispatch(
         commitStyleUpdates(this.props.staticLayers || [], this.props.basemapLayers || [])
@@ -175,9 +177,9 @@ class MapModule extends React.Component {
     }
 
     // loadTemporalExtent
-    if (this.props.loadTemporalExtent !== undefined && this.props.loadTemporalExtent.length) {
+    if (this.props.loadTemporalExtent !== null && this.props.loadTemporalExtent.length) {
       if (
-        prevProps.loadTemporalExtent === undefined ||
+        prevProps.loadTemporalExtent === null ||
         !prevProps.loadTemporalExtent.length ||
         this.props.loadTemporalExtent[0].getTime() !== prevProps.loadTemporalExtent[0].getTime() ||
         this.props.loadTemporalExtent[1].getTime() !== prevProps.loadTemporalExtent[1].getTime()
@@ -186,9 +188,9 @@ class MapModule extends React.Component {
       }
     }
     // temporalExtent
-    if (this.props.temporalExtent !== undefined && this.props.temporalExtent.length) {
+    if (this.props.temporalExtent !== null && this.props.temporalExtent.length) {
       if (
-        prevProps.temporalExtent === undefined ||
+        prevProps.temporalExtent === null ||
         !prevProps.temporalExtent.length ||
         this.props.temporalExtent[0].getTime() !== prevProps.temporalExtent[0].getTime() ||
         this.props.temporalExtent[1].getTime() !== prevProps.temporalExtent[1].getTime()
@@ -241,7 +243,7 @@ class MapModule extends React.Component {
     }
   }
   render() {
-    if (this.state.error !== undefined) {
+    if (this.state.error !== null) {
       console.log(this.state.error)
       return (
         <div>
@@ -263,7 +265,7 @@ class MapModule extends React.Component {
 
 MapModule.propTypes = {
   token: PropTypes.string,
-  viewport: PropTypes.shape(viewportTypes),
+  viewport: PropTypes.shape(viewportTypes).isRequired,
   tracks: PropTypes.arrayOf(PropTypes.exact(trackTypes)),
   heatmapLayers: PropTypes.arrayOf(PropTypes.shape(heatmapLayerTypes)),
   temporalExtent: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
@@ -285,8 +287,24 @@ MapModule.propTypes = {
 }
 
 MapModule.defaultProps = {
+  token: null,
+  glyphsPath: null,
   highlightTemporalExtent: null,
   tracks: null,
+  hoverPopup: null,
+  clickPopup: null,
+  heatmapLayers: null,
+  temporalExtent: null,
+  loadTemporalExtent: null,
+  basemapLayers: null,
+  staticLayers: null,
+  onViewportChange: () => {},
+  onLoadStart: () => {},
+  onLoadComplete: () => {},
+  onClick: () => {},
+  onHover: () => {},
+  onAttributionsChange: () => {},
+  onClosePopup: () => {},
 }
 
 export default MapModule

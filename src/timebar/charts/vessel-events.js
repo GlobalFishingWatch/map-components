@@ -286,7 +286,7 @@ class VesselEvents extends Component {
                 onClick={() => onEventClick(props.event)}
               >
                 <rect
-                  class={`vessel-event -${props.event.type}`}
+                  className={`vessel-event -${props.event.type}`}
                   x={props.style.x1}
                   y={-props.height / 2}
                   width={props.style.width}
@@ -314,6 +314,8 @@ VesselEvents.propTypes = {
       type: PropTypes.string,
     })
   ).isRequired,
+  outerStart: PropTypes.string.isRequired,
+  outerEnd: PropTypes.string.isRequired,
   selectedEventID: PropTypes.string,
   highlightedEventIDs: PropTypes.arrayOf(PropTypes.string),
   outerScale: PropTypes.func.isRequired,
@@ -330,6 +332,7 @@ VesselEvents.defaultProps = {
   highlightedEventIDs: null,
   onEventHighlighted: () => {},
   onEventClick: () => {},
+  tooltipContainer: null,
 }
 
 export default VesselEvents

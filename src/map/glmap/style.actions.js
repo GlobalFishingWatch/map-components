@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable'
 import { hexToRgb } from '../utils/map-colors'
+import uniq from 'lodash/uniq'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
 import GL_STYLE from './gl-styles/style.json'
@@ -404,8 +405,17 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   // update source when needed
   staticLayers.forEach((refLayer) => {
     const sourceId = refLayer.id
-    if (refLayer.data !== undefined && currentGLSources[sourceId] !== undefined) {
-      style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
+    if (currentGLSources[sourceId] !== undefined) {
+      if (refLayer.data !== undefined) {
+        style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
+      }
+      if (refLayer.url !== undefined) {
+        const { tiles } = currentGLSources[sourceId]
+        // Using default tiles url as a fallback
+        const newTiles =
+          tiles !== undefined && tiles.length > 0 ? uniq([refLayer.url, ...tiles]) : [refLayer.url]
+        style = style.setIn(['sources', sourceId, 'tiles'], fromJS(newTiles))
+      }
     }
   })
 

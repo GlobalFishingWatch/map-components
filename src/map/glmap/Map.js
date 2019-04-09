@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import MapGL, { Popup } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
 
@@ -21,6 +22,14 @@ const PopupWrapper = (props) => {
       {children}
     </Popup>
   )
+}
+
+PopupWrapper.propTypes = {
+  latitude: PropTypes.string.isRequired,
+  longitude: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  closeButton: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
 }
 
 class Map extends React.Component {
@@ -103,6 +112,30 @@ class Map extends React.Component {
     this.onMapInteraction(event, 'click')
   }
 
+  getRef = (ref) => {
+    if (ref !== null) {
+      this.glMap = ref.getMap()
+    }
+  }
+
+  getCursor = ({ isDragging }) => {
+    const { cursor } = this.props
+    if (cursor === null) {
+      return isDragging ? 'grabbing' : 'grab'
+    }
+    return cursor
+  }
+
+  transformRequest = (url, resourceType) => {
+    const { token } = this.props
+    if (token !== null && resourceType === 'Tile' && url.match(TILES_URL_NEEDING_AUTHENTICATION)) {
+      return {
+        url: url,
+        headers: { Authorization: 'Bearer ' + token },
+      }
+    }
+  }
+
   render() {
     const {
       viewport,
@@ -113,7 +146,6 @@ class Map extends React.Component {
       onClosePopup,
       clickPopup,
       hoverPopup,
-      cursor,
       interactiveLayerIds,
     } = this.props
     return (
@@ -131,20 +163,12 @@ class Map extends React.Component {
         }}
       >
         <MapGL
-          ref={(ref) => {
-            if (ref !== null) {
-              this.glMap = ref.getMap()
-            }
-          }}
+          ref={this.getRef}
+          transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
           onHover={this.onHover}
           onClick={this.onClick}
-          getCursor={({ isDragging }) => {
-            if (cursor === null) {
-              return isDragging ? 'grabbing' : 'grab'
-            }
-            return cursor
-          }}
+          getCursor={this.getCursor}
           mapStyle={mapStyle}
           {...viewport}
           maxZoom={maxZoom}
@@ -152,7 +176,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
         >
-          <ActivityLayers loadTemporalExtent={this.props.loadTemporalExtent} />
+          <ActivityLayers />
           {clickPopup !== undefined && clickPopup !== null && (
             <PopupWrapper
               latitude={clickPopup.latitude}
@@ -180,19 +204,32 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-  viewport: PropTypes.object,
-  mapStyle: PropTypes.object,
+  token: PropTypes.string,
+  viewport: PropTypes.object.isRequired,
+  mapStyle: PropTypes.object.isRequired,
   clickPopup: PropTypes.object,
   hoverPopup: PropTypes.object,
-  maxZoom: PropTypes.number,
-  minZoom: PropTypes.number,
-  setViewport: PropTypes.func,
+  maxZoom: PropTypes.number.isRequired,
+  minZoom: PropTypes.number.isRequired,
+  setViewport: PropTypes.func.isRequired,
   mapHover: PropTypes.func,
   mapClick: PropTypes.func,
   onClosePopup: PropTypes.func,
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
+}
+
+Map.defaultProps = {
+  token: null,
+  clickPopup: null,
+  hoverPopup: null,
+  mapHover: () => {},
+  mapClick: () => {},
+  onClosePopup: () => {},
+  transitionEnd: () => {},
+  cursor: null,
+  interactiveLayerIds: null,
 }
 
 export default Map
