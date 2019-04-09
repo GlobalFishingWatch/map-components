@@ -48,4 +48,4 @@ export const STATIC_LAYERS_CARTO_TILES_ENDPOINT =
 
 export const TRACKS_LAYER_IN_FRONT_OF_GROUP = 'static'
 
-export const TILES_API_URL = 'dot-world-fishing'
+export const TILES_URL_NEEDING_AUTHENTICATION = 'dot-world-fishing'
