@@ -1,5 +1,5 @@
 import tbbox from '@turf/bbox'
-import { targetMapVessel } from '../map'
+import { targetMapVessel } from '../store'
 
 import {
   getTilePromises,
