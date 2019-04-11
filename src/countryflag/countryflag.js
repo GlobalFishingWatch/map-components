@@ -4,7 +4,9 @@ import countryflag from 'countryflag'
 
 class CountryFlag extends Component {
   render() {
-    const { iso, iso2, svg, size } = this.props
+    // iso2 is deprecated, ignoring prop-types
+    // eslint-disable-next-line react/prop-types
+    const { iso, iso2, svg, size, margin } = this.props
     if (!iso && !iso2) {
       console.error(' Country flag iso (iso 3) or iso2 code is required')
       return null
@@ -15,7 +17,7 @@ class CountryFlag extends Component {
     const flag = countryflag(iso || iso2)
     return svg === true || flag.emoji === null ? (
       <img
-        style={{ height: size, marginRight: '0.2em', marginLeft: '0.1em' }}
+        style={{ height: size, marginRight: margin.right, marginLeft: margin.left }}
         alt={flag.name}
         src={flag.svg}
       />
@@ -31,11 +33,19 @@ CountryFlag.propTypes = {
   iso: PropTypes.string.isRequired,
   svg: PropTypes.bool,
   size: PropTypes.string,
+  margin: PropTypes.shape({
+    left: PropTypes.string,
+    righ: PropTypes.string,
+  }),
 }
 
 CountryFlag.defaultProps = {
   svg: false,
   size: '1em',
+  margin: {
+    left: '0.1em',
+    right: '0.2em',
+  },
 }
 
 export default CountryFlag
