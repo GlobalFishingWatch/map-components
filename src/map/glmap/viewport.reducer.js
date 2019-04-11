@@ -1,4 +1,4 @@
-import { FlyToInterpolator } from 'react-map-gl'
+import FlyToInterpolator from 'react-map-gl/dist/es5/utils/transition/viewport-fly-to-interpolator'
 import { easeCubic } from 'd3-ease'
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL } from '../config'
 import { TRANSITION_TYPE } from '../constants'

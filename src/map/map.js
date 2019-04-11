@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
+import { combineReducers } from 'redux'
 import { Provider } from 'react-redux'
-import thunk from 'redux-thunk'
 import throttle from 'lodash/throttle'
 import { trackTypes } from './proptypes/tracks'
 import { heatmapLayerTypes, basemapLayerTypes, staticLayerTypes } from './proptypes/layers'
@@ -10,54 +9,19 @@ import { viewportTypes, popupTypes } from './proptypes/shared'
 
 import Map from './glmap/Map.container'
 import { initModule, setTemporalExtent, setHighlightTemporalExtent } from './module/module.actions'
-import { fitToBounds, updateViewport, transitionToZoom } from './glmap/viewport.actions'
+import { updateViewport, transitionToZoom } from './glmap/viewport.actions'
 import { initStyle, commitStyleUpdates, applyTemporalExtent } from './glmap/style.actions'
 import { updateTracks } from './tracks/tracks.actions'
 import { updateHeatmapLayers, updateLayerLoadTemporalExtents } from './heatmap/heatmap.actions'
-import GL_STYLE from './glmap/gl-styles/style.json'
 
-import ModuleReducer from './module/module.reducer'
-import TracksReducer from './tracks/tracks.reducer'
-import HeatmapReducer from './heatmap/heatmap.reducer'
-import HeatmapTilesReducer from './heatmap/heatmapTiles.reducer'
-import ViewportReducer from './glmap/viewport.reducer'
-import StyleReducer from './glmap/style.reducer'
-import InteractionReducer from './glmap/interaction.reducer'
+import store from './store'
+import mapReducers from './store/reducers'
 
 const mapReducer = combineReducers({
-  module: ModuleReducer,
-  tracks: TracksReducer,
-  heatmap: HeatmapReducer,
-  heatmapTiles: HeatmapTilesReducer,
-  style: StyleReducer,
-  viewport: ViewportReducer,
-  interaction: InteractionReducer,
+  map: mapReducers,
 })
 
-let composeEnhancers = compose
-
-if (
-  (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
-  process.env.NODE_ENV === 'development'
-) {
-  const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
-  composeEnhancers = composeWithDevTools({
-    name: 'Map module',
-    realtime: true,
-    hostname: 'localhost',
-    port: 8000,
-    maxAge: 30,
-    stateSanitizer: (state) => ({ ...state, map: { ...state.map, heatmap: 'NOT_SERIALIZED' } }),
-  })
-}
-
-const store = createStore(
-  combineReducers({
-    map: mapReducer,
-  }),
-  {},
-  composeEnhancers(applyMiddleware(thunk))
-)
+store.replaceReducer(mapReducer)
 
 const throttleApplyTemporalExtent = throttle((temporalExtent) => {
   store.dispatch(applyTemporalExtent(temporalExtent))
@@ -308,13 +272,3 @@ MapModule.defaultProps = {
 }
 
 export default MapModule
-
-export const targetMapVessel = (id) => {
-  const track = store.getState().map.tracks.data.find((t) => t.id === id.toString())
-  store.dispatch(fitToBounds(track.geoBounds))
-
-  return track.timelineBounds
-}
-
-// TODO MAP MODULE make it a function
-export const AVAILABLE_BASEMAPS = GL_STYLE.metadata['gfw:basemap-layers']
