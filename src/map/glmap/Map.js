@@ -25,11 +25,15 @@ const PopupWrapper = (props) => {
 }
 
 PopupWrapper.propTypes = {
-  latitude: PropTypes.string.isRequired,
-  longitude: PropTypes.string.isRequired,
+  latitude: PropTypes.number.isRequired,
+  longitude: PropTypes.number.isRequired,
   children: PropTypes.node.isRequired,
   closeButton: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
+}
+
+PopupWrapper.defaultProps = {
+  onClose: () => {},
 }
 
 class Map extends React.Component {
