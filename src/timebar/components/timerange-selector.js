@@ -40,9 +40,32 @@ class TimeRangeSelector extends Component {
     onSubmit(newStart, newEnd)
   }
 
-  setUnit(which, allBounds, unit, offset) {
+  onStartChange = (value, unit) => {
+    this.setUnit('start', unit, value)
+  }
+
+  onEndChange = (value, unit) => {
+    this.setUnit('end', unit, value)
+  }
+
+  setUnit(which, unit, value) {
     const prevDate = this.state[which]
-    const newDate = dayjs(prevDate).add(offset, unit)
+    // const newDate = dayjs(prevDate).add(offset, unit)
+    const newDate = dayjs(prevDate).set(unit, value)
+
+    const { absoluteStart, absoluteEnd } = this.props
+    const { start, end } = this.state
+
+    const allBounds = {
+      start: {
+        min: getTime(absoluteStart),
+        max: getTime(end) - ONE_DAY_MS,
+      },
+      end: {
+        min: getTime(start) + ONE_DAY_MS,
+        max: getTime(absoluteEnd),
+      },
+    }
 
     const bounds = allBounds[which]
     let newDateMs = newDate.toDate().getTime()
@@ -74,21 +97,9 @@ class TimeRangeSelector extends Component {
       endCanIncrement,
       endCanDecrement,
     } = this.state
-    const { absoluteStart, absoluteEnd } = this.props
 
     if (start === undefined) {
       return null
-    }
-
-    const bounds = {
-      start: {
-        min: getTime(absoluteStart),
-        max: getTime(end) - ONE_DAY_MS,
-      },
-      end: {
-        min: getTime(start) + ONE_DAY_MS,
-        max: getTime(absoluteEnd),
-      },
     }
     const mStart = dayjs(start)
     const mEnd = dayjs(end)
@@ -101,54 +112,50 @@ class TimeRangeSelector extends Component {
           <div className={styles.selectorGroup}>
             <span className={styles.selectorLabel}>START</span>
             <DateSelector
+              unit="date"
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'day', offset)
-              }}
+              onChange={this.onStartChange}
               value={mStart.date()}
             />
             <DateSelector
+              unit="month"
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'month', offset)
-              }}
-              value={mStart.format('MMM')}
+              onChange={this.onStartChange}
+              label={mStart.format('MMM')}
+              value={mStart.month()}
             />
             <DateSelector
+              unit="year"
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'year', offset)
-              }}
+              onChange={this.onStartChange}
               value={mStart.year()}
             />
           </div>
           <div className={styles.selectorGroup}>
             <span className={styles.selectorLabel}>END</span>
             <DateSelector
+              unit="date"
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'day', offset)
-              }}
+              onChange={this.onEndChange}
               value={mEnd.date()}
             />
             <DateSelector
+              unit="month"
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'month', offset)
-              }}
-              value={mEnd.format('MMM')}
+              onChange={this.onEndChange}
+              label={mEnd.format('MMM')}
+              value={mEnd.month()}
             />
             <DateSelector
+              unit="year"
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'year', offset)
-              }}
+              onChange={this.onEndChange}
               value={mEnd.year()}
             />
           </div>
@@ -178,6 +185,7 @@ class TimeRangeSelector extends Component {
 
 TimeRangeSelector.propTypes = {
   onSubmit: PropTypes.func.isRequired,
+  onDiscard: PropTypes.func.isRequired,
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
   absoluteStart: PropTypes.string.isRequired,

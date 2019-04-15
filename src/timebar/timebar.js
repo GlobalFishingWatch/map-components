@@ -31,6 +31,7 @@ class Timebar extends Component {
     super()
     this.state = {
       showTimeRangeSelector: false,
+      absoluteEnd: null,
     }
   }
 
@@ -59,7 +60,7 @@ class Timebar extends Component {
 
   setBookmark = () => {
     const { start, end, onBookmarkChange } = this.props
-    onBookmarkChange(start, end)
+    onBookmarkChange !== null && onBookmarkChange(start, end)
   }
 
   onTimeRangeSelectorSubmit = (start, end) => {
@@ -258,6 +259,11 @@ class Timebar extends Component {
 }
 
 Timebar.propTypes = {
+  start: PropTypes.string.isRequired,
+  end: PropTypes.string.isRequired,
+  bookmarkStart: PropTypes.string,
+  bookmarkEnd: PropTypes.string,
+  onBookmarkChange: PropTypes.func,
   onChange: PropTypes.func.isRequired,
   absoluteStart: PropTypes.string.isRequired,
   absoluteEnd: PropTypes.string.isRequired,
@@ -266,6 +272,9 @@ Timebar.propTypes = {
 
 Timebar.defaultProps = {
   enablePlayback: false,
+  bookmarkStart: null,
+  bookmarkEnd: null,
+  onBookmarkChange: null,
 }
 
 export default Timebar

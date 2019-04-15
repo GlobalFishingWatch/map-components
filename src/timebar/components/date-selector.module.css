@@ -4,6 +4,7 @@
   flex-direction: column;
   width: 4.2rem;
   margin-right: 1rem;
+  position: relative;
 }
 
 .arrowButton {
@@ -31,12 +32,27 @@
   outline: none;
 }
 
-.value {
-  display: flex;
-  height: 3.4rem;
-  align-items: center;
-  justify-content: center;
+.valueInput {
+  height: 2.7rem;
+  padding: 0;
+  text-align: center;
   background: var(--timebar-secondary-background-color);
   color: var(--timebar-light-blue);
   text-transform: uppercase;
+  border: 1px solid transparent;
+  outline: none;
+}
+
+.labelInput {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: auto;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.valueInputError {
+  border-color: red;
 }
