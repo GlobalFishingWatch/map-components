@@ -32,6 +32,7 @@ const SPEED_STEPS = [1, 2, 3, 5, 10]
 class Timebar extends Component {
   constructor() {
     super()
+    this.interval = null
     this.state = {
       playback: {
         playing: false,
@@ -48,6 +49,14 @@ class Timebar extends Component {
 
     // TODO stick to day/hour here too
     this.notifyChange(start, end)
+  }
+
+  componentWillUnmount() {
+    this.clearInterval()
+  }
+
+  componentDidCatch() {
+    this.clearInterval()
   }
 
   static getDerivedStateFromProps(props) {
@@ -144,7 +153,28 @@ class Timebar extends Component {
   }
 
   onPlayClick = () => {
-    this.setPlaybackConfig('playing', !this.state.playback.playing)
+    const { playing } = this.state.playback
+    this.setPlaybackConfig('playing', !playing)
+    if (playing) {
+      this.clearInterval()
+    } else {
+      this.setInterval()
+    }
+  }
+
+  setInterval = () => {
+    const speed = SPEED_STEPS[this.state.playback.speedStep]
+    this.interval = setInterval(() => {
+      const newStart = dayjs(this.props.start).add(1, 'day')
+      const newEnd = newStart.add(30, 'day')
+      this.notifyChange(newStart.toISOString(), newEnd.toISOString())
+    }, 1000 / speed)
+  }
+
+  clearInterval = () => {
+    if (this.interval !== null) {
+      clearInterval(this.interval)
+    }
   }
 
   toggleLoop = () => {
@@ -168,6 +198,9 @@ class Timebar extends Component {
     const { playback } = this.state
     const nextStep = playback.speedStep === SPEED_STEPS.length - 1 ? 0 : (playback.speedStep += 1)
     this.setPlaybackConfig('speedStep', nextStep)
+
+    this.clearInterval()
+    this.setInterval()
   }
 
   setPlaybackConfig = (prop, step) => {
@@ -182,7 +215,6 @@ class Timebar extends Component {
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
     const { playback } = this.state
-    console.log('TCL: render -> playback', playback)
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
