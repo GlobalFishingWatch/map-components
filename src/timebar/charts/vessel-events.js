@@ -27,7 +27,7 @@ const HEIGHTS = {
 
 const TOOLTIP_DATE_FORMAT = 'MMM D YYYY h:mm a'
 
-const Layer = (props) => {
+const Layer = React.memo((props) => {
   const { outerScale, events, y, className, children } = props
   return (
     <g transform={`translate(0, ${y})`} className={className}>
@@ -49,7 +49,7 @@ const Layer = (props) => {
       })}
     </g>
   )
-}
+})
 
 Layer.propTypes = {
   outerScale: PropTypes.func.isRequired,

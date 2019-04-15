@@ -198,9 +198,10 @@ class Timebar extends Component {
     const { playback } = this.state
     const nextStep = playback.speedStep === SPEED_STEPS.length - 1 ? 0 : (playback.speedStep += 1)
     this.setPlaybackConfig('speedStep', nextStep)
-
-    this.clearInterval()
-    this.setInterval()
+    if (playback.playing) {
+      this.clearInterval()
+      this.setInterval()
+    }
   }
 
   setPlaybackConfig = (prop, step) => {
