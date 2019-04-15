@@ -63,10 +63,30 @@
   justify-content: center;
   height: 100%;
   top: 0;
-  min-width: 200px;
   padding-left: 2rem;
   user-select: none;
   font-weight: 400;
+  overflow: hidden;
+
+  /* min-width: 200px; */
+}
+
+.lastUpdate {
+  max-width: 50%;
+  font-size: 12px;
+}
+
+@media screen and (min-width: 768px) {
+  .lastUpdate {
+    max-width: 110px;
+    font-size: 20.8px;
+  }
+}
+
+@media screen and (min-width: 1154px) {
+  .lastUpdate {
+    max-width: 100%;
+  }
 }
 
 .lastUpdateLabel {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import cx from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
@@ -334,7 +334,7 @@ class Timeline extends Component {
           }}
         />
         <div
-          className={classNames(styles.veilLeft, styles.veil, {
+          className={cx(styles.veilLeft, styles.veil, {
             [styles._immediate]: dragging === DRAG_START,
           })}
           style={{
@@ -364,7 +364,7 @@ class Timeline extends Component {
           mouseX={this.state.handlerMouseX}
         />
         <div
-          className={classNames(styles.veilRight, styles.veil, {
+          className={cx(styles.veilRight, styles.veil, {
             [styles._immediate]: dragging === DRAG_END,
           })}
           style={{
@@ -375,7 +375,7 @@ class Timeline extends Component {
         <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
           {(style) => (
             <animated.div className={styles.absoluteEnd} style={style}>
-              <div className={styles.lastUpdateLabel}>Last Update</div>
+              <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
               <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
             </animated.div>
           )}

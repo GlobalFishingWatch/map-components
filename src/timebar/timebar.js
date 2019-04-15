@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import cx from 'classnames'
 import {
   getTime,
   clampToAbsoluteBoundaries,
@@ -9,12 +9,14 @@ import {
   isMoreThanADay,
   getHumanizedDates,
 } from './utils'
+import './timebar-settings.module.css'
 import styles from './timebar.module.css'
 import TimeRangeSelector from './components/timerange-selector'
 import Timeline from './components/timeline'
 import { ReactComponent as IconLoop } from './icons/loop.svg'
 import { ReactComponent as IconBack } from './icons/back.svg'
 import { ReactComponent as IconPlay } from './icons/play.svg'
+import { ReactComponent as IconPause } from './icons/pause.svg'
 import { ReactComponent as IconForward } from './icons/forward.svg'
 import { ReactComponent as IconTimeRange } from './icons/timeRange.svg'
 import { ReactComponent as IconBookmark } from './icons/bookmark.svg'
@@ -25,11 +27,17 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
+const SPEED_STEPS = [1, 2, 3, 5, 10]
 
 class Timebar extends Component {
   constructor() {
     super()
     this.state = {
+      playback: {
+        playing: false,
+        speedStep: 0,
+        loop: false,
+      },
       showTimeRangeSelector: false,
       absoluteEnd: null,
     }
@@ -135,8 +143,46 @@ class Timebar extends Component {
     onChange(start, end, humanizedStart, humanizedEnd)
   }
 
+  onPlayClick = () => {
+    this.setPlaybackConfig('playing', !this.state.playback.playing)
+  }
+
+  toggleLoop = () => {
+    this.setState((prevState) => ({
+      playback: {
+        ...prevState.playback,
+        loop: !prevState.playback.loop,
+      },
+    }))
+  }
+
+  onForwardClick = () => {
+    console.log('TODO: go forward in timeline')
+  }
+
+  onBackwardClick = () => {
+    console.log('TODO: go backward in timeline')
+  }
+
+  onSpeedClick = () => {
+    const { playback } = this.state
+    const nextStep = playback.speedStep === SPEED_STEPS.length - 1 ? 0 : (playback.speedStep += 1)
+    this.setPlaybackConfig('speedStep', nextStep)
+  }
+
+  setPlaybackConfig = (prop, step) => {
+    this.setState({
+      playback: {
+        ...this.state.playback,
+        [prop]: step,
+      },
+    })
+  }
+
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
+    const { playback } = this.state
+    console.log('TCL: render -> playback', playback)
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
@@ -159,41 +205,52 @@ class Timebar extends Component {
     return (
       <div className={styles.Timebar}>
         {enablePlayback && (
-          <div className={styles.playbackActions}>
+          <div
+            className={cx(styles.playbackActions, {
+              [styles.playbackActionsActive]: playback.playing,
+            })}
+          >
             <button
               type="button"
               title="Toggle animation looping"
-              className={classNames(styles.uiButton, styles.secondary, styles.loop)}
+              onClick={this.toggleLoop}
+              className={cx(styles.uiButton, styles.secondary, styles.loop, {
+                [styles.secondaryActive]: playback.loop,
+              })}
             >
               <IconLoop />
             </button>
             <button
               type="button"
               title="Move back"
-              className={classNames(styles.uiButton, styles.secondary, styles.back)}
+              onClick={this.onBackwardClick}
+              className={cx(styles.uiButton, styles.secondary, styles.back)}
             >
               <IconBack />
             </button>
             <button
               type="button"
-              title="Play animation"
-              className={classNames(styles.uiButton, styles.play)}
+              title={`${playback.playing === true ? 'Pause' : 'Play'} animation`}
+              onClick={this.onPlayClick}
+              className={cx(styles.uiButton, styles.play)}
             >
-              <IconPlay />
+              {playback.playing === true ? <IconPause /> : <IconPlay />}
             </button>
             <button
               type="button"
               title="Move forward"
-              className={classNames(styles.uiButton, styles.secondary, styles.forward)}
+              onClick={this.onForwardClick}
+              className={cx(styles.uiButton, styles.secondary, styles.forward)}
             >
               <IconForward />
             </button>
             <button
               type="button"
               title="Change animation speed"
-              className={classNames(styles.uiButton, styles.secondary, styles.speed)}
+              onClick={this.onSpeedClick}
+              className={cx(styles.uiButton, styles.secondary, styles.speed)}
             >
-              1x
+              {SPEED_STEPS[playback.speedStep]}x
             </button>
           </div>
         )}
@@ -211,7 +268,7 @@ class Timebar extends Component {
             <button
               type="button"
               title="Select a time range"
-              className={classNames(styles.uiButton, styles.timeRange)}
+              className={cx(styles.uiButton, styles.timeRange)}
               onClick={this.toggleTimeRangeSelector}
             >
               <IconTimeRange />
@@ -220,7 +277,7 @@ class Timebar extends Component {
           <button
             type="button"
             title="Bookmark current time range"
-            className={classNames(styles.uiButton, styles.bookmark)}
+            className={cx(styles.uiButton, styles.bookmark)}
             onClick={this.setBookmark}
             disabled={bookmarkDisabled === true}
           >
@@ -234,7 +291,7 @@ class Timebar extends Component {
               onClick={() => {
                 this.zoom('out')
               }}
-              className={classNames(styles.uiButton, styles.out)}
+              className={cx(styles.uiButton, styles.out)}
             >
               <IconMinus />
             </button>
@@ -245,7 +302,7 @@ class Timebar extends Component {
               onClick={() => {
                 this.zoom('in')
               }}
-              className={classNames(styles.uiButton, styles.in)}
+              className={cx(styles.uiButton, styles.in)}
             >
               <IconPlus />
             </button>
@@ -271,7 +328,10 @@ Timebar.propTypes = {
 }
 
 Timebar.defaultProps = {
+  bookmarkStart: null,
+  bookmarkEnd: null,
   enablePlayback: false,
+  onBookmarkChange: () => {},
 }
 
 export default Timebar

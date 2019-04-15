@@ -136,6 +136,7 @@ class TimebarContainer extends Component {
           <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
         </div>
         <Timebar
+          enablePlayback
           start={start}
           end={end}
           absoluteStart={absoluteStart}
