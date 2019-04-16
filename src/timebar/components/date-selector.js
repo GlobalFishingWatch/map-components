@@ -28,11 +28,11 @@ class DateSelector extends Component {
     // TODO: validate days / months / years
     switch (unit) {
       case 'date':
-        return value > 0 && value < 31
+        return value > 0 && value <= 31
       case 'month':
         return value >= 0 && value < 12
       case 'year':
-        return value > 2012 && value < new Date().getFullYear()
+        return value > 2012 && value <= new Date().getFullYear()
       default:
         return false
     }
@@ -80,13 +80,21 @@ class DateSelector extends Component {
             {label}
           </label>
         )}
-        <input
-          type="text"
-          name={label + unit}
-          value={value}
-          className={cx(styles.valueInput, { [styles.valueInputError]: error })}
-          onChange={this.onInputChange}
-        />
+        {unit !== 'month' && (
+          <input
+            type="text"
+            name={label + unit}
+            value={value}
+            className={cx(styles.valueInput, { [styles.valueInputError]: error })}
+            onChange={this.onInputChange}
+          />
+        )}
+        {unit === 'month' && (
+          <select className={styles.selectInput} name={label + unit}>
+            <option>Enero</option>
+            <option>Febrero</option>
+          </select>
+        )}
         <button
           type="button"
           className={styles.arrowButton}
