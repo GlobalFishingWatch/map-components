@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
+import dayjs from 'dayjs'
 import styles from './date-selector.module.css'
 import { ReactComponent as IconArrowUp } from '../icons/arrowUp.svg'
 import { ReactComponent as IconArrowDown } from '../icons/arrowDown.svg'
@@ -12,6 +13,12 @@ class DateSelector extends Component {
       value: props.value,
       error: false,
     }
+    this.months = Array.from(Array(12).keys()).map((i) => ({
+      value: i,
+      label: dayjs()
+        .month(i)
+        .format('MMM'),
+    }))
   }
 
   componentWillReceiveProps(nextProps) {
@@ -25,7 +32,6 @@ class DateSelector extends Component {
     const isNumber = typeof value === 'number'
     if (!isNumber) return false
 
-    // TODO: validate days / months / years
     switch (unit) {
       case 'date':
         return value > 0 && value <= 31
@@ -50,6 +56,10 @@ class DateSelector extends Component {
 
   onInputChange = (event) => {
     const value = event.target.value && parseInt(event.target.value)
+    this.setValue(value)
+  }
+
+  setValue = (value) => {
     const isValid = this.validate(value)
     this.setState({ value, error: !isValid }, () => {
       if (isValid) {
@@ -90,9 +100,15 @@ class DateSelector extends Component {
           />
         )}
         {unit === 'month' && (
-          <select className={styles.selectInput} name={label + unit}>
-            <option>Enero</option>
-            <option>Febrero</option>
+          <select
+            value={value}
+            name={label + unit}
+            className={styles.selectInput}
+            onChange={this.onInputChange}
+          >
+            {this.months.map((m) => (
+              <option value={m.value}>{m.label}</option>
+            ))}
           </select>
         )}
         <button
