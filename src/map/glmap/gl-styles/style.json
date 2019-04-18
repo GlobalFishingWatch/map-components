@@ -182,6 +182,15 @@
         "gfw:popups": [{ "id": "event_id" }]
       }
     },
+    "world_encounters": {
+      "type": "vector",
+      "tiles": [
+        "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
+      ],
+      "metadata": {
+        "gfw:popups": [{ "id": "event_id" }]
+      }
+    },
     "events_gap": {
       "type": "vector",
       "tiles": [
@@ -511,6 +520,18 @@
       },
       "type": "circle",
       "source": "events_encounter",
+      "source-layer": "default",
+      "paint": {
+        "circle-radius": 3,
+        "circle-color": "#E5647D",
+        "circle-stroke-width": 0.5,
+        "circle-stroke-color": "#000000"
+      }
+    },
+    {
+      "id": "world_encounters",
+      "type": "circle",
+      "source": "world_encounters",
       "source-layer": "default",
       "paint": {
         "circle-radius": 3,
