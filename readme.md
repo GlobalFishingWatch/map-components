@@ -1,5 +1,7 @@
 # GFW map components
 
+[![npm version](https://badge.fury.io/js/%40globalfishingwatch%2Fmap-components.svg)](https://badge.fury.io/js/%40globalfishingwatch%2Fmap-components)
+
 Set of components used in global fishing watch map frontend.
 
 ## Using the components
