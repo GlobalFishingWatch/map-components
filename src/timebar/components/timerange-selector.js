@@ -12,6 +12,8 @@ class TimeRangeSelector extends Component {
   constructor() {
     super()
     this.state = {
+      startValid: true,
+      endValid: true,
       startCanIncrement: true,
       startCanDecrement: true,
       endCanIncrement: true,
@@ -29,30 +31,57 @@ class TimeRangeSelector extends Component {
 
   submit(start, end) {
     const { onSubmit } = this.props
-
-    // on release, "stick" to day/hour
     const newStart = dayjs(start)
-      .startOf('day')
-      .toISOString()
     const newEnd = dayjs(end)
-      .startOf('day')
-      .toISOString()
-    onSubmit(newStart, newEnd)
+    if (!newStart.isValid()) {
+      this.setState({ startValid: false })
+    } else if (!newEnd.isValid()) {
+      this.setState({ endValid: false })
+    } else {
+      this.setState({ startValid: true, endValid: true })
+      onSubmit(newStart.startOf('day').toISOString(), newEnd.startOf('day').toISOString())
+    }
+  }
+
+  isDateValid(which, value, unit) {
+    const date = this.state[which]
+    switch (unit) {
+      case 'date': {
+        const daysInMonth = dayjs(date).daysInMonth()
+        return value > 0 && value < daysInMonth
+      }
+      case 'month': {
+        return value >= 0 && value < 12
+      }
+      case 'year': {
+        // 2012 is first year with data
+        return value > 2012 && value <= new Date().getFullYear()
+      }
+      default:
+        return false
+    }
   }
 
   onStartChange = (value, unit) => {
-    this.setUnit('start', unit, value)
+    if (this.isDateValid('start', value, unit)) {
+      this.setUnit('start', unit, value)
+    } else {
+      this.setState({ startValid: false })
+    }
   }
 
   onEndChange = (value, unit) => {
-    this.setUnit('end', unit, value)
+    if (this.isDateValid('end', value, unit)) {
+      this.setUnit('end', unit, value)
+    } else {
+      this.setState({ endValid: false })
+    }
   }
 
   setUnit(which, unit, value) {
     const prevDate = this.state[which]
     // const newDate = dayjs(prevDate).add(offset, unit)
     const newDate = dayjs(prevDate).set(unit, value)
-
     const { absoluteStart, absoluteEnd } = this.props
     const { start, end } = this.state
 
@@ -73,6 +102,7 @@ class TimeRangeSelector extends Component {
 
     this.setState({
       [which]: new Date(newDateMs),
+      [`${which}Valid`]: true,
       [`${which}CanIncrement`]: newDateMs !== bounds.max,
       [`${which}CanDecrement`]: newDateMs !== bounds.min,
     })
@@ -92,6 +122,8 @@ class TimeRangeSelector extends Component {
     const {
       start,
       end,
+      startValid,
+      endValid,
       startCanIncrement,
       startCanDecrement,
       endCanIncrement,
@@ -113,6 +145,7 @@ class TimeRangeSelector extends Component {
             <span className={styles.selectorLabel}>START</span>
             <DateSelector
               unit="date"
+              valid={startValid}
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
               onChange={this.onStartChange}
@@ -120,6 +153,7 @@ class TimeRangeSelector extends Component {
             />
             <DateSelector
               unit="month"
+              valid={startValid}
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
               onChange={this.onStartChange}
@@ -128,6 +162,7 @@ class TimeRangeSelector extends Component {
             />
             <DateSelector
               unit="year"
+              valid={startValid}
               canIncrement={startCanIncrement}
               canDecrement={startCanDecrement}
               onChange={this.onStartChange}
@@ -138,6 +173,7 @@ class TimeRangeSelector extends Component {
             <span className={styles.selectorLabel}>END</span>
             <DateSelector
               unit="date"
+              valid={endValid}
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
               onChange={this.onEndChange}
@@ -145,6 +181,7 @@ class TimeRangeSelector extends Component {
             />
             <DateSelector
               unit="month"
+              valid={endValid}
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
               onChange={this.onEndChange}
@@ -153,6 +190,7 @@ class TimeRangeSelector extends Component {
             />
             <DateSelector
               unit="year"
+              valid={endValid}
               canIncrement={endCanIncrement}
               canDecrement={endCanDecrement}
               onChange={this.onEndChange}
@@ -170,6 +208,7 @@ class TimeRangeSelector extends Component {
           </button>
           <button
             type="button"
+            disabled={!startValid || !endValid}
             className={styles.cta}
             onClick={() => {
               this.submit(start, end)

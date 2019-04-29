@@ -55,13 +55,17 @@ h2 {
   border: none;
   padding: 0;
   border-radius: 0;
-  cursor: pointer;
+  cursor: not-allowed;
   width: 15rem;
   height: 3.6rem;
   background: var(--timebar-cta-btn-color);
   color: var(--timebar-white);
   font-size: var(--timebar-font-size);
   transition: var(--timebar-hover-transition);
+}
+
+.cta:not([disabled]) {
+  cursor: pointer;
 }
 
 .cta:hover,

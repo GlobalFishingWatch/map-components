@@ -9,10 +9,7 @@ import { ReactComponent as IconArrowDown } from '../icons/arrowDown.svg'
 class DateSelector extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      value: props.value,
-      error: false,
-    }
+    this.state = { value: props.value }
     this.months = Array.from(Array(12).keys()).map((i) => ({
       value: i,
       label: dayjs()
@@ -24,23 +21,6 @@ class DateSelector extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
       this.setState({ value: nextProps.value })
-    }
-  }
-
-  validate(value) {
-    const { unit } = this.props
-    const isNumber = typeof value === 'number'
-    if (!isNumber) return false
-
-    switch (unit) {
-      case 'date':
-        return value > 0 && value <= 31
-      case 'month':
-        return value >= 0 && value < 12
-      case 'year':
-        return value > 2012 && value <= new Date().getFullYear()
-      default:
-        return false
     }
   }
 
@@ -60,21 +40,13 @@ class DateSelector extends Component {
   }
 
   setValue = (value) => {
-    const isValid = this.validate(value)
-    this.setState({ value, error: !isValid }, () => {
-      if (isValid) {
-        this.debouncedChange(value)
-      }
-    })
-  }
-
-  debouncedChange = (value) => {
+    this.setState({ value })
     this.props.onChange(value, this.props.unit)
   }
 
   render() {
-    const { value, error } = this.state
-    const { unit, label, canIncrement, canDecrement } = this.props
+    const { value } = this.state
+    const { unit, label, canIncrement, canDecrement, valid } = this.props
     return (
       <div className={styles.DateSelector}>
         <button
@@ -86,7 +58,12 @@ class DateSelector extends Component {
           <IconArrowUp />
         </button>
         {label !== '' && (
-          <label className={cx(styles.valueInput, styles.labelInput)} htmlFor={label + unit}>
+          <label
+            className={cx(styles.valueInput, styles.labelInput, {
+              [styles.valueInputError]: !valid,
+            })}
+            htmlFor={label + unit}
+          >
             {label}
           </label>
         )}
@@ -95,7 +72,7 @@ class DateSelector extends Component {
             type="text"
             name={label + unit}
             value={value}
-            className={cx(styles.valueInput, { [styles.valueInputError]: error })}
+            className={cx(styles.valueInput, { [styles.valueInputError]: !valid })}
             onChange={this.onInputChange}
           />
         )}
@@ -107,7 +84,9 @@ class DateSelector extends Component {
             onChange={this.onInputChange}
           >
             {this.months.map((m) => (
-              <option value={m.value}>{m.label}</option>
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
             ))}
           </select>
         )}
@@ -125,6 +104,7 @@ class DateSelector extends Component {
 }
 
 DateSelector.propTypes = {
+  valid: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   unit: PropTypes.oneOf(['date', 'month', 'year']).isRequired,
   label: PropTypes.string,
@@ -134,6 +114,7 @@ DateSelector.propTypes = {
 }
 
 DateSelector.defaultProps = {
+  valid: true,
   label: '',
 }
 
