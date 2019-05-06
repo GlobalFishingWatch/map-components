@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import * as PIXI from 'pixi.js'
 import PropTypes from 'prop-types'
 import { BaseControl } from 'react-map-gl'
@@ -86,8 +86,15 @@ const getVesselTexture = (radius, blurFactor) => {
 }
 
 class ActivityLayers extends BaseControl {
+  state = {
+    pixiReady: false,
+  }
+
   componentDidMount() {
     this._build()
+    this.setState({
+      pixiReady: true,
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -264,6 +271,7 @@ class ActivityLayers extends BaseControl {
       rightWorldScaled,
     } = this.props
     const { viewport } = this._context
+    const { pixiReady } = this.state
 
     const startIndex = temporalExtentIndexes[0]
     const endIndex = temporalExtentIndexes[1]
@@ -295,48 +303,52 @@ class ActivityLayers extends BaseControl {
         onMouseMove={this.onMouseMove}
         onTouchStart={this.onTouchStart}
       >
-        {heatmapLayers.map((layer) => (
-          <HeatmapLayer
-            key={layer.id}
-            layer={layer}
-            filters={layer.filters || []}
-            viewport={viewport}
-            startIndex={startIndex}
-            endIndex={endIndex}
-            baseTexture={this.baseTexture}
-            rootStage={this.heatmapStage}
-            useRadialGradientStyle={useRadialGradientStyle}
-            customRenderingStyle={{}}
-            viewportLeft={leftWorldScaled}
-            viewportRight={rightWorldScaled}
-          />
-        ))}
-        {this.stage !== undefined && (
-          <HeatmapLayer
-            key="highlighted"
-            layer={highlightLayerData}
-            filters={highlightFilters}
-            viewport={viewport}
-            startIndex={startIndex}
-            endIndex={endIndex}
-            baseTexture={this.baseTexture}
-            rootStage={this.heatmapStage}
-            useRadialGradientStyle={useRadialGradientStyle}
-            customRenderingStyle={{ defaultOpacity: 1, defaultSize: 1 }}
-            viewportLeft={leftWorldScaled}
-            viewportRight={rightWorldScaled}
-          />
-        )}
-        {this.stage !== undefined && (
-          <TracksLayer
-            tracks={tracks}
-            viewport={viewport}
-            zoom={zoom}
-            startIndex={startIndex}
-            endIndex={endIndex}
-            highlightTemporalExtentIndexes={highlightTemporalExtentIndexes}
-            rootStage={this.stage}
-          />
+        {pixiReady === true && (
+          <Fragment>
+            {heatmapLayers.map((layer) => (
+              <HeatmapLayer
+                key={layer.id}
+                layer={layer}
+                filters={layer.filters || []}
+                viewport={viewport}
+                startIndex={startIndex}
+                endIndex={endIndex}
+                baseTexture={this.baseTexture}
+                rootStage={this.heatmapStage}
+                useRadialGradientStyle={useRadialGradientStyle}
+                customRenderingStyle={{}}
+                viewportLeft={leftWorldScaled}
+                viewportRight={rightWorldScaled}
+              />
+            ))}
+            {this.stage !== undefined && (
+              <HeatmapLayer
+                key="highlighted"
+                layer={highlightLayerData}
+                filters={highlightFilters}
+                viewport={viewport}
+                startIndex={startIndex}
+                endIndex={endIndex}
+                baseTexture={this.baseTexture}
+                rootStage={this.heatmapStage}
+                useRadialGradientStyle={useRadialGradientStyle}
+                customRenderingStyle={{ defaultOpacity: 1, defaultSize: 1 }}
+                viewportLeft={leftWorldScaled}
+                viewportRight={rightWorldScaled}
+              />
+            )}
+            {this.stage !== undefined && (
+              <TracksLayer
+                tracks={tracks}
+                viewport={viewport}
+                zoom={zoom}
+                startIndex={startIndex}
+                endIndex={endIndex}
+                highlightTemporalExtentIndexes={highlightTemporalExtentIndexes}
+                rootStage={this.stage}
+              />
+            )}
+          </Fragment>
         )}
       </div>
     )
