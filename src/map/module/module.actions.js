@@ -11,11 +11,12 @@ export const initModule = (props) => (dispatch) => {
   })
 }
 
-export const startLoader = (dispatch, state) => {
-  const loaderId = new Date().getTime()
+export const startLoader = (dispatch, state, loaderId) => {
+  const timestamp = new Date().getTime()
+  const generatedLoaderId = loaderId !== undefined ? `${loaderId}_${timestamp}` : timestamp
   dispatch({
     type: START_LOADER,
-    payload: loaderId,
+    payload: generatedLoaderId,
   })
   if (state.map.module.onLoadStart !== undefined) {
     state.map.module.onLoadStart()
@@ -24,12 +25,12 @@ export const startLoader = (dispatch, state) => {
 }
 
 export const completeLoader = (loaderId) => (dispatch, getState) => {
-  const state = getState()
-  const loaders = Object.assign({}, state.map.module.loaders)
   dispatch({
     type: COMPLETE_LOADER,
     payload: loaderId,
   })
+  const state = getState()
+  const loaders = state.map.module.loaders
   if (!loaders.length && state.map.module.onLoadComplete !== undefined) {
     state.map.module.onLoadComplete()
   }
