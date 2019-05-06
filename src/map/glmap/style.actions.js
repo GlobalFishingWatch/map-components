@@ -84,7 +84,15 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
         ) {
           // style reset when no features filter is declared and neither is applyAll
           const originalLayerStyle = GL_STYLE.layers.find((l) => l.id === currentGlLayer.id)
-          glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+
+          if (originalLayerStyle !== undefined) {
+            glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+          } else {
+            // this will happen when no style exist in the original definition (ie custom layers)
+            // in this case set glPaintFinalValue to null and we'll just skip applying
+            // any selected/highlighted style for this layer
+            glPaintFinalValue = null
+          }
         } else if (applyStyleToAllFeatures === true || applyStyleToAllFeatures === false) {
           glPaintFinalValue = applyStyleToAllFeatures === true ? selectedValue : fallbackValue
         } else {
@@ -106,7 +114,7 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
           ]
         }
 
-        if (glPaintFinalValue !== undefined) {
+        if (glPaintFinalValue !== undefined && glPaintFinalValue !== null) {
           newStyle = newStyle.setIn(
             ['layers', glLayerIndex, paintOrLayout, glPaintProperty],
             glPaintFinalValue
