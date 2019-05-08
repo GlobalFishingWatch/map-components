@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import countryflag from 'countryflag'
 
-class CountryFlag extends Component {
+class CountryFlag extends PureComponent {
   render() {
     // iso2 is deprecated, ignoring prop-types
     // eslint-disable-next-line react/prop-types
