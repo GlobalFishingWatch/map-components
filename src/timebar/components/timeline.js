@@ -32,12 +32,13 @@ class Timeline extends Component {
       outerHeight: 50,
       dragging: null,
     }
+    this.graphContainer = null
     this.isMovingInside = false
   }
 
   componentDidMount() {
     // wait for end of call stack to get rendered CSS
-    window.setTimeout(this.onWindowResize, 1)
+    window.setTimeout(this.onWindowResize, 10)
     window.addEventListener('resize', this.onWindowResize)
     window.addEventListener('mousemove', this.onMouseMove)
     window.addEventListener('touchmove', this.onMouseMove)
@@ -56,21 +57,23 @@ class Timeline extends Component {
   }
 
   onWindowResize = () => {
-    const graphStyle = window.getComputedStyle(this.graphContainer)
-    const outerX = parseFloat(this.graphContainer.getBoundingClientRect().left)
-    const outerWidth = parseFloat(graphStyle.width)
-    const outerHeight = parseFloat(graphStyle.height)
-    const innerStartPx = outerWidth * 0.15
-    const innerEndPx = outerWidth * 0.85
-    const innerWidth = outerWidth * 0.7
-    this.setState({
-      outerX,
-      innerStartPx,
-      innerEndPx,
-      innerWidth,
-      outerWidth,
-      outerHeight,
-    })
+    if (this.graphContainer !== null) {
+      const graphStyle = window.getComputedStyle(this.graphContainer)
+      const outerX = parseFloat(this.graphContainer.getBoundingClientRect().left)
+      const outerWidth = parseFloat(graphStyle.width)
+      const outerHeight = parseFloat(graphStyle.height)
+      const innerStartPx = outerWidth * 0.15
+      const innerEndPx = outerWidth * 0.85
+      const innerWidth = outerWidth * 0.7
+      this.setState({
+        outerX,
+        innerStartPx,
+        innerEndPx,
+        innerWidth,
+        outerWidth,
+        outerHeight,
+      })
+    }
   }
 
   isHandlerZoomInValid(x) {
@@ -391,6 +394,7 @@ Timeline.propTypes = {
   end: PropTypes.string.isRequired,
   absoluteStart: PropTypes.string.isRequired,
   absoluteEnd: PropTypes.string.isRequired,
+  onBookmarkChange: PropTypes.func,
   bookmarkStart: PropTypes.string,
   bookmarkEnd: PropTypes.string,
 }
@@ -398,6 +402,7 @@ Timeline.propTypes = {
 Timeline.defaultProps = {
   bookmarkStart: null,
   bookmarkEnd: null,
+  onBookmarkChange: () => {},
   onMouseLeave: () => {},
   onMouseMove: () => {},
 }

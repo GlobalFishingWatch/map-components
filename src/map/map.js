@@ -119,7 +119,9 @@ class MapModule extends React.Component {
     })
 
     // heatmap layers
-    store.dispatch(updateHeatmapLayers(this.props.heatmapLayers, this.props.loadTemporalExtent))
+    if (this.props.heatmapLayers !== null) {
+      store.dispatch(updateHeatmapLayers(this.props.heatmapLayers, this.props.loadTemporalExtent))
+    }
   }
 
   componentDidUpdate(prevProps) {
