@@ -58,18 +58,19 @@ h2 {
   cursor: not-allowed;
   width: 15rem;
   height: 3.6rem;
-  background: var(--timebar-cta-btn-color);
   color: var(--timebar-white);
   font-size: var(--timebar-font-size);
   transition: var(--timebar-hover-transition);
+  background-color: var(--timebar-ui-btn-color-hover);
 }
 
 .cta:not([disabled]) {
   cursor: pointer;
+  background: var(--timebar-cta-btn-color);
 }
 
-.cta:hover,
-.cta:focus {
+.cta:not([disabled]):hover,
+.cta:not([disabled]):focus {
   background: var(--timebar-cta-btn-hover);
   outline: none;
 }
