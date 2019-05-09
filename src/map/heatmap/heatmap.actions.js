@@ -481,6 +481,10 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
   dispatch,
   getState
 ) => {
+  if (newLayers === null) {
+    console.warn("New layers in updateHeatmapLayers can't be null")
+    return
+  }
   const prevLayersDict = getState().map.heatmap.heatmapLayers
 
   // add and update layers
