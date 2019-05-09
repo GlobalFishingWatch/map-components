@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": "https://github.com/GlobalFishingWatch/map-components",
   "main": "components/index.js",
-  "typings": "types/index.d.ts",
+  "types": "types/index.d.ts",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -88,6 +88,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^1.6.0",
+    "gh-pages": "^2.0.1",
     "husky": "^1.3.1",
     "imagemin-lint-staged": "^0.4.0",
     "lint-staged": "^8.1.1",
