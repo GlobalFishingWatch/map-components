@@ -26,12 +26,12 @@ class DateSelector extends Component {
 
   onIncrementClick = () => {
     const { value, unit } = this.props
-    this.props.onChange(value + 1, unit)
+    this.props.onChange(value + 1, unit, true)
   }
 
   onDecrementClick = () => {
     const { value, unit } = this.props
-    this.props.onChange(value - 1, unit)
+    this.props.onChange(value - 1, unit, true)
   }
 
   onInputChange = (event) => {
