@@ -5,7 +5,6 @@
   width: 46rem;
   background: var(--timebar-main-background-color);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 3.5rem 3rem 3rem;
   box-sizing: border-box;
   z-index: 0;
   box-shadow: 0 0 28px 5px rgba(0, 0, 0, 0.8);
@@ -21,6 +20,10 @@
   background: var(--timebar-main-background-color);
   opacity: 0.7;
   z-index: -1;
+}
+
+.inner {
+  padding: 3.5rem 3rem 3rem;
 }
 
 h2 {
