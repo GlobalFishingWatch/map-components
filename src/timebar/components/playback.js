@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
-import dayjs from 'dayjs'
 import ImmediateContext from '../immediateContext'
 import { ReactComponent as IconLoop } from '../icons/loop.svg'
 import { ReactComponent as IconBack } from '../icons/back.svg'
@@ -38,8 +37,10 @@ class Playback extends Component {
     const { playing } = this.state.playback
     this.setPlaybackConfig('playing', !playing)
     if (playing) {
+      this.context.toggleImmediate(false)
       this.clearInterval()
     } else {
+      this.context.toggleImmediate(true)
       this.setInterval()
     }
   }

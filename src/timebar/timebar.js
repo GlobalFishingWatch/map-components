@@ -144,7 +144,7 @@ class Timebar extends Component {
 
   onPlaybackTick = (speed) => {
     const newStart = dayjs(this.props.start).add(1, 'day')
-    const newEnd = newStart.add(30, 'day')
+    const newEnd = newStart.add(32, 'day')
     this.notifyChange(newStart.toISOString(), newEnd.toISOString())
   }
 
