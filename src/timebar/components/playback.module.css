@@ -1,0 +1,50 @@
+.playbackActions svg {
+  fill: var(--timebar-white);
+}
+
+
+/* PLAYBACK ACTIONS */
+
+.playbackActions {
+  background-color: var(--timebar-ui-btn-color);
+  width: var(--timebar-size);
+  height: 100%;
+  margin-right: 0.1rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.secondary {
+  opacity: 0;
+}
+
+.playbackActionsActive .secondary,
+.playbackActions:hover .secondary {
+  opacity: 0.5;
+}
+
+.playbackActions .secondaryActive,
+.playbackActions:hover .secondary:hover {
+  opacity: 1;
+}
+
+.playbackActions button {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+}
+
+.playbackActions .loop {
+  margin: 0 2.4rem;
+}
+
+.playbackActions .speed {
+  margin-left: 2.4rem;
+}
+
+
+@media only screen and (max-width: 72rem) {
+  .playbackActions {
+    /* display: none; */
+  }
+}

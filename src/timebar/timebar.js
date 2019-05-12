@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
+import dayjs from 'dayjs'
 import ImmediateContext from './immediateContext'
 import {
   getTime,
@@ -14,11 +14,7 @@ import './timebar-settings.module.css'
 import styles from './timebar.module.css'
 import TimeRangeSelector from './components/timerange-selector'
 import Timeline from './components/timeline'
-import { ReactComponent as IconLoop } from './icons/loop.svg'
-import { ReactComponent as IconBack } from './icons/back.svg'
-import { ReactComponent as IconPlay } from './icons/play.svg'
-import { ReactComponent as IconPause } from './icons/pause.svg'
-import { ReactComponent as IconForward } from './icons/forward.svg'
+import Playback from './components/playback'
 import { ReactComponent as IconTimeRange } from './icons/timeRange.svg'
 import { ReactComponent as IconBookmark } from './icons/bookmark.svg'
 import { ReactComponent as IconBookmarkFilled } from './icons/bookmarkFilled.svg'
@@ -28,7 +24,6 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
-const SPEED_STEPS = [1, 2, 3, 5, 10]
 
 class Timebar extends Component {
   constructor() {
@@ -42,11 +37,6 @@ class Timebar extends Component {
     this.state = {
       immediate: false,
       toggleImmediate,
-      playback: {
-        playing: false,
-        speedStep: 0,
-        loop: false,
-      },
       showTimeRangeSelector: false,
       absoluteEnd: null,
     }
@@ -57,14 +47,6 @@ class Timebar extends Component {
 
     // TODO stick to day/hour here too
     this.notifyChange(start, end)
-  }
-
-  componentWillUnmount() {
-    this.clearInterval()
-  }
-
-  componentDidCatch() {
-    this.clearInterval()
   }
 
   static getDerivedStateFromProps(props) {
@@ -160,70 +142,15 @@ class Timebar extends Component {
     onChange(start, end, humanizedStart, humanizedEnd)
   }
 
-  onPlayClick = () => {
-    const { playing } = this.state.playback
-    this.setPlaybackConfig('playing', !playing)
-    if (playing) {
-      this.clearInterval()
-    } else {
-      this.setInterval()
-    }
-  }
-
-  setInterval = () => {
-    const speed = SPEED_STEPS[this.state.playback.speedStep]
-    this.interval = setInterval(() => {
-      const newStart = dayjs(this.props.start).add(1, 'day')
-      const newEnd = newStart.add(30, 'day')
-      this.notifyChange(newStart.toISOString(), newEnd.toISOString())
-    }, 1000 / speed)
-  }
-
-  clearInterval = () => {
-    if (this.interval !== null) {
-      clearInterval(this.interval)
-    }
-  }
-
-  toggleLoop = () => {
-    this.setState((prevState) => ({
-      playback: {
-        ...prevState.playback,
-        loop: !prevState.playback.loop,
-      },
-    }))
-  }
-
-  onForwardClick = () => {
-    console.log('TODO: go forward in timeline')
-  }
-
-  onBackwardClick = () => {
-    console.log('TODO: go backward in timeline')
-  }
-
-  onSpeedClick = () => {
-    const { playback } = this.state
-    const nextStep = playback.speedStep === SPEED_STEPS.length - 1 ? 0 : (playback.speedStep += 1)
-    this.setPlaybackConfig('speedStep', nextStep)
-    if (playback.playing) {
-      this.clearInterval()
-      this.setInterval()
-    }
-  }
-
-  setPlaybackConfig = (prop, step) => {
-    this.setState({
-      playback: {
-        ...this.state.playback,
-        [prop]: step,
-      },
-    })
+  onPlaybackTick = (speed) => {
+    const newStart = dayjs(this.props.start).add(1, 'day')
+    const newEnd = newStart.add(30, 'day')
+    this.notifyChange(newStart.toISOString(), newEnd.toISOString())
   }
 
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
-    const { playback, immediate, toggleImmediate } = this.state
+    const { immediate, toggleImmediate } = this.state
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
@@ -246,56 +173,7 @@ class Timebar extends Component {
     return (
       <ImmediateContext.Provider value={{ immediate, toggleImmediate }}>
         <div className={styles.Timebar}>
-          {enablePlayback && (
-            <div
-              className={cx(styles.playbackActions, {
-                [styles.playbackActionsActive]: playback.playing,
-              })}
-            >
-              <button
-                type="button"
-                title="Toggle animation looping"
-                onClick={this.toggleLoop}
-                className={cx(styles.uiButton, styles.secondary, styles.loop, {
-                  [styles.secondaryActive]: playback.loop,
-                })}
-              >
-                <IconLoop />
-              </button>
-              <button
-                type="button"
-                title="Move back"
-                onClick={this.onBackwardClick}
-                className={cx(styles.uiButton, styles.secondary, styles.back)}
-              >
-                <IconBack />
-              </button>
-              <button
-                type="button"
-                title={`${playback.playing === true ? 'Pause' : 'Play'} animation`}
-                onClick={this.onPlayClick}
-                className={cx(styles.uiButton, styles.play)}
-              >
-                {playback.playing === true ? <IconPause /> : <IconPlay />}
-              </button>
-              <button
-                type="button"
-                title="Move forward"
-                onClick={this.onForwardClick}
-                className={cx(styles.uiButton, styles.secondary, styles.forward)}
-              >
-                <IconForward />
-              </button>
-              <button
-                type="button"
-                title="Change animation speed"
-                onClick={this.onSpeedClick}
-                className={cx(styles.uiButton, styles.secondary, styles.speed)}
-              >
-                {SPEED_STEPS[playback.speedStep]}x
-              </button>
-            </div>
-          )}
+          {enablePlayback && <Playback start={start} onTick={this.onPlaybackTick} />}
 
           <div className={styles.timeActions}>
             {showTimeRangeSelector && (
