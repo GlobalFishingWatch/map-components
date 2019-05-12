@@ -4,6 +4,7 @@ import cx from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
+import ImmediateContext from '../immediateContext'
 import { animated, Spring } from 'react-spring/renderprops'
 import {
   getTime,
@@ -22,6 +23,7 @@ const DRAG_START = 'DRAG_START'
 const DRAG_END = 'DRAG_END'
 
 class Timeline extends Component {
+  static contextType = ImmediateContext
   constructor() {
     super()
     this.state = {
@@ -146,6 +148,7 @@ class Timeline extends Component {
     const clientX = event.clientX || event.changedTouches[0].clientX
     this.lastX = clientX
     const x = clientX - outerX
+    this.context.toggleImmediate(true)
     this.setState({
       dragging,
       handlerMouseX: x,
@@ -214,6 +217,7 @@ class Timeline extends Component {
 
     const isHandlerZoomInValid = this.isHandlerZoomInValid(x)
 
+    this.context.toggleImmediate(false)
     this.setState({
       dragging: null,
       handlerMouseX: null,
@@ -260,6 +264,7 @@ class Timeline extends Component {
       outerWidth,
       outerHeight,
     } = this.state
+    const { immediate } = this.context
 
     this.innerScale = scaleTime()
       .domain([new Date(start), new Date(end)])
@@ -271,8 +276,6 @@ class Timeline extends Component {
       .domain([new Date(outerStart), new Date(outerEnd)])
       .range([0, this.state.outerWidth])
 
-    const immediate = this.state.dragging !== null
-
     return (
       <div ref={(node) => (this.node = node)} className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
@@ -282,7 +285,6 @@ class Timeline extends Component {
             bookmarkEnd={bookmarkEnd}
             minX={-outerX}
             maxX={outerWidth}
-            immediate={immediate}
             onDelete={() => {
               onBookmarkChange(null, null)
             }}
@@ -312,7 +314,6 @@ class Timeline extends Component {
               outerScale={this.outerScale}
               outerStart={outerStart}
               outerEnd={outerEnd}
-              immediate={immediate}
             />
             {this.props.children &&
               this.props.children({
@@ -321,7 +322,6 @@ class Timeline extends Component {
                 outerEnd,
                 outerWidth,
                 outerHeight,
-                immediate,
                 graphHeight: outerHeight - 20,
                 tooltipContainer: this.tooltipContainer,
                 ...this.props,

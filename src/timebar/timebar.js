@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
+import ImmediateContext from './immediateContext'
 import {
   getTime,
   clampToAbsoluteBoundaries,
@@ -32,8 +33,15 @@ const SPEED_STEPS = [1, 2, 3, 5, 10]
 class Timebar extends Component {
   constructor() {
     super()
+    const toggleImmediate = (immediate) => {
+      this.setState((state) => ({
+        immediate,
+      }))
+    }
     this.interval = null
     this.state = {
+      immediate: false,
+      toggleImmediate,
       playback: {
         playing: false,
         speedStep: 0,
@@ -215,7 +223,7 @@ class Timebar extends Component {
 
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
-    const { playback } = this.state
+    const { playback, immediate, toggleImmediate } = this.state
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
@@ -236,114 +244,116 @@ class Timebar extends Component {
       getTime(bookmarkEnd) === getTime(end)
 
     return (
-      <div className={styles.Timebar}>
-        {enablePlayback && (
-          <div
-            className={cx(styles.playbackActions, {
-              [styles.playbackActionsActive]: playback.playing,
-            })}
-          >
-            <button
-              type="button"
-              title="Toggle animation looping"
-              onClick={this.toggleLoop}
-              className={cx(styles.uiButton, styles.secondary, styles.loop, {
-                [styles.secondaryActive]: playback.loop,
+      <ImmediateContext.Provider value={{ immediate, toggleImmediate }}>
+        <div className={styles.Timebar}>
+          {enablePlayback && (
+            <div
+              className={cx(styles.playbackActions, {
+                [styles.playbackActionsActive]: playback.playing,
               })}
             >
-              <IconLoop />
-            </button>
-            <button
-              type="button"
-              title="Move back"
-              onClick={this.onBackwardClick}
-              className={cx(styles.uiButton, styles.secondary, styles.back)}
-            >
-              <IconBack />
-            </button>
-            <button
-              type="button"
-              title={`${playback.playing === true ? 'Pause' : 'Play'} animation`}
-              onClick={this.onPlayClick}
-              className={cx(styles.uiButton, styles.play)}
-            >
-              {playback.playing === true ? <IconPause /> : <IconPlay />}
-            </button>
-            <button
-              type="button"
-              title="Move forward"
-              onClick={this.onForwardClick}
-              className={cx(styles.uiButton, styles.secondary, styles.forward)}
-            >
-              <IconForward />
-            </button>
-            <button
-              type="button"
-              title="Change animation speed"
-              onClick={this.onSpeedClick}
-              className={cx(styles.uiButton, styles.secondary, styles.speed)}
-            >
-              {SPEED_STEPS[playback.speedStep]}x
-            </button>
-          </div>
-        )}
-
-        <div className={styles.timeActions}>
-          {showTimeRangeSelector && (
-            <TimeRangeSelector
-              {...this.props}
-              absoluteEnd={absoluteEnd}
-              onSubmit={this.onTimeRangeSelectorSubmit}
-              onDiscard={this.toggleTimeRangeSelector}
-            />
+              <button
+                type="button"
+                title="Toggle animation looping"
+                onClick={this.toggleLoop}
+                className={cx(styles.uiButton, styles.secondary, styles.loop, {
+                  [styles.secondaryActive]: playback.loop,
+                })}
+              >
+                <IconLoop />
+              </button>
+              <button
+                type="button"
+                title="Move back"
+                onClick={this.onBackwardClick}
+                className={cx(styles.uiButton, styles.secondary, styles.back)}
+              >
+                <IconBack />
+              </button>
+              <button
+                type="button"
+                title={`${playback.playing === true ? 'Pause' : 'Play'} animation`}
+                onClick={this.onPlayClick}
+                className={cx(styles.uiButton, styles.play)}
+              >
+                {playback.playing === true ? <IconPause /> : <IconPlay />}
+              </button>
+              <button
+                type="button"
+                title="Move forward"
+                onClick={this.onForwardClick}
+                className={cx(styles.uiButton, styles.secondary, styles.forward)}
+              >
+                <IconForward />
+              </button>
+              <button
+                type="button"
+                title="Change animation speed"
+                onClick={this.onSpeedClick}
+                className={cx(styles.uiButton, styles.secondary, styles.speed)}
+              >
+                {SPEED_STEPS[playback.speedStep]}x
+              </button>
+            </div>
           )}
-          <div className={styles.timeRangeContainer}>
-            <button
-              type="button"
-              title="Select a time range"
-              className={cx(styles.uiButton, styles.timeRange)}
-              onClick={this.toggleTimeRangeSelector}
-            >
-              <IconTimeRange />
-            </button>
-          </div>
-          <button
-            type="button"
-            title="Bookmark current time range"
-            className={cx(styles.uiButton, styles.bookmark)}
-            onClick={this.setBookmark}
-            disabled={bookmarkDisabled === true}
-          >
-            {hasBookmark ? <IconBookmarkFilled /> : <IconBookmark />}
-          </button>
-          <div className={styles.timeScale}>
-            <button
-              type="button"
-              title="Zoom out"
-              disabled={canZoomOut === false}
-              onClick={() => {
-                this.zoom('out')
-              }}
-              className={cx(styles.uiButton, styles.out)}
-            >
-              <IconMinus />
-            </button>
-            <button
-              type="button"
-              title="Zoom in"
-              disabled={canZoomIn === false}
-              onClick={() => {
-                this.zoom('in')
-              }}
-              className={cx(styles.uiButton, styles.in)}
-            >
-              <IconPlus />
-            </button>
-          </div>
-        </div>
 
-        <Timeline {...this.props} onChange={this.notifyChange} absoluteEnd={absoluteEnd} />
-      </div>
+          <div className={styles.timeActions}>
+            {showTimeRangeSelector && (
+              <TimeRangeSelector
+                {...this.props}
+                absoluteEnd={absoluteEnd}
+                onSubmit={this.onTimeRangeSelectorSubmit}
+                onDiscard={this.toggleTimeRangeSelector}
+              />
+            )}
+            <div className={styles.timeRangeContainer}>
+              <button
+                type="button"
+                title="Select a time range"
+                className={cx(styles.uiButton, styles.timeRange)}
+                onClick={this.toggleTimeRangeSelector}
+              >
+                <IconTimeRange />
+              </button>
+            </div>
+            <button
+              type="button"
+              title="Bookmark current time range"
+              className={cx(styles.uiButton, styles.bookmark)}
+              onClick={this.setBookmark}
+              disabled={bookmarkDisabled === true}
+            >
+              {hasBookmark ? <IconBookmarkFilled /> : <IconBookmark />}
+            </button>
+            <div className={styles.timeScale}>
+              <button
+                type="button"
+                title="Zoom out"
+                disabled={canZoomOut === false}
+                onClick={() => {
+                  this.zoom('out')
+                }}
+                className={cx(styles.uiButton, styles.out)}
+              >
+                <IconMinus />
+              </button>
+              <button
+                type="button"
+                title="Zoom in"
+                disabled={canZoomIn === false}
+                onClick={() => {
+                  this.zoom('in')
+                }}
+                className={cx(styles.uiButton, styles.in)}
+              >
+                <IconPlus />
+              </button>
+            </div>
+          </div>
+
+          <Timeline {...this.props} onChange={this.notifyChange} absoluteEnd={absoluteEnd} />
+        </div>
+      </ImmediateContext.Provider>
     )
   }
 }

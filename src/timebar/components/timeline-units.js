@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import { animated, Transition } from 'react-spring/renderprops'
 import { getTime, getDeltaDays } from '../utils'
+import ImmediateContext from '../immediateContext'
 import styles from './timeline-units.module.css'
 
 const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
@@ -96,21 +97,14 @@ const getUnitsPositions = (
 }
 
 class TimelineUnits extends Component {
+  static contextType = ImmediateContext
   zoomToUnit({ start, end }) {
     this.props.onChange(start, end)
   }
 
   render() {
-    const {
-      start,
-      end,
-      absoluteStart,
-      absoluteEnd,
-      outerScale,
-      outerStart,
-      outerEnd,
-      immediate,
-    } = this.props
+    const { start, end, absoluteStart, absoluteEnd, outerScale, outerStart, outerEnd } = this.props
+    const { immediate } = this.context
     const innerDays = getDeltaDays(start, end)
 
     let baseUnit = 'day'
@@ -171,7 +165,6 @@ TimelineUnits.propTypes = {
   outerStart: PropTypes.string.isRequired,
   outerEnd: PropTypes.string.isRequired,
   outerScale: PropTypes.func.isRequired,
-  immediate: PropTypes.bool.isRequired,
 }
 
 export default TimelineUnits
