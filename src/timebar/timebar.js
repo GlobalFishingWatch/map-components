@@ -142,10 +142,11 @@ class Timebar extends Component {
     onChange(start, end, humanizedStart, humanizedEnd)
   }
 
-  onPlaybackTick = (speed) => {
-    const newStart = dayjs(this.props.start).add(1, 'day')
-    const newEnd = newStart.add(32, 'day')
-    this.notifyChange(newStart.toISOString(), newEnd.toISOString())
+  onPlaybackTick = (deltaMs) => {
+    const newStartMs = new Date(this.props.start).getTime() + deltaMs
+    const newEndMs = new Date(this.props.end).getTime() + deltaMs
+
+    this.notifyChange(new Date(newStartMs).toISOString(), new Date(newEndMs).toISOString())
   }
 
   render() {
@@ -173,7 +174,7 @@ class Timebar extends Component {
     return (
       <ImmediateContext.Provider value={{ immediate, toggleImmediate }}>
         <div className={styles.Timebar}>
-          {enablePlayback && <Playback start={start} onTick={this.onPlaybackTick} />}
+          {enablePlayback && <Playback start={start} end={end} onTick={this.onPlaybackTick} />}
 
           <div className={styles.timeActions}>
             {showTimeRangeSelector && (

@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import cx from 'classnames'
+import memoize from 'memoize-one'
+import { scaleLinear } from 'd3-scale'
 import ImmediateContext from '../immediateContext'
 import { ReactComponent as IconLoop } from '../icons/loop.svg'
 import { ReactComponent as IconBack } from '../icons/back.svg'
@@ -9,62 +12,69 @@ import { ReactComponent as IconForward } from '../icons/forward.svg'
 import styles from './playback.module.css'
 import uiStyles from '../timebar.module.css'
 
+const BASE_STEP = 0.001
 const SPEED_STEPS = [1, 2, 3, 5, 10]
 
 class Playback extends Component {
   static contextType = ImmediateContext
   constructor() {
     super()
-    this.interval = null
     this.state = {
-      playback: {
-        playing: false,
-        speedStep: 0,
-        loop: false,
-      },
+      playing: false,
+      speedStep: 0,
+      loop: false,
     }
   }
+
+  getStep = memoize((start, end, speedStep) => {
+    const baseStepWithSpeed = BASE_STEP * SPEED_STEPS[speedStep]
+    const startMs = new Date(start).getTime()
+    const endMs = new Date(end).getTime()
+    const scale = scaleLinear()
+      .range([0, 1])
+      .domain([startMs, endMs])
+    const step = scale.invert(baseStepWithSpeed) - startMs
+    return step
+  })
 
   componentWillUnmount() {
-    this.clearInterval()
+    window.cancelAnimationFrame(this.requestAnimationFrame)
   }
 
-  componentDidCatch() {
-    this.clearInterval()
+  tick = (elapsedMs) => {
+    if (this.lastUpdateMs === undefined || this.lastUpdateMs === null) {
+      this.lastUpdateMs = elapsedMs
+    }
+    const { onTick, start, end } = this.props
+    const { speedStep } = this.state
+    // "compare" elapsed with theoretical 60 fps frame
+    const progressRatio = (elapsedMs - this.lastUpdateMs) / (1000 / 60)
+    const deltaMs = this.getStep(start, end, speedStep) * progressRatio
+    onTick(deltaMs)
+    this.lastUpdateMs = elapsedMs
+    this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
   }
 
-  onPlayClick = () => {
-    const { playing } = this.state.playback
-    this.setPlaybackConfig('playing', !playing)
+  onPlayToggle = () => {
+    const { playing } = this.state
+
     if (playing) {
       this.context.toggleImmediate(false)
-      this.clearInterval()
+      this.lastUpdateMs = null
+      window.cancelAnimationFrame(this.requestAnimationFrame)
     } else {
       this.context.toggleImmediate(true)
-      this.setInterval()
+      this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
     }
-  }
 
-  setInterval = () => {
-    const { onTick } = this.props
-    const speed = SPEED_STEPS[this.state.playback.speedStep]
-    this.interval = setInterval(() => {
-      onTick()
-    }, 1000 / speed)
-  }
-
-  clearInterval = () => {
-    if (this.interval !== null) {
-      clearInterval(this.interval)
-    }
+    this.setState({
+      playing: !playing,
+    })
   }
 
   toggleLoop = () => {
     this.setState((prevState) => ({
-      playback: {
-        ...prevState.playback,
-        loop: !prevState.playback.loop,
-      },
+      loop: !prevState.playback.loop,
     }))
   }
 
@@ -77,30 +87,19 @@ class Playback extends Component {
   }
 
   onSpeedClick = () => {
-    const { playback } = this.state
-    const nextStep = playback.speedStep === SPEED_STEPS.length - 1 ? 0 : (playback.speedStep += 1)
-    this.setPlaybackConfig('speedStep', nextStep)
-    if (playback.playing) {
-      this.clearInterval()
-      this.setInterval()
-    }
-  }
-
-  setPlaybackConfig = (prop, step) => {
-    this.setState({
-      playback: {
-        ...this.state.playback,
-        [prop]: step,
-      },
-    })
+    const { speedStep } = this.state
+    const nextStep = speedStep === SPEED_STEPS.length - 1 ? 0 : speedStep + 1
+    const step = this.getStep(nextStep)
+    this.step = step
+    this.setState({ speedStep: nextStep })
   }
 
   render() {
-    const { playback } = this.state
+    const { playing, loop, speedStep } = this.state
     return (
       <div
         className={cx(styles.playbackActions, {
-          [styles.playbackActionsActive]: playback.playing,
+          [styles.playbackActionsActive]: playing,
         })}
       >
         <button
@@ -108,7 +107,7 @@ class Playback extends Component {
           title="Toggle animation looping"
           onClick={this.toggleLoop}
           className={cx(uiStyles.uiButton, styles.secondary, styles.loop, {
-            [styles.secondaryActive]: playback.loop,
+            [styles.secondaryActive]: loop,
           })}
         >
           <IconLoop />
@@ -123,11 +122,11 @@ class Playback extends Component {
         </button>
         <button
           type="button"
-          title={`${playback.playing === true ? 'Pause' : 'Play'} animation`}
-          onClick={this.onPlayClick}
+          title={`${playing === true ? 'Pause' : 'Play'} animation`}
+          onClick={this.onPlayToggle}
           className={cx(uiStyles.uiButton, styles.play)}
         >
-          {playback.playing === true ? <IconPause /> : <IconPlay />}
+          {playing === true ? <IconPause /> : <IconPlay />}
         </button>
         <button
           type="button"
@@ -143,11 +142,17 @@ class Playback extends Component {
           onClick={this.onSpeedClick}
           className={cx(uiStyles.uiButton, styles.secondary, styles.speed)}
         >
-          {SPEED_STEPS[playback.speedStep]}x
+          {SPEED_STEPS[speedStep]}x
         </button>
       </div>
     )
   }
+}
+
+Playback.propTypes = {
+  onTick: PropTypes.func.isRequired,
+  start: PropTypes.string.isRequired,
+  end: PropTypes.string.isRequired,
 }
 
 export default Playback
