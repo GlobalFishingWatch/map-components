@@ -138,7 +138,7 @@ function parseLayerTile(rawTileData, colsByName, isPBF, tileCoordinates, prevPla
 function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined) {
   return (dispatch, getState) => {
     const state = getState()
-    const loaderID = startLoader(dispatch, state)
+    const loaderID = startLoader(dispatch, state, layerIds.join('-'))
     const token = state.map.module.token
     const heatmapLayers = state.map.heatmap.heatmapLayers
     const tilesByLayer = {}
@@ -481,6 +481,10 @@ export const updateHeatmapLayers = (newLayers, currentLoadTemporalExtent) => (
   dispatch,
   getState
 ) => {
+  if (newLayers === null) {
+    console.warn("New layers in updateHeatmapLayers can't be null")
+    return
+  }
   const prevLayersDict = getState().map.heatmap.heatmapLayers
 
   // add and update layers

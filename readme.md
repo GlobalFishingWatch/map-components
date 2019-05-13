@@ -68,6 +68,8 @@ and it will update the package.json, generate the github release and push your c
 npm publish
 ```
 
+(⚠️ don't forget to bump dependency version on parent project if needed!) 
+
 ## License
 
 MIT ©
