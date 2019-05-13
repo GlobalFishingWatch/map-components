@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import cx from 'classnames'
 import memoize from 'memoize-one'
 import { scaleLinear } from 'd3-scale'
+import { clampToAbsoluteBoundaries } from '../utils'
 import ImmediateContext from '../immediateContext'
 import { ReactComponent as IconLoop } from '../icons/loop.svg'
 import { ReactComponent as IconBack } from '../icons/back.svg'
@@ -45,36 +46,73 @@ class Playback extends Component {
     if (this.lastUpdateMs === undefined || this.lastUpdateMs === null) {
       this.lastUpdateMs = elapsedMs
     }
-    const { onTick, start, end } = this.props
-    const { speedStep } = this.state
+    const { onTick, start, end, absoluteStart, absoluteEnd } = this.props
+    const { speedStep, loop } = this.state
     // "compare" elapsed with theoretical 60 fps frame
     const progressRatio = (elapsedMs - this.lastUpdateMs) / (1000 / 60)
     const deltaMs = this.getStep(start, end, speedStep) * progressRatio
-    onTick(deltaMs)
     this.lastUpdateMs = elapsedMs
-    this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
+
+    const newStartMs = new Date(start).getTime() + deltaMs
+    const newEndMs = new Date(end).getTime() + deltaMs
+
+    const currentStartEndDeltaMs = newEndMs - newStartMs
+
+    const newStart = new Date(newStartMs).toISOString()
+    const newEnd = new Date(newEndMs).toISOString()
+
+    const { newStartClamped, newEndClamped, clamped } = clampToAbsoluteBoundaries(
+      newStart,
+      newEnd,
+      currentStartEndDeltaMs,
+      absoluteStart,
+      absoluteEnd
+    )
+
+    onTick(newStartClamped, newEndClamped)
+
+    if (clamped === 'end') {
+      if (loop === true) {
+        // start again from absoluteStart
+        const newEnd = new Date(
+          new Date(absoluteStart).getTime() + currentStartEndDeltaMs
+        ).toISOString()
+        onTick(absoluteStart, newEnd)
+      } else {
+        this.togglePlay(false)
+      }
+    }
+    if (clamped !== 'end' || loop === true) {
+      this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
+    }
   }
 
-  onPlayToggle = () => {
+  togglePlay = (force) => {
     const { playing } = this.state
 
-    if (playing) {
+    const playingNext = force === undefined ? !playing : force
+
+    if (playingNext) {
+      this.context.toggleImmediate(true)
+      this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
+    } else {
       this.context.toggleImmediate(false)
       this.lastUpdateMs = null
       window.cancelAnimationFrame(this.requestAnimationFrame)
-    } else {
-      this.context.toggleImmediate(true)
-      this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
     }
 
     this.setState({
-      playing: !playing,
+      playing: playingNext,
     })
+  }
+
+  onPlayToggleClick = () => {
+    this.togglePlay()
   }
 
   toggleLoop = () => {
     this.setState((prevState) => ({
-      loop: !prevState.playback.loop,
+      loop: !prevState.loop,
     }))
   }
 
@@ -96,6 +134,7 @@ class Playback extends Component {
 
   render() {
     const { playing, loop, speedStep } = this.state
+
     return (
       <div
         className={cx(styles.playbackActions, {
@@ -123,7 +162,7 @@ class Playback extends Component {
         <button
           type="button"
           title={`${playing === true ? 'Pause' : 'Play'} animation`}
-          onClick={this.onPlayToggle}
+          onClick={this.onPlayToggleClick}
           className={cx(uiStyles.uiButton, styles.play)}
         >
           {playing === true ? <IconPause /> : <IconPlay />}
@@ -153,6 +192,8 @@ Playback.propTypes = {
   onTick: PropTypes.func.isRequired,
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
+  absoluteStart: PropTypes.string.isRequired,
+  absoluteEnd: PropTypes.string.isRequired,
 }
 
 export default Playback
