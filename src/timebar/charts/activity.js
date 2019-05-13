@@ -48,7 +48,6 @@ Activity.propTypes = {
   ).isRequired,
   absoluteEnd: PropTypes.string.isRequired,
   outerScale: PropTypes.func.isRequired,
-  immediate: PropTypes.bool.isRequired,
   outerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
 }

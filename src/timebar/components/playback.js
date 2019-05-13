@@ -15,6 +15,7 @@ import uiStyles from '../timebar.module.css'
 
 const BASE_STEP = 0.001
 const SPEED_STEPS = [1, 2, 3, 5, 10]
+const FAST_FORWARD_REWIND_MULTIPLICATOR = 100
 
 class Playback extends Component {
   static contextType = ImmediateContext
@@ -38,20 +39,10 @@ class Playback extends Component {
     return step
   })
 
-  componentWillUnmount() {
-    window.cancelAnimationFrame(this.requestAnimationFrame)
-  }
-
-  tick = (elapsedMs) => {
-    if (this.lastUpdateMs === undefined || this.lastUpdateMs === null) {
-      this.lastUpdateMs = elapsedMs
-    }
+  update = (deltaMultiplicatorMs) => {
     const { onTick, start, end, absoluteStart, absoluteEnd } = this.props
     const { speedStep, loop } = this.state
-    // "compare" elapsed with theoretical 60 fps frame
-    const progressRatio = (elapsedMs - this.lastUpdateMs) / (1000 / 60)
-    const deltaMs = this.getStep(start, end, speedStep) * progressRatio
-    this.lastUpdateMs = elapsedMs
+    const deltaMs = this.getStep(start, end, speedStep) * deltaMultiplicatorMs
 
     const newStartMs = new Date(start).getTime() + deltaMs
     const newEndMs = new Date(end).getTime() + deltaMs
@@ -83,6 +74,22 @@ class Playback extends Component {
       }
     }
     if (clamped !== 'end' || loop === true) {
+      return true
+    }
+  }
+
+  tick = (elapsedMs) => {
+    if (this.lastUpdateMs === undefined || this.lastUpdateMs === null) {
+      this.lastUpdateMs = elapsedMs
+    }
+    // "compare" elapsed with theoretical 60 fps frame
+    const progressRatio = (elapsedMs - this.lastUpdateMs) / (1000 / 60)
+
+    const requireNextTick = this.update(progressRatio)
+
+    this.lastUpdateMs = elapsedMs
+
+    if (requireNextTick === true) {
       this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
     }
   }
@@ -106,6 +113,10 @@ class Playback extends Component {
     })
   }
 
+  componentWillUnmount() {
+    window.cancelAnimationFrame(this.requestAnimationFrame)
+  }
+
   onPlayToggleClick = () => {
     this.togglePlay()
   }
@@ -117,11 +128,11 @@ class Playback extends Component {
   }
 
   onForwardClick = () => {
-    console.log('TODO: go forward in timeline')
+    this.update(FAST_FORWARD_REWIND_MULTIPLICATOR)
   }
 
   onBackwardClick = () => {
-    console.log('TODO: go backward in timeline')
+    this.update(-FAST_FORWARD_REWIND_MULTIPLICATOR)
   }
 
   onSpeedClick = () => {
