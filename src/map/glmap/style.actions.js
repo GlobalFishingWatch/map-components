@@ -307,26 +307,31 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
   dispatch(setMapStyle(style))
 }
 
-const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
+const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   const state = getState()
   let style = state.map.style.mapStyle
 
   workspaceGLLayers.forEach((workspaceGLLayer) => {
-    const id = workspaceGLLayer.id
-    const gl = workspaceGLLayer.gl
+    const { id, gl } = workspaceGLLayer
     const finalSource = setDefaultVectorTiles(gl.source, workspaceGLLayer.url)
     style = style.setIn(['sources', id], fromJS(finalSource))
 
-    gl.layers.forEach((workspaceGlLayer) => {
-      let layerId = workspaceGlLayer.id
-      if (layerId === undefined) {
-        layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
+    const existingLayerIds = style
+      .get('layers')
+      .toJS()
+      .map((l) => l.id)
+    const layersToAdd = gl.layers.filter((l) => !existingLayerIds.includes(l.id))
+    layersToAdd.forEach((layerToAdd) => {
+
+      let layerToAddId = id
+      if (gl.layers.length > 1) {
+        layerToAddId = `${id}-${new Date().getTime()}`
       }
-      const defaultGlLayer = setLayerStyleDefaults(workspaceGlLayer)
+      const defaultGlLayer = setLayerStyleDefaults(layerToAdd)
 
       const glLayer = {
         ...defaultGlLayer,
-        id: layerId,
+        id: layerToAddId,
         source: id,
       }
 
@@ -440,11 +445,11 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   const currentGLSources = getState().map.style.mapStyle.toJS().sources
 
   // collect layers declared in workspace but not in original gl style
-  const workspaceGLLayers = layers.filter(
-    (layer) => layer.gl !== undefined && currentGLSources[layer.id] === undefined
-  )
+  const workspaceGLLayers = layers.filter((layer) => layer.gl !== undefined)
+
   if (workspaceGLLayers.length) {
-    dispatch(addWorkspaceGLLayers(workspaceGLLayers))
+    // Adds the gl layers again in case the source is a dynamic geojson source
+    dispatch(updateWorkspaceGLLayers(workspaceGLLayers))
   }
 
   // instanciate custom layers if needed
