@@ -1,8 +1,18 @@
 import * as React from 'react'
 
 export interface MapModuleViewport {
-  zoom?: number
-  center?: number[]
+  zoom: number
+  center: number[]
+}
+
+export interface MapModuleTrack {
+  id: string
+  url?: string
+  data?: object
+  color?: string
+  type?: string
+  layerTemporalExtents?: Array<Array<number>>
+  fitBoundsOnLoad?: boolean
 }
 
 export interface MapModuleHeatmapLayers {
@@ -69,9 +79,10 @@ export interface MapModuleClickPopup {
 }
 
 export interface MapModuleProps {
-  token?: string
   viewport: MapModuleViewport
-  tracks?: any[]
+  token?: string
+  transitionsEnabled?: boolean
+  tracks?: MapModuleTrack[]
   heatmapLayers?: MapModuleHeatmapLayers[]
   temporalExtent?: Date[]
   highlightTemporalExtent?: Date[]

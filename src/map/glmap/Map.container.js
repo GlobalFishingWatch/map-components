@@ -2,6 +2,8 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { fromJS } from 'immutable'
 import { TRACKS_LAYER_IN_FRONT_OF_GROUP } from '../config'
+import LinearInterpolator from 'react-map-gl/dist/esm/utils/transition/linear-interpolator'
+import { easeCubicInOut } from 'd3-ease'
 import { closePopup } from '../module/module.actions.js'
 import { getTracksStyles } from '../tracks/tracks.selectors.js'
 import { mapInteraction } from './interaction.actions.js'
@@ -59,8 +61,16 @@ const getCursor = createSelector(
   }
 )
 
+const defaultTransitions = {}
+const transitions = {
+  transitionDuration: 200,
+  transitionEasing: easeCubicInOut,
+  transitionInterpolator: new LinearInterpolator(),
+}
+
 const mapStateToProps = (state) => ({
   viewport: state.map.viewport.viewport,
+  transitions: ownProps.transitionsEnabled === true ? transitions : defaultTransitions,
   maxZoom: state.map.viewport.maxZoom,
   minZoom: state.map.viewport.minZoom,
   cursor: getCursor(state),

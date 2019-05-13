@@ -128,6 +128,7 @@ class Map extends React.Component {
   render() {
     const {
       viewport,
+      transitions,
       maxZoom,
       minZoom,
       transitionEnd,
@@ -153,6 +154,8 @@ class Map extends React.Component {
         }}
       >
         <MapGL
+          {...viewport}
+          {...transitions}
           ref={this.getRef}
           transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
@@ -160,7 +163,6 @@ class Map extends React.Component {
           onClick={this.onClick}
           getCursor={this.getCursor}
           mapStyle={mapStyle}
-          {...viewport}
           maxZoom={maxZoom}
           minZoom={minZoom}
           onViewportChange={this.onViewportChange}
@@ -196,6 +198,7 @@ class Map extends React.Component {
 
 Map.propTypes = {
   token: PropTypes.string,
+  transitions: PropTypes.object.isRequired,
   viewport: PropTypes.object.isRequired,
   mapStyle: PropTypes.object.isRequired,
   clickPopup: PropTypes.object,
