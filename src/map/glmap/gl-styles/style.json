@@ -532,7 +532,7 @@
       "id": "world_encounters",
       "type": "circle",
       "source": "world_encounters",
-      "source-layer": "default",
+      "source-layer": "points",
       "paint": {
         "circle-radius": 3,
         "circle-color": "#E5647D",
