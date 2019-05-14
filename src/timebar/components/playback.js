@@ -174,7 +174,7 @@ class Playback extends Component {
           type="button"
           title={`${playing === true ? 'Pause' : 'Play'} animation`}
           onClick={this.onPlayToggleClick}
-          className={cx(uiStyles.uiButton, styles.play)}
+          className={cx(uiStyles.uiButton, styles.buttonBigger, styles.play)}
         >
           {playing === true ? <IconPause /> : <IconPlay />}
         </button>

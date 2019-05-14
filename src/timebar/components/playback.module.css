@@ -2,7 +2,6 @@
   fill: var(--timebar-white);
 }
 
-
 /* PLAYBACK ACTIONS */
 
 .playbackActions {
@@ -34,6 +33,12 @@
   border-radius: 50%;
 }
 
+.playbackActions .buttonBigger:hover,
+.playbackActions .buttonBigger:focus {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
 .playbackActions .loop {
   margin: 0 2.4rem;
 }
@@ -42,9 +47,8 @@
   margin-left: 2.4rem;
 }
 
-
 @media only screen and (max-width: 72rem) {
   .playbackActions {
-    /* display: none; */
+    display: none;
   }
 }
