@@ -96,80 +96,82 @@ class TimeRangeSelector extends Component {
     return (
       <div className={styles.TimeRangeSelector}>
         <div className={styles.veil} onClick={this.props.onDiscard} />
-        <h2>Select a time range</h2>
-        <div className={styles.selectorsContainer}>
-          <div className={styles.selectorGroup}>
-            <span className={styles.selectorLabel}>START</span>
-            <DateSelector
-              canIncrement={startCanIncrement}
-              canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'day', offset)
-              }}
-              value={mStart.date()}
-            />
-            <DateSelector
-              canIncrement={startCanIncrement}
-              canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'month', offset)
-              }}
-              value={mStart.format('MMM')}
-            />
-            <DateSelector
-              canIncrement={startCanIncrement}
-              canDecrement={startCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('start', bounds, 'year', offset)
-              }}
-              value={mStart.year()}
-            />
+        <div className={styles.inner}>
+          <h2>Select a time range</h2>
+          <div className={styles.selectorsContainer}>
+            <div className={styles.selectorGroup}>
+              <span className={styles.selectorLabel}>START</span>
+              <DateSelector
+                canIncrement={startCanIncrement}
+                canDecrement={startCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('start', bounds, 'day', offset)
+                }}
+                value={mStart.date()}
+              />
+              <DateSelector
+                canIncrement={startCanIncrement}
+                canDecrement={startCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('start', bounds, 'month', offset)
+                }}
+                value={mStart.format('MMM')}
+              />
+              <DateSelector
+                canIncrement={startCanIncrement}
+                canDecrement={startCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('start', bounds, 'year', offset)
+                }}
+                value={mStart.year()}
+              />
+            </div>
+            <div className={styles.selectorGroup}>
+              <span className={styles.selectorLabel}>END</span>
+              <DateSelector
+                canIncrement={endCanIncrement}
+                canDecrement={endCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('end', bounds, 'day', offset)
+                }}
+                value={mEnd.date()}
+              />
+              <DateSelector
+                canIncrement={endCanIncrement}
+                canDecrement={endCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('end', bounds, 'month', offset)
+                }}
+                value={mEnd.format('MMM')}
+              />
+              <DateSelector
+                canIncrement={endCanIncrement}
+                canDecrement={endCanDecrement}
+                onChange={(offset) => {
+                  this.setUnit('end', bounds, 'year', offset)
+                }}
+                value={mEnd.year()}
+              />
+            </div>
           </div>
-          <div className={styles.selectorGroup}>
-            <span className={styles.selectorLabel}>END</span>
-            <DateSelector
-              canIncrement={endCanIncrement}
-              canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'day', offset)
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={classNames(styles.cta, styles.secondary)}
+              onClick={this.last30days}
+            >
+              LAST 30 DAYS
+            </button>
+            <button
+              type="button"
+              className={styles.cta}
+              onClick={() => {
+                this.submit(start, end)
               }}
-              value={mEnd.date()}
-            />
-            <DateSelector
-              canIncrement={endCanIncrement}
-              canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'month', offset)
-              }}
-              value={mEnd.format('MMM')}
-            />
-            <DateSelector
-              canIncrement={endCanIncrement}
-              canDecrement={endCanDecrement}
-              onChange={(offset) => {
-                this.setUnit('end', bounds, 'year', offset)
-              }}
-              value={mEnd.year()}
-            />
+            >
+              DONE
+            </button>
           </div>
-        </div>
-        <div className={styles.actions}>
-          <button
-            type="button"
-            className={classNames(styles.cta, styles.secondary)}
-            onClick={this.last30days}
-          >
-            LAST 30 DAYS
-          </button>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={() => {
-              this.submit(start, end)
-            }}
-          >
-            DONE
-          </button>
         </div>
       </div>
     )
@@ -182,6 +184,7 @@ TimeRangeSelector.propTypes = {
   end: PropTypes.string.isRequired,
   absoluteStart: PropTypes.string.isRequired,
   absoluteEnd: PropTypes.string.isRequired,
+  onDiscard: PropTypes.func.isRequired,
 }
 
 export default TimeRangeSelector

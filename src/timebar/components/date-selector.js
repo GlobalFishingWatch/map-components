@@ -5,6 +5,43 @@ import { ReactComponent as IconArrowUp } from '../icons/arrowUp.svg'
 import { ReactComponent as IconArrowDown } from '../icons/arrowDown.svg'
 
 class DateSelector extends Component {
+  pressing = 0
+  pressingInterval = null
+  pressingTimeout = null
+
+  onMouseDown(increment) {
+    this.clear()
+    const { onChange } = this.props
+    this.pressing = increment
+    onChange(this.pressing)
+    this.pressingTimeout = window.setTimeout(this.startTimeout, 800)
+    window.addEventListener('mouseup', this.onMouseUp)
+  }
+
+  startTimeout = () => {
+    this.pressingInterval = window.setInterval(this.onInterval, 80)
+  }
+
+  onInterval = () => {
+    const { onChange } = this.props
+    onChange(this.pressing)
+  }
+
+  onMouseUp = () => {
+    this.clear()
+    this.pressing = 0
+  }
+
+  clear() {
+    window.clearInterval(this.pressingInterval)
+    window.clearTimeout(this.pressingTimeout)
+    window.removeEventListener('mouseup', this.onMouseUp)
+  }
+
+  componentWillUnmount() {
+    this.clear()
+  }
+
   render() {
     const { onChange, value, canIncrement, canDecrement } = this.props
     return (
@@ -13,8 +50,8 @@ class DateSelector extends Component {
           type="button"
           className={styles.arrowButton}
           disabled={!canIncrement}
-          onClick={() => {
-            onChange(+1)
+          onMouseDown={() => {
+            this.onMouseDown(+1)
           }}
         >
           <IconArrowUp />
@@ -24,8 +61,8 @@ class DateSelector extends Component {
           type="button"
           className={styles.arrowButton}
           disabled={!canDecrement}
-          onClick={() => {
-            onChange(-1)
+          onMouseDown={() => {
+            this.onMouseDown(-1)
           }}
         >
           <IconArrowDown />
