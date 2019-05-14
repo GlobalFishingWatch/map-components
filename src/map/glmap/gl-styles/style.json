@@ -167,6 +167,12 @@
       },
       "type": "vector"
     },
+    "encounters_ais": {
+      "type": "vector",
+      "tiles": [
+        "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
+      ]
+    },
     "events_fishing": {
       "type": "vector",
       "tiles": [
@@ -177,15 +183,6 @@
       "type": "vector",
       "tiles": [
         "https://events-dot-world-fishing-827.appspot.com/datasets/indonesia/events/encounter/tiles/{z},{x},{y}"
-      ],
-      "metadata": {
-        "gfw:popups": [{ "id": "event_id" }]
-      }
-    },
-    "world_encounters": {
-      "type": "vector",
-      "tiles": [
-        "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -529,10 +526,14 @@
       }
     },
     {
-      "id": "world_encounters",
+      "id": "encounters_ais",
       "type": "circle",
-      "source": "world_encounters",
+      "source": "encounters_ais",
       "source-layer": "points",
+      "metadata": {
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
+      },
       "paint": {
         "circle-radius": 3,
         "circle-color": "#E5647D",
