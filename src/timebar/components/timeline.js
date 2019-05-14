@@ -276,6 +276,8 @@ class Timeline extends Component {
       .domain([new Date(outerStart), new Date(outerEnd)])
       .range([0, this.state.outerWidth])
 
+    const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
+
     return (
       <div ref={(node) => (this.node = node)} className={styles.Timeline}>
         {bookmarkStart !== undefined && bookmarkStart !== null && (
@@ -322,7 +324,7 @@ class Timeline extends Component {
                 outerEnd,
                 outerWidth,
                 outerHeight,
-                graphHeight: outerHeight - 20,
+                graphHeight: outerHeight,
                 tooltipContainer: this.tooltipContainer,
                 ...this.props,
               })}
@@ -372,14 +374,16 @@ class Timeline extends Component {
             width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
           }}
         />
-        <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
-          {(style) => (
-            <animated.div className={styles.absoluteEnd} style={style}>
-              <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
-              <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
-            </animated.div>
-          )}
-        </Spring>
+        {lastUpdatePosition <= outerWidth && (
+          <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
+            {(style) => (
+              <animated.div className={styles.absoluteEnd} style={style}>
+                <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
+                <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
+              </animated.div>
+            )}
+          </Spring>
+        )}
       </div>
     )
   }
