@@ -6,7 +6,9 @@
   --timebar-ui-btn-color: #163f89;
   --timebar-ui-btn-color-faded: rgba(22, 63, 137, 0.5);
   --timebar-ui-btn-color-hover: #2d5295;
+  --timebar-main-background-color-white: rgba(79, 198, 215, 0.1);
   --timebar-main-background-color-white-overlay: #1d2a4b;
+  --timebar-main-background-color-white-hover: rgba(79, 198, 215, 0.4);
   --timebar-cta-btn-color: #46a4b9;
   --timebar-cta-btn-hover: #58acbf;
   --timebar-light-blue: #4fc6d7;

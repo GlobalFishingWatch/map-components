@@ -243,7 +243,7 @@ class VesselEvents extends Component {
     const backgrounds = this.getBackgrounds(filteredEvents)
     const lines = this.getLines(filteredEvents)
     const overlays = this.getOverlays(filteredEvents)
-    const y = 5 + graphHeight / 2
+    const y = graphHeight / 2
     const tooltip = this.renderTooltip(filteredEvents)
 
     return (
@@ -259,7 +259,12 @@ class VesselEvents extends Component {
                 onMouseEnter={() => onEventHighlighted(props.event)}
                 onMouseLeave={() => onEventHighlighted()}
               >
-                <rect x={props.style.x1} y={0} width={props.style.width} height={graphHeight} />
+                <rect
+                  x={props.style.x1 + HEIGHTS.port / 2}
+                  y={0}
+                  width={props.style.width}
+                  height={graphHeight}
+                />
               </g>
             )}
           </Layer>

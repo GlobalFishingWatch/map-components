@@ -7,6 +7,7 @@ import ImmediateContext from '../immediateContext'
 import styles from './activity.module.css'
 
 const TOP_MARGIN = 5
+const BOTTOM_MARGIN = 20
 
 class Activity extends Component {
   static contextType = ImmediateContext
@@ -19,7 +20,7 @@ class Activity extends Component {
     const lastDay = activity[activity.length - 1]
     const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
 
-    const finalHeight = graphHeight - TOP_MARGIN
+    const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
     const middle = TOP_MARGIN + finalHeight / 2
 
     const areaGenerator = area()
