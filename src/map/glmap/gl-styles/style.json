@@ -532,6 +532,7 @@
       "source-layer": "points",
       "metadata": {
         "gfw:temporal": true,
+        "gfw:temporalField": "timeIndex",
         "mapbox:group": "temporal"
       },
       "paint": {

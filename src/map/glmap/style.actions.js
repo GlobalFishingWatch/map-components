@@ -1,6 +1,7 @@
 import { fromJS } from 'immutable'
-import { hexToRgb } from '../utils/map-colors'
+import convert from '@globalfishingwatch/map-convert'
 import uniq from 'lodash/uniq'
+import { hexToRgb } from '../utils/map-colors'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
 import GL_STYLE from './gl-styles/style.json'
@@ -33,9 +34,18 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   const start = Math.round(temporalExtent[0].getTime() / 1000)
   const end = Math.round(temporalExtent[1].getTime() / 1000)
 
+  // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
+  // logic for legacy encounters layer that only have a 'timeIndex'
+  const startIndex = convert.getOffsetedTimeAtPrecision(temporalExtent[0].getTime())
+  const endIndex = convert.getOffsetedTimeAtPrecision(temporalExtent[1].getTime())
+
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]
-    if (glLayer.metadata === undefined || glLayer.metadata['gfw:temporal'] !== true) {
+    if (
+      glLayer.metadata === undefined ||
+      glLayer.metadata['gfw:temporal'] !== true ||
+      glLayer.layout.visibility === 'none'
+    ) {
       continue
     }
 
@@ -45,8 +55,16 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     if (currentFilter === null) {
       throw new Error('filter must be preset on style.json for temporal layer: ', glLayer.id)
     }
-    currentFilter[1][2] = start
-    currentFilter[2][2] = end
+
+    // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
+    // logic for legacy encounters layer that only have a 'timeIndex'
+    const isLegacy = glLayer.metadata && glLayer.metadata['gfw:temporalField'] === 'timeIndex'
+    console.log(isLegacy)
+    currentFilter[1][2] = isLegacy ? startIndex : start
+    currentFilter[2][2] = isLegacy ? endIndex : end
+    // currentFilter[1][2] = start
+    // currentFilter[2][2] = end
+    console.log(currentFilter)
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
