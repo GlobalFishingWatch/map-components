@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, NavLink } from 'react-router-do
 import './App.css'
 
 import MapPage from './map/map'
+import MapWorkspace from './map-workspace/map-workspace'
 import Miniglobe from './miniglobe/miniglobe'
 import Timebar from './timebar/timebar'
 import CountryFlag from './countryflag/countryflag'
@@ -17,6 +18,7 @@ class App extends Component {
           <nav className="nav">
             <NavLink to="/miniglobe">Miniglobe</NavLink>
             <NavLink to="/map">Map</NavLink>
+            <NavLink to="/map-workspace">Map+workspace</NavLink>
             <NavLink to="/timebar">Timebar</NavLink>
             <NavLink to="/countryflag">CountryFlag</NavLink>
           </nav>
@@ -24,6 +26,7 @@ class App extends Component {
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/map" component={MapPage} />
+              <Route path="/map-workspace" component={MapWorkspace} />
               <Route path="/miniglobe" component={Miniglobe} />
               <Route path="/timebar" component={Timebar} />
               <Route path="/countryflag" component={CountryFlag} />
