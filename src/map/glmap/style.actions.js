@@ -41,11 +41,7 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
 
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]
-    if (
-      glLayer.metadata === undefined ||
-      glLayer.metadata['gfw:temporal'] !== true ||
-      glLayer.layout.visibility === 'none'
-    ) {
+    if (glLayer.metadata === undefined || glLayer.metadata['gfw:temporal'] !== true) {
       continue
     }
 
@@ -59,12 +55,10 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
     // logic for legacy encounters layer that only have a 'timeIndex'
     const isLegacy = glLayer.metadata && glLayer.metadata['gfw:temporalField'] === 'timeIndex'
-    console.log(isLegacy)
     currentFilter[1][2] = isLegacy ? startIndex : start
     currentFilter[2][2] = isLegacy ? endIndex : end
     // currentFilter[1][2] = start
     // currentFilter[2][2] = end
-    console.log(currentFilter)
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
