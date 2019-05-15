@@ -28,7 +28,7 @@ const ONE_DAY_MS = 1000 * 60 * 60 * 24
 class Timebar extends Component {
   constructor() {
     super()
-    const toggleImmediate = (immediate) => {
+    this.toggleImmediate = (immediate) => {
       this.setState((state) => ({
         immediate,
       }))
@@ -36,7 +36,6 @@ class Timebar extends Component {
     this.interval = null
     this.state = {
       immediate: false,
-      toggleImmediate,
       showTimeRangeSelector: false,
       absoluteEnd: null,
     }
@@ -148,7 +147,7 @@ class Timebar extends Component {
 
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
-    const { immediate, toggleImmediate } = this.state
+    const { immediate } = this.state
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
@@ -169,7 +168,7 @@ class Timebar extends Component {
       getTime(bookmarkEnd) === getTime(end)
 
     return (
-      <ImmediateContext.Provider value={{ immediate, toggleImmediate }}>
+      <ImmediateContext.Provider value={{ immediate, toggleImmediate: this.toggleImmediate }}>
         <div className={styles.Timebar}>
           {enablePlayback && (
             <Playback

@@ -19,6 +19,7 @@ const FAST_FORWARD_REWIND_MULTIPLICATOR = 100
 
 class Playback extends Component {
   static contextType = ImmediateContext
+  lastUpdateMs = null
   constructor() {
     super()
     this.state = {
@@ -79,7 +80,7 @@ class Playback extends Component {
   }
 
   tick = (elapsedMs) => {
-    if (this.lastUpdateMs === undefined || this.lastUpdateMs === null) {
+    if (this.lastUpdateMs === null) {
       this.lastUpdateMs = elapsedMs
     }
     // "compare" elapsed with theoretical 60 fps frame
@@ -138,8 +139,6 @@ class Playback extends Component {
   onSpeedClick = () => {
     const { speedStep } = this.state
     const nextStep = speedStep === SPEED_STEPS.length - 1 ? 0 : speedStep + 1
-    const step = this.getStep(nextStep)
-    this.step = step
     this.setState({ speedStep: nextStep })
   }
 
