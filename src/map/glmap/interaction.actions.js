@@ -31,6 +31,8 @@ const getAreaKm2 = (glFeature) => {
   return formatted
 }
 
+// Try to retrieve 'gfw:id' (generated when instanciating CARTO layer to preserve original style.json id)
+// In most cases it won't exist, so fall back to source id
 const getStaticLayerIdFromGlFeature = (glFeature) =>
   (glFeature.layer.metadata !== undefined && glFeature.layer.metadata['gfw:id']) ||
   glFeature.layer.source
@@ -65,9 +67,20 @@ export const mapHover = (latitude, longitude, features, cluster) => (dispatch, g
   if (isEmpty === true) {
     const feature = findFeature(features, null)
     if (feature !== undefined) {
+      event.type = 'static'
+      event.cluster = cluster
+      event.layer = {
+        id: feature.staticLayerId,
+      }
+      const properties = feature.feature.properties
+      event.target = {
+        properties,
+      }
+      cursor = 'pointer'
+
       const popupFields = getFeatureMetaFields(feature.staticLayerId, state, feature.feature)
+
       if (popupFields !== null) {
-        const properties = feature.feature.properties
         const mainPopupField =
           popupFields.find((f) => f.id && f.id.toLowerCase() === 'name') ||
           popupFields.find((f) => f.id && f.id.toLowerCase() === 'id') ||
@@ -80,16 +93,8 @@ export const mapHover = (latitude, longitude, features, cluster) => (dispatch, g
           )
         const mainPopupFieldId = mainPopupField.id
         const featureTitle = properties[mainPopupFieldId]
-        event.type = 'static'
-        event.cluster = cluster
-        event.layer = {
-          id: feature.staticLayerId,
-        }
-        event.target = {
-          featureTitle,
-          properties,
-        }
-        cursor = 'pointer'
+
+        event.target.featureTitle = featureTitle
       }
     }
   } else if (isEmpty !== true) {

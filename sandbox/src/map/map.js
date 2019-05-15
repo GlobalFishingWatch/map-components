@@ -7,12 +7,12 @@ class MapPage extends Component {
     highlightTemporalExtent: [new Date(2017, 11, 1), new Date(2017, 11, 31)],
     viewport: {
       center: [0, 0],
-      zoom: 5,
+      zoom: 3,
     }
   }
 
   loadTemporalExtent = [new Date(2017, 12, 1), new Date(2017, 11, 31)]
-  temporalExtent = [new Date(2017, 11, 1), new Date(2017, 11, 31)]
+  temporalExtent = [new Date(2017, 1, 1), new Date(2017, 11, 31)]
 
   onViewportChange = ({ zoom, center }) => {
     if (this.state.workspaceAuto === false) {
