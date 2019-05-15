@@ -536,10 +536,26 @@
         "mapbox:group": "temporal"
       },
       "paint": {
+        "circle-color": "#e5647d",
         "circle-radius": 3,
-        "circle-color": "#E5647D",
-        "circle-stroke-width": 0.5,
-        "circle-stroke-color": "#000000"
+        "circle-opacity": 0.9
+      }
+    },
+    {
+      "id": "encounters_ais_outline",
+      "type": "circle",
+      "source": "encounters_ais",
+      "source-layer": "points",
+      "metadata": {
+        "gfw:temporal": true,
+        "gfw:temporalField": "timeIndex",
+        "mapbox:group": "temporal"
+      },
+      "paint": {
+        "circle-color": "hsla(0, 0%, 0%, 0)",
+        "circle-stroke-color": "#e5647d",
+        "circle-stroke-width": 1,
+        "circle-radius": 6
       }
     },
     {
