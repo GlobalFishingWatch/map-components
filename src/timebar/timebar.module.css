@@ -8,7 +8,7 @@
   font-family: var(--timebar-font-family);
   font-size: var(--timebar-font-size);
   font-weight: var(--timebar-font-weight);
-  box-sizing: border-box;
+  box-sizing: content-box;
 }
 
 .uiButton {
@@ -67,7 +67,6 @@
   position: relative;
 }
 
-
 @media only screen and (max-width: 72rem) {
   :root {
     --timebar-size: 6rem;
@@ -83,8 +82,4 @@
     width: var(--timebar-size);
     height: var(--timebar-size);
   }
-}
-
-.timeRangeContainer {
-  position: relative;
 }
