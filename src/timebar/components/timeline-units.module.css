@@ -29,6 +29,7 @@
   background: none;
   border: none;
   cursor: zoom-in;
+  z-index: 1;
 }
 
 .unit button:focus {

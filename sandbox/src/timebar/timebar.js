@@ -41,8 +41,8 @@ const getHumanizedDates = (start, end) => {
 // console.log(groupedVesselEvents)
 // console.log(groupedVesselEvents.map(e => e.type))
 
-const initialStart = '2017-12-01T00:00:00.000Z'
-const initialEnd = '2018-12-01T00:00:00.000Z'
+const initialStart = '2018-04-01T00:00:00.000Z'
+const initialEnd = '2019-03-31T00:00:00.000Z'
 
 const absoluteStart = '2017-01-01T00:00:00.000Z'
 const absoluteEnd = initialEnd
@@ -136,6 +136,7 @@ class TimebarContainer extends Component {
           <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
         </div>
         <Timebar
+          enablePlayback
           start={start}
           end={end}
           absoluteStart={absoluteStart}

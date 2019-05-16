@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import cx from 'classnames'
+import dayjs from 'dayjs'
+import ImmediateContext from './immediateContext'
 import {
   getTime,
   clampToAbsoluteBoundaries,
@@ -9,13 +10,11 @@ import {
   isMoreThanADay,
   getHumanizedDates,
 } from './utils'
+import './timebar-settings.module.css'
 import styles from './timebar.module.css'
 import TimeRangeSelector from './components/timerange-selector'
 import Timeline from './components/timeline'
-import { ReactComponent as IconLoop } from './icons/loop.svg'
-import { ReactComponent as IconBack } from './icons/back.svg'
-import { ReactComponent as IconPlay } from './icons/play.svg'
-import { ReactComponent as IconForward } from './icons/forward.svg'
+import Playback from './components/playback'
 import { ReactComponent as IconTimeRange } from './icons/timeRange.svg'
 import { ReactComponent as IconBookmark } from './icons/bookmark.svg'
 import { ReactComponent as IconBookmarkFilled } from './icons/bookmarkFilled.svg'
@@ -29,7 +28,14 @@ const ONE_DAY_MS = 1000 * 60 * 60 * 24
 class Timebar extends Component {
   constructor() {
     super()
+    this.toggleImmediate = (immediate) => {
+      this.setState((state) => ({
+        immediate,
+      }))
+    }
+    this.interval = null
     this.state = {
+      immediate: false,
       showTimeRangeSelector: false,
       absoluteEnd: null,
     }
@@ -135,8 +141,13 @@ class Timebar extends Component {
     onChange(start, end, humanizedStart, humanizedEnd)
   }
 
+  onPlaybackTick = (newStart, newEnd) => {
+    this.notifyChange(newStart, newEnd)
+  }
+
   render() {
     const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
+    const { immediate } = this.state
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
@@ -157,103 +168,75 @@ class Timebar extends Component {
       getTime(bookmarkEnd) === getTime(end)
 
     return (
-      <div className={styles.Timebar}>
-        {enablePlayback && (
-          <div className={styles.playbackActions}>
-            <button
-              type="button"
-              title="Toggle animation looping"
-              className={classNames(styles.uiButton, styles.secondary, styles.loop)}
-            >
-              <IconLoop />
-            </button>
-            <button
-              type="button"
-              title="Move back"
-              className={classNames(styles.uiButton, styles.secondary, styles.back)}
-            >
-              <IconBack />
-            </button>
-            <button
-              type="button"
-              title="Play animation"
-              className={classNames(styles.uiButton, styles.play)}
-            >
-              <IconPlay />
-            </button>
-            <button
-              type="button"
-              title="Move forward"
-              className={classNames(styles.uiButton, styles.secondary, styles.forward)}
-            >
-              <IconForward />
-            </button>
-            <button
-              type="button"
-              title="Change animation speed"
-              className={classNames(styles.uiButton, styles.secondary, styles.speed)}
-            >
-              1x
-            </button>
-          </div>
-        )}
-
-        <div className={styles.timeActions}>
-          {showTimeRangeSelector && (
-            <TimeRangeSelector
-              {...this.props}
+      <ImmediateContext.Provider value={{ immediate, toggleImmediate: this.toggleImmediate }}>
+        <div className={styles.Timebar}>
+          {enablePlayback && (
+            <Playback
+              start={start}
+              end={end}
+              absoluteStart={absoluteStart}
               absoluteEnd={absoluteEnd}
-              onSubmit={this.onTimeRangeSelectorSubmit}
-              onDiscard={this.toggleTimeRangeSelector}
+              onTick={this.onPlaybackTick}
             />
           )}
-          <div className={styles.timeRangeContainer}>
-            <button
-              type="button"
-              title="Select a time range"
-              className={classNames(styles.uiButton, styles.timeRange)}
-              onClick={this.toggleTimeRangeSelector}
-            >
-              <IconTimeRange />
-            </button>
-          </div>
-          <button
-            type="button"
-            title="Bookmark current time range"
-            className={classNames(styles.uiButton, styles.bookmark)}
-            onClick={this.setBookmark}
-            disabled={bookmarkDisabled === true}
-          >
-            {hasBookmark ? <IconBookmarkFilled /> : <IconBookmark />}
-          </button>
-          <div className={styles.timeScale}>
-            <button
-              type="button"
-              title="Zoom out"
-              disabled={canZoomOut === false}
-              onClick={() => {
-                this.zoom('out')
-              }}
-              className={classNames(styles.uiButton, styles.out)}
-            >
-              <IconMinus />
-            </button>
-            <button
-              type="button"
-              title="Zoom in"
-              disabled={canZoomIn === false}
-              onClick={() => {
-                this.zoom('in')
-              }}
-              className={classNames(styles.uiButton, styles.in)}
-            >
-              <IconPlus />
-            </button>
-          </div>
-        </div>
 
-        <Timeline {...this.props} onChange={this.notifyChange} absoluteEnd={absoluteEnd} />
-      </div>
+          <div className={styles.timeActions}>
+            {showTimeRangeSelector && (
+              <TimeRangeSelector
+                {...this.props}
+                absoluteEnd={absoluteEnd}
+                onSubmit={this.onTimeRangeSelectorSubmit}
+                onDiscard={this.toggleTimeRangeSelector}
+              />
+            )}
+            <div className={styles.timeRangeContainer}>
+              <button
+                type="button"
+                title="Select a time range"
+                className={cx(styles.uiButton, styles.timeRange)}
+                onClick={this.toggleTimeRangeSelector}
+              >
+                <IconTimeRange />
+              </button>
+            </div>
+            <button
+              type="button"
+              title="Bookmark current time range"
+              className={cx(styles.uiButton, styles.bookmark)}
+              onClick={this.setBookmark}
+              disabled={bookmarkDisabled === true}
+            >
+              {hasBookmark ? <IconBookmarkFilled /> : <IconBookmark />}
+            </button>
+            <div className={styles.timeScale}>
+              <button
+                type="button"
+                title="Zoom out"
+                disabled={canZoomOut === false}
+                onClick={() => {
+                  this.zoom('out')
+                }}
+                className={cx(styles.uiButton, styles.out)}
+              >
+                <IconMinus />
+              </button>
+              <button
+                type="button"
+                title="Zoom in"
+                disabled={canZoomIn === false}
+                onClick={() => {
+                  this.zoom('in')
+                }}
+                className={cx(styles.uiButton, styles.in)}
+              >
+                <IconPlus />
+              </button>
+            </div>
+          </div>
+
+          <Timeline {...this.props} onChange={this.notifyChange} absoluteEnd={absoluteEnd} />
+        </div>
+      </ImmediateContext.Provider>
     )
   }
 }
@@ -271,7 +254,10 @@ Timebar.propTypes = {
 }
 
 Timebar.defaultProps = {
+  bookmarkStart: null,
+  bookmarkEnd: null,
   enablePlayback: false,
+  onBookmarkChange: () => {},
 }
 
 export default Timebar

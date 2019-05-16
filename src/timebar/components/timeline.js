@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import cx from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
+import ImmediateContext from '../immediateContext'
 import { animated, Spring } from 'react-spring/renderprops'
 import {
   getTime,
@@ -22,6 +23,7 @@ const DRAG_START = 'DRAG_START'
 const DRAG_END = 'DRAG_END'
 
 class Timeline extends Component {
+  static contextType = ImmediateContext
   constructor() {
     super()
     this.state = {
@@ -146,6 +148,7 @@ class Timeline extends Component {
     const clientX = event.clientX || event.changedTouches[0].clientX
     this.lastX = clientX
     const x = clientX - outerX
+    this.context.toggleImmediate(true)
     this.setState({
       dragging,
       handlerMouseX: x,
@@ -214,6 +217,7 @@ class Timeline extends Component {
 
     const isHandlerZoomInValid = this.isHandlerZoomInValid(x)
 
+    this.context.toggleImmediate(false)
     this.setState({
       dragging: null,
       handlerMouseX: null,
@@ -260,6 +264,7 @@ class Timeline extends Component {
       outerWidth,
       outerHeight,
     } = this.state
+    const { immediate } = this.context
 
     this.innerScale = scaleTime()
       .domain([new Date(start), new Date(end)])
@@ -271,7 +276,7 @@ class Timeline extends Component {
       .domain([new Date(outerStart), new Date(outerEnd)])
       .range([0, this.state.outerWidth])
 
-    const immediate = this.state.dragging !== null
+    const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
 
     return (
       <div ref={(node) => (this.node = node)} className={styles.Timeline}>
@@ -282,7 +287,6 @@ class Timeline extends Component {
             bookmarkEnd={bookmarkEnd}
             minX={-outerX}
             maxX={outerWidth}
-            immediate={immediate}
             onDelete={() => {
               onBookmarkChange(null, null)
             }}
@@ -312,7 +316,6 @@ class Timeline extends Component {
               outerScale={this.outerScale}
               outerStart={outerStart}
               outerEnd={outerEnd}
-              immediate={immediate}
             />
             {this.props.children &&
               this.props.children({
@@ -321,8 +324,7 @@ class Timeline extends Component {
                 outerEnd,
                 outerWidth,
                 outerHeight,
-                immediate,
-                graphHeight: outerHeight - 20,
+                graphHeight: outerHeight,
                 tooltipContainer: this.tooltipContainer,
                 ...this.props,
               })}
@@ -334,7 +336,7 @@ class Timeline extends Component {
           }}
         />
         <div
-          className={classNames(styles.veilLeft, styles.veil, {
+          className={cx(styles.veilLeft, styles.veil, {
             [styles._immediate]: dragging === DRAG_START,
           })}
           style={{
@@ -364,7 +366,7 @@ class Timeline extends Component {
           mouseX={this.state.handlerMouseX}
         />
         <div
-          className={classNames(styles.veilRight, styles.veil, {
+          className={cx(styles.veilRight, styles.veil, {
             [styles._immediate]: dragging === DRAG_END,
           })}
           style={{
@@ -372,14 +374,16 @@ class Timeline extends Component {
             width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
           }}
         />
-        <Spring native immediate={immediate} to={{ left: this.outerScale(new Date(absoluteEnd)) }}>
-          {(style) => (
-            <animated.div className={styles.absoluteEnd} style={style}>
-              <div className={styles.lastUpdateLabel}>Last Update</div>
-              <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
-            </animated.div>
-          )}
-        </Spring>
+        {lastUpdatePosition <= outerWidth && (
+          <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
+            {(style) => (
+              <animated.div className={styles.absoluteEnd} style={style}>
+                <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
+                <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
+              </animated.div>
+            )}
+          </Spring>
+        )}
       </div>
     )
   }

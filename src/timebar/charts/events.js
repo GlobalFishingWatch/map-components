@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import styles from './events.module.css'
 
 const TOP_MARGIN = 5
+const BOTTOM_MARGIN = 20
 
 class Events extends Component {
   getFinalEvents = memoize(
@@ -86,8 +87,8 @@ class Events extends Component {
     // TODO this probably won't work correctly with Redux immutable state as nextProps.events !== props.events?
     const finalEvents = this.getFinalEvents(events, showFishing)
 
-    const finalHeight = graphHeight - TOP_MARGIN * 2
-    const middle = graphHeight / 2
+    const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
+    const middle = TOP_MARGIN + finalHeight / 2
 
     const areaGenerator = area()
       .x((d) => outerScale(d.data.date))

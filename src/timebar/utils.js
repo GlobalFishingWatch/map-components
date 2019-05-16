@@ -15,17 +15,20 @@ export const clampToAbsoluteBoundaries = (
   const absoluteEndMs = getTime(absoluteEnd)
   let newStartClamped = start
   let newEndClamped = end
+  let clamped
 
   // newStart is before absolute start: use abs start as new start and keep the existing duration to get to new end
   if (startMs < absoluteStartMs) {
     newStartClamped = absoluteStart
     newEndClamped = new Date(absoluteStartMs + desiredDeltaMs).toISOString()
+    clamped = 'start'
     // newEnd is after absolute end: use abs end as new end and keep the existing duration to get back to new start
   } else if (endMs > absoluteEndMs) {
     newEndClamped = absoluteEnd
     newStartClamped = new Date(absoluteEndMs - desiredDeltaMs).toISOString()
+    clamped = 'end'
   }
-  return { newStartClamped, newEndClamped }
+  return { newStartClamped, newEndClamped, clamped }
 }
 
 export const getDeltaMs = (start, end) => getTime(end) - getTime(start)

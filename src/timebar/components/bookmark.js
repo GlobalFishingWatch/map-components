@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { getHumanizedDates } from '../utils'
+import ImmediateContext from '../immediateContext'
 import styles from './bookmark.module.css'
 import { ReactComponent as IconBookmarkFilled } from '../icons/bookmarkFilled.svg'
 import { ReactComponent as IconDelete } from '../icons/delete.svg'
@@ -12,8 +13,10 @@ const MIN_WIDTH_WITH_OVERFLOW_ARROWS = 52
 const COMPACT_MAX_WIDTH = 240
 
 class Bookmark extends Component {
+  static contextType = ImmediateContext
   render() {
-    const { scale, bookmarkStart, bookmarkEnd, minX, maxX, immediate, onSelect } = this.props
+    const { scale, bookmarkStart, bookmarkEnd, minX, maxX, onSelect } = this.props
+    const { immediate } = this.context
 
     const x = scale(new Date(bookmarkStart))
     const width = scale(new Date(bookmarkEnd)) - x
