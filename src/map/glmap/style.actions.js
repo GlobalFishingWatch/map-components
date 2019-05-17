@@ -98,7 +98,15 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
           const originalLayerStyle = GL_STYLE.layers.find((l) => l.id === currentGlLayer.id)
 
           if (originalLayerStyle !== undefined) {
-            glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+            // for reset: do not repaint with default style when layer as a custom main color property
+            if (
+              currentGlLayer.metadata &&
+              currentGlLayer.metadata['gfw:mainColorPaintProperty'] === glPaintProperty
+            ) {
+              glPaintFinalValue = null
+            } else {
+              glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+            }
           } else {
             // this will happen when no style exist in the original definition (ie custom layers)
             // in this case set glPaintFinalValue to null and we'll just skip applying
@@ -201,6 +209,7 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     case 'circle': {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
+        .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
         .setIn(
           ['layers', glLayerIndex, 'paint', 'circle-radius'],
           initialGLLayer.paint['circle-radius']
@@ -215,7 +224,11 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
         )
 
       if (refLayer.color !== undefined) {
-        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
+        const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, 'paint', colorPaintProperty],
+          refLayer.color
+        )
       }
       break
     }

@@ -549,6 +549,7 @@
       "metadata": {
         "gfw:temporal": true,
         "gfw:temporalField": "timeIndex",
+        "gfw:mainColorPaintProperty": "circle-stroke-color",
         "mapbox:group": "temporal"
       },
       "paint": {

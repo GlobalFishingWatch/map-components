@@ -45,6 +45,7 @@ class MapPage extends Component {
               id: 'encounters_ais',
               visible: true,
               interactive: true,
+              color: '#eeff00'
             },
           ]}
           temporalExtent={this.temporalExtent}
