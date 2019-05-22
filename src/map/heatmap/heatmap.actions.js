@@ -355,6 +355,9 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
 
   Object.keys(layers).forEach((layerId) => {
     const layer = layers[layerId]
+    if (layer.visible !== true) {
+      return
+    }
     const allPossibleTilesByPreference = tileQuery.uids.map((uid) =>
       layer.tiles.find((tile) => tile.uid === uid)
     )

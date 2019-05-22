@@ -1,6 +1,7 @@
 import { fromJS } from 'immutable'
-import { hexToRgb } from '../utils/map-colors'
+import convert from '@globalfishingwatch/map-convert'
 import uniq from 'lodash/uniq'
+import { hexToRgb } from '../utils/map-colors'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
 import GL_STYLE from './gl-styles/style.json'
@@ -33,6 +34,11 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   const start = Math.round(temporalExtent[0].getTime() / 1000)
   const end = Math.round(temporalExtent[1].getTime() / 1000)
 
+  // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
+  // logic for legacy encounters layer that only have a 'timeIndex'
+  const startIndex = convert.getOffsetedTimeAtPrecision(temporalExtent[0].getTime())
+  const endIndex = convert.getOffsetedTimeAtPrecision(temporalExtent[1].getTime())
+
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]
     if (glLayer.metadata === undefined || glLayer.metadata['gfw:temporal'] !== true) {
@@ -45,8 +51,14 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     if (currentFilter === null) {
       throw new Error('filter must be preset on style.json for temporal layer: ', glLayer.id)
     }
-    currentFilter[1][2] = start
-    currentFilter[2][2] = end
+
+    // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
+    // logic for legacy encounters layer that only have a 'timeIndex'
+    const isLegacy = glLayer.metadata && glLayer.metadata['gfw:temporalField'] === 'timeIndex'
+    currentFilter[1][2] = isLegacy ? startIndex : start
+    currentFilter[2][2] = isLegacy ? endIndex : end
+    // currentFilter[1][2] = start
+    // currentFilter[2][2] = end
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
@@ -86,7 +98,15 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
           const originalLayerStyle = GL_STYLE.layers.find((l) => l.id === currentGlLayer.id)
 
           if (originalLayerStyle !== undefined) {
-            glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+            // for reset: do not repaint with default style when layer as a custom main color property
+            if (
+              currentGlLayer.metadata &&
+              currentGlLayer.metadata['gfw:mainColorPaintProperty'] === glPaintProperty
+            ) {
+              glPaintFinalValue = null
+            } else {
+              glPaintFinalValue = originalLayerStyle[paintOrLayout][glPaintProperty]
+            }
           } else {
             // this will happen when no style exist in the original definition (ie custom layers)
             // in this case set glPaintFinalValue to null and we'll just skip applying
@@ -189,6 +209,7 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     case 'circle': {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
+        .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
         .setIn(
           ['layers', glLayerIndex, 'paint', 'circle-radius'],
           initialGLLayer.paint['circle-radius']
@@ -203,7 +224,11 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
         )
 
       if (refLayer.color !== undefined) {
-        newStyle = newStyle.setIn(['layers', glLayerIndex, 'paint', 'circle-color'], refLayer.color)
+        const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
+        newStyle = newStyle.setIn(
+          ['layers', glLayerIndex, 'paint', colorPaintProperty],
+          refLayer.color
+        )
       }
       break
     }
