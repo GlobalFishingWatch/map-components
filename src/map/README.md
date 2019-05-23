@@ -56,6 +56,10 @@ Number.
 
 Array of [latitude, longitude]
 
+### `autoClusterZoom`
+
+Boolean. Default true. Have the map zoom in to an appropriate zoom level when user clicks on a cluster (several features under a point or one feature defined as a cluster)
+
 ## `tracks`
 
 Array of `track`. Sets the tracks to load and display (loading/displaying is triggered by diffing incoming array with existing array).
@@ -115,7 +119,7 @@ A Number between 0 and 360. Colors for heatmap layers can only be expressed as h
 
 ### `heatmapLayer.opacity`
 
-A Number between 0 and 1.
+A Number between 0 and 1. 0 by default.
 
 ### `heatmapLayer.visible`
 
@@ -297,11 +301,38 @@ Function. TODO
 
 ## `onClick`
 
-Function. TODO
+Function. Returns an event:
+```
+    {
+        latitude,
+        longitude,
+        isCluster:bool,
+        count:int - will be -1 if cluster size can't be determined
+        features: [
+            {
+                layer: {
+                    id:string,
+                    group:string - matches mapbox:group defined in style.json
+                },
+                properties:[] - all available properties,
+                title:string - human readable title,
+                fields: [ - human readable properties
+                    {
+                        id:string,
+                        label:string,
+                        value:any,
+                        title:string,
+                        isLink:bool
+                    }
+                ]
+            }
+        ]
+    }
+```
 
 ## `onHover`
 
-Function. TODO
+Function. See `onClick`
 
 ## `onAttributionsChange`
 

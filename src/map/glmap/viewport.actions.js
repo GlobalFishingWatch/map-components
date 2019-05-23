@@ -20,6 +20,7 @@ export const setViewport = (viewport) => (dispatch) => {
 }
 
 export const updateViewport = (viewportUpdate) => (dispatch) => {
+  console.log(viewportUpdate)
   dispatch({
     type: UPDATE_VIEWPORT,
     payload: viewportUpdate,
@@ -43,6 +44,7 @@ const transitionTo = (increment, latitude = null, longitude = null, zoom = null)
 }
 
 export const transitionToZoom = (zoom) => (dispatch) => {
+  debugger
   dispatch(transitionTo(null, null, null, zoom))
 }
 
