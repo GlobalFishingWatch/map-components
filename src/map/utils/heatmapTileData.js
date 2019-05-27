@@ -306,6 +306,7 @@ export const selectVesselsAt = (tileData, tileQuery, startIndex, endIndex, curre
         Object.keys(frame).forEach((key) => {
           vessel[key] = frame[key][i]
         })
+        vessel.timeIndex = f
         vessels.push(vessel)
       }
     }

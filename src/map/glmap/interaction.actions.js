@@ -82,7 +82,7 @@ const getFeature = (glFeature, layerId) => {
 
   // Get most likely feature title
   const mainField = fields.find((f) => f.isMain === true)
-  feature.title = mainField === undefined ? layerId : mainField.title
+  feature.title = mainField === undefined ? layerId : mainField.value
 
   return feature
 }
@@ -104,13 +104,21 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
   // Collect and normalize features on legacy heatmap
   const currentLegacyHeatmapData = getState().map.heatmap.highlightedVessels
   let legacyHeatmapFeature
+  console.log(currentLegacyHeatmapData)
   if (currentLegacyHeatmapData.isEmpty !== true) {
-    const properties =
+    const foundVessels =
       currentLegacyHeatmapData.foundVessels === undefined
         ? []
-        : currentLegacyHeatmapData.foundVessels[0]
+        : currentLegacyHeatmapData.foundVessels
+    const properties = foundVessels.length === 0 ? [] : foundVessels[0]
+    const isCluster = currentLegacyHeatmapData.clickableCluster === true
+    const count =
+      isCluster === true && currentLegacyHeatmapData.highlightableCluster === false
+        ? -1
+        : foundVessels.length
     legacyHeatmapFeature = {
-      isCluster: currentLegacyHeatmapData.clickableCluster === true,
+      isCluster,
+      count,
       layer: {
         id: currentLegacyHeatmapData.layer.id,
         group: 'legacyHeatmap',
@@ -143,6 +151,7 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       // lookup for cluster
       const clusterPromise = getCluster(glFeature, glGetSource).then((cluster) => {
         feature.cluster = cluster
+        feature.count = cluster.childrenFeatures.length
       })
       clusterPromises.push(clusterPromise)
       feature.isCluster = true
@@ -156,11 +165,11 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       event.features.length > 1 || event.features.some((feature) => feature.isCluster === true)
 
     // legacy heatmap layers can yield clusters with an unknown number of features, handle this here:
-    if (legacyHeatmapFeature !== undefined && legacyHeatmapFeature.isCluster) {
+    if (legacyHeatmapFeature !== undefined && legacyHeatmapFeature.count === -1) {
       event.count = -1
     } else {
       event.count = event.features.reduce((count, feature) => {
-        const featureCount = feature.isCluster ? feature.cluster.childrenFeatures.length : 1
+        let featureCount = feature.count || 1
         return count + featureCount
       }, 0)
     }
