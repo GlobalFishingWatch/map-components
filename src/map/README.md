@@ -60,6 +60,10 @@ Array of [latitude, longitude]
 
 Boolean. Default true. Have the map zoom in to an appropriate zoom level when user clicks on a cluster (several features under a point or one feature defined as a cluster)
 
+### `isCluster`
+
+Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features. 
+
 ## `tracks`
 
 Array of `track`. Sets the tracks to load and display (loading/displaying is triggered by diffing incoming array with existing array).
@@ -326,7 +330,8 @@ Function. Returns an event:
                     }
                 ]
             }
-        ]
+        ],
+        feature: {} - set if there's only one feature
     }
 ```
 

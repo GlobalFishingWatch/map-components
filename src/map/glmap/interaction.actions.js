@@ -165,19 +165,24 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       }, 0)
     }
 
-    if (
-      event.isCluster === true &&
-      getState().map.module.autoClusterZoom === true &&
-      interactionType === 'click'
-    ) {
+    if (event.count === 1) {
+      event.feature = event.features[0]
+    }
+
+    let clusterBehavior = false
+    if (getState().map.module.autoClusterZoom === true && interactionType === 'click') {
+      clusterBehavior = getState().map.module.isCluster(event)
+      event.clusterBehavior = clusterBehavior
+    }
+
+    if (clusterBehavior === true) {
       dispatch(clearHighlightedVessels())
       dispatch(zoomIntoVesselCenter(latitude, longitude))
     }
 
     let cursor = null
     if (event.features.length) {
-      cursor =
-        getState().map.module.autoClusterZoom === true && event.isCluster ? 'zoom-in' : 'pointer'
+      cursor = clusterBehavior === true ? 'zoom-in' : 'pointer'
     }
 
     dispatch({

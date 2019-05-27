@@ -60,7 +60,6 @@ export default function(state = initialState, action) {
         state.maxZoom,
         action.payload.zoom || currentZoom + action.payload.increment
       )
-      debugger
       const viewport = {
         ...state.viewport,
         ...DEFAULT_TRANSITION,

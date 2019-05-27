@@ -20,7 +20,6 @@ export const setViewport = (viewport) => (dispatch) => {
 }
 
 export const updateViewport = (viewportUpdate) => (dispatch) => {
-  console.log(viewportUpdate)
   dispatch({
     type: UPDATE_VIEWPORT,
     payload: viewportUpdate,
