@@ -104,7 +104,7 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
   // Collect and normalize features on legacy heatmap
   const currentLegacyHeatmapData = getState().map.heatmap.highlightedVessels
   let legacyHeatmapFeature
-  console.log(currentLegacyHeatmapData)
+
   if (currentLegacyHeatmapData.isEmpty !== true) {
     const foundVessels =
       currentLegacyHeatmapData.foundVessels === undefined

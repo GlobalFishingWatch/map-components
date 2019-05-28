@@ -56,20 +56,25 @@ class MapPage extends Component {
     temporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 31)],
     highlightTemporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 10)],
     viewport: {
-      center: [0, 0],
-      zoom: 3,
+      center: [0, -75],
+      zoom: 4,
     },
-    fishingHeader: null,
+    fishingHeaders: null,
   }
 
   loadTemporalExtent = [new Date(2017, 12, 1), new Date(2017, 11, 31)]
 
   componentDidMount() {
-    fetch('https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-tasks-657-uvi-v2/header')
-      .then(res => res.json())
-      .then(header => {
+    const promises = [
+      'https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-tasks-657-uvi-v2/header',
+      'https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-tasks-872-peruvian-nn-public-v1/header'
+    ].map(
+      url => fetch(url).then(res => res.json())
+    )
+    Promise.all(promises)
+      .then(headers => {
         this.setState({
-          fishingHeader: header
+          fishingHeaders: headers
         })
       })
   }
@@ -80,7 +85,7 @@ class MapPage extends Component {
 
 
   onFeatureClick = (event) => {
-    // console.log(event)
+    console.log(event)
   }
 
   onFeatureHover = (event) => {
@@ -88,10 +93,10 @@ class MapPage extends Component {
   }
 
   render() {
-    const { viewport, temporalExtent, fishingHeader } = this.state
+    const { viewport, temporalExtent, fishingHeaders } = this.state
 
     let heatmapLayers = []
-    if (fishingHeader !== null) {
+    if (fishingHeaders !== null) {
       heatmapLayers = [
         {
           id: 'fishing_ais',
@@ -101,7 +106,17 @@ class MapPage extends Component {
           visible: true,
           interactive: true,
           filters: [],
-          header: fishingHeader,
+          header: fishingHeaders[0],
+        },
+        {
+          id: 'peru-public-fishing',
+          tilesetId: 'gfw-tasks-872-peruvian-nn-public-v1',
+          hue: 100,
+          opacity: 1,
+          visible: true,
+          interactive: true,
+          filters: [],
+          header: fishingHeaders[1],
         }
       ]
     }
@@ -117,7 +132,7 @@ class MapPage extends Component {
         <MapModule
           viewport={viewport}
           onViewportChange={this.onViewportChange}
-          autoClusterZoom={true}
+          autoClusterZoom={false}
           heatmapLayers={heatmapLayers}
           // staticLayers={[]}
           staticLayers={[
