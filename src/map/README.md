@@ -113,10 +113,6 @@ String. Mandatory. Identifies layer uniquely, can be workspace id for instance.
 
 String. Mandatory. Identifies tileset uniquely
 
-### `heatmapLayer.subtype`
-
-String. Allowed values are: `encounters`.
-
 ### `heatmapLayer.hue`
 
 A Number between 0 and 360. Colors for heatmap layers can only be expressed as hues (degrees in the color wheel, saturation and luminance being hardcoded) for internal technical reasons.
