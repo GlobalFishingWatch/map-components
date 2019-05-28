@@ -387,22 +387,15 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
   let layerVesselsResult
   let foundVessels
 
-  const hasEncounters =
-    layersVesselsResults.filter((layerVessel) => layerVessel.layer.subtype === ENCOUNTERS).length >
-    0
-
   if (layersVesselsResults.length === 0) {
     isEmpty = true
-  } else if (layersVesselsResults.length > 1 && !hasEncounters) {
+  } else if (layersVesselsResults.length > 1) {
     // if there are points over multiple layers, consider this a cluster (ie don't select, zoom instead, or don't highlight)
     // there's an exception if vessel selection contains an encounter, in which case it will take priority
     isCluster = true
   } else {
-    // if we have a hit with an encounters layer, use it in priority
-    // if not the layersVesselsResults should contain a single result
-    layerVesselsResult = hasEncounters
-      ? layersVesselsResults.find((layerVessel) => layerVessel.layer.subtype === ENCOUNTERS)
-      : layersVesselsResults[0]
+    // layersVesselsResults should contain a single result
+    layerVesselsResult = layersVesselsResults[0]
 
     // we can get multiple points with similar series and seriesgroup, in which case
     // we should treat that as a successful vessel query, not a cluster
@@ -446,16 +439,24 @@ export function highlightVesselFromHeatmap(tileQuery, temporalExtentIndexes) {
       temporalExtentIndexes
     )
 
-    if (layer.id !== undefined || state.map.heatmap.highlightedVessels.layerId !== layer.id) {
+    if (
+      isCluster === true ||
+      layer.id !== undefined ||
+      state.map.heatmap.highlightedVessels.layerId !== layer.id
+    ) {
+      const layerPayload =
+        layer === undefined
+          ? null
+          : {
+              id: layer.id,
+              tilesetId: layer.tilesetId,
+              subtype: layer.subtype,
+              header: layer.header,
+            }
       dispatch({
         type: HIGHLIGHT_VESSELS,
         payload: {
-          layer: {
-            id: layer.id,
-            tilesetId: layer.tilesetId,
-            subtype: layer.subtype,
-            header: layer.header,
-          },
+          layer: layerPayload,
           isEmpty,
           clickableCluster: isCluster === true || isMouseCluster === true,
           highlightableCluster: isCluster !== true,

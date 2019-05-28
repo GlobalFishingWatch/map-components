@@ -160,7 +160,8 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
   })
 
   Promise.all(clusterPromises).then(() => {
-    // The whole set of features is considered a cluster if any feature is a cluster or there are more than one feature
+    // The whole set of features is considered a cluster
+    // if any feature is a cluster, or there is more than one feature
     event.isCluster =
       event.features.length > 1 || event.features.some((feature) => feature.isCluster === true)
 
@@ -178,20 +179,19 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       event.feature = event.features[0]
     }
 
-    let clusterBehavior = false
-    if (getState().map.module.autoClusterZoom === true && interactionType === 'click') {
-      clusterBehavior = getState().map.module.isCluster(event)
-      event.clusterBehavior = clusterBehavior
+    const autoClusterZoom = getState().map.module.autoClusterZoom === true
+    if (autoClusterZoom && interactionType === 'click') {
+      const clusterBehavior = getState().map.module.isCluster(event)
+      event.isCluster = clusterBehavior
+      if (event.isCluster === true) {
+        dispatch(clearHighlightedVessels())
+        dispatch(zoomIntoVesselCenter(latitude, longitude))
+      }
     }
 
-    if (clusterBehavior === true) {
-      dispatch(clearHighlightedVessels())
-      dispatch(zoomIntoVesselCenter(latitude, longitude))
-    }
-
-    let cursor = null
-    if (event.features.length) {
-      cursor = clusterBehavior === true ? 'zoom-in' : 'pointer'
+    let cursor = event.features.length ? 'pointer' : null
+    if (event.isCluster === true && autoClusterZoom === true) {
+      cursor = 'zoom-in'
     }
 
     dispatch({

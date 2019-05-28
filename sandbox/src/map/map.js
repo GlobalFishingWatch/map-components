@@ -56,7 +56,7 @@ class MapPage extends Component {
     temporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 31)],
     highlightTemporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 10)],
     viewport: {
-      center: [0, -75],
+      center: [0, -80],
       zoom: 4,
     },
     fishingHeaders: null,
@@ -108,16 +108,16 @@ class MapPage extends Component {
           filters: [],
           header: fishingHeaders[0],
         },
-        {
-          id: 'peru-public-fishing',
-          tilesetId: 'gfw-tasks-872-peruvian-nn-public-v1',
-          hue: 100,
-          opacity: 1,
-          visible: true,
-          interactive: true,
-          filters: [],
-          header: fishingHeaders[1],
-        }
+        // {
+        //   id: 'peru-public-fishing',
+        //   tilesetId: 'gfw-tasks-872-peruvian-nn-public-v1',
+        //   hue: 100,
+        //   opacity: 1,
+        //   visible: true,
+        //   interactive: true,
+        //   filters: [],
+        //   header: fishingHeaders[1],
+        // }
       ]
     }
 
@@ -146,7 +146,7 @@ class MapPage extends Component {
               id: 'eez',
               visible: true,
               color: '#ff00ff',
-              interactive: false
+              interactive: true
             },
             {
               id: 'events_encounter_vessel',
