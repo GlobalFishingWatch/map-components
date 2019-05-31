@@ -31,8 +31,8 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   const currentStyle = style.toJS()
   const glLayers = currentStyle.layers
 
-  const start = Math.round(temporalExtent[0].getTime() / 1000)
-  const end = Math.round(temporalExtent[1].getTime() / 1000)
+  let start = Math.round(temporalExtent[0].getTime() / 1000)
+  let end = Math.round(temporalExtent[1].getTime() / 1000)
 
   // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
   // logic for legacy encounters layer that only have a 'timeIndex'
@@ -43,6 +43,12 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     const glLayer = glLayers[i]
     if (glLayer.metadata === undefined || glLayer.metadata['gfw:temporal'] !== true) {
       continue
+    }
+
+    // TODO temporary - remove when that issue has been adressed on Chile layer
+    if (glLayer.metadata['gfw:temporalUseSeconds'] === true) {
+      start *= 1000
+      end *= 1000
     }
 
     // if layer is temporal, a filter must always be preset on the style.json object

@@ -173,6 +173,12 @@
         "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
       ]
     },
+    "chile_aquaculture": {
+      "type": "vector",
+      "tiles": [
+        "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-aquaculture-v1/{z}%2F{x}%2F{y}.pbf"
+      ]
+    },
     "events_fishing": {
       "type": "vector",
       "tiles": [
@@ -538,7 +544,8 @@
       "paint": {
         "circle-color": "#e5647d",
         "circle-radius": 3,
-        "circle-opacity": 0.9
+        "circle-opacity": 0.9,
+        "circle-stroke-opacity": 0
       }
     },
     {
@@ -557,6 +564,22 @@
         "circle-stroke-color": "#e5647d",
         "circle-stroke-width": 1,
         "circle-radius": 6
+      }
+    },
+    {
+      "id": "chile_aquaculture",
+      "type": "circle",
+      "source": "chile_aquaculture",
+      "source-layer": "chile_aquaculture",
+      "metadata": {
+        "gfw:temporal": true,
+        "gfw:temporalUseSeconds": true,
+        "mapbox:group": "temporal"
+      },
+      "paint": {
+        "circle-color": "#e5647d",
+        "circle-radius": 3,
+        "circle-opacity": 0.9
       }
     },
     {
