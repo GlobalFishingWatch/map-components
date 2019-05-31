@@ -573,7 +573,6 @@
       "source-layer": "chile_aquaculture",
       "metadata": {
         "gfw:temporal": true,
-        "gfw:temporalUseSeconds": true,
         "mapbox:group": "temporal"
       },
       "paint": {

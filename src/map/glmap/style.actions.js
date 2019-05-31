@@ -45,12 +45,6 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
       continue
     }
 
-    // TODO temporary - remove when that issue has been adressed on Chile layer
-    if (glLayer.metadata['gfw:temporalUseSeconds'] === true) {
-      start *= 1000
-      end *= 1000
-    }
-
     // if layer is temporal, a filter must always be preset on the style.json object
     // because each layer can have a different time field to be filtered
     const currentFilter = style.getIn(['layers', i, 'filter']).toJS()
