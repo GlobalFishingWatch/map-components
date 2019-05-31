@@ -283,7 +283,7 @@ class ActivityLayers extends BaseControl {
     if (highlightedVessels.isEmpty === true && tracks.length === 0) {
       this._startHeatmapFadein()
     }
-    if (this.renderer) {
+    if (this.renderer && this.renderer.gl && this.renderer.gl.getError !== undefined) {
       const err = this.renderer.gl.getError()
       if (err !== 0) console.log(err)
     }
