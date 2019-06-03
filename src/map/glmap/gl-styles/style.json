@@ -179,6 +179,12 @@
         "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-aquaculture-v1/{z}%2F{x}%2F{y}.pbf"
       ]
     },
+    "chile_transport": {
+      "type": "vector",
+      "tiles": [
+        "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-transport-v1/{z}%2F{x}%2F{y}.pbf"
+      ]
+    },
     "events_fishing": {
       "type": "vector",
       "tiles": [
@@ -571,6 +577,21 @@
       "type": "circle",
       "source": "chile_aquaculture",
       "source-layer": "chile_aquaculture",
+      "metadata": {
+        "gfw:temporal": true,
+        "mapbox:group": "temporal"
+      },
+      "paint": {
+        "circle-color": "#e5647d",
+        "circle-radius": 3,
+        "circle-opacity": 0.9
+      }
+    },
+    {
+      "id": "chile_transport",
+      "type": "circle",
+      "source": "chile_transport",
+      "source-layer": "chile_transport",
       "metadata": {
         "gfw:temporal": true,
         "mapbox:group": "temporal"
