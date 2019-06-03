@@ -155,6 +155,8 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       })
       clusterPromises.push(clusterPromise)
       feature.isCluster = true
+    } else {
+      feature.isCluster = false
     }
     event.features.push(feature)
   })
