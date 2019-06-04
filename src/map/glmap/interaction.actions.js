@@ -17,10 +17,12 @@ const getAreaKm2 = (glFeature) => {
 const getFields = (glFeature, sourceId = null) => {
   const source = sourceId === null ? null : GL_STYLE.sources[sourceId]
   if (source === null || source === undefined) {
-    console.warn('Couldnt find source when looking for fields of layer', sourceId)
+    // console.warn('Couldnt find source when looking for fields of layer', sourceId)
   }
   const fieldsDefinition =
-    source.metadata === undefined || source.metadata['gfw:popups'] === undefined
+    source === undefined ||
+    source.metadata === undefined ||
+    source.metadata['gfw:popups'] === undefined
       ? []
       : source.metadata['gfw:popups']
 

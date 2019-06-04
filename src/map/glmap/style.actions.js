@@ -5,6 +5,7 @@ import { hexToRgb } from '../utils/map-colors'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
 import GL_STYLE from './gl-styles/style.json'
+import { setLayerStyleDefaults } from './style.reducer.js'
 import getMainGeomType from '../utils/getMainGeomType'
 
 export const INIT_MAP_STYLE = 'INIT_MAP_STYLE'
@@ -210,18 +211,18 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
         .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-radius'],
-          initialGLLayer.paint['circle-radius']
-        )
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-stroke-color'],
-          initialGLLayer.paint['circle-stroke-color'] || '#000'
-        )
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
-          initialGLLayer.paint['circle-stroke-width'] || 1
-        )
+        // .setIn(
+        //   ['layers', glLayerIndex, 'paint', 'circle-radius'],
+        //   initialGLLayer.paint['circle-radius']
+        // )
+        // .setIn(
+        //   ['layers', glLayerIndex, 'paint', 'circle-stroke-color'],
+        //   initialGLLayer.paint['circle-stroke-color'] || '#000'
+        // )
+        // .setIn(
+        //   ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
+        //   initialGLLayer.paint['circle-stroke-width'] || 1
+        // )
 
       if (refLayer.color !== undefined) {
         const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
@@ -302,11 +303,19 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
     style = style.setIn(['sources', id], finalSource)
 
     const layers = []
-    gl.layers.forEach((srcGlLayer) => {
+    gl.layers.forEach((workspaceGlLayer) => {
+      const sourceLayer =
+        workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
+      let layerId = workspaceGlLayer.id
+      if (layerId === undefined) {
+        layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
+      }
+      const defaultGlLayer = setLayerStyleDefaults(workspaceGlLayer)
       const glLayer = {
-        ...srcGlLayer,
+        ...defaultGlLayer,
+        id: layerId,
         source: id,
-        'source-layer': id,
+        'source-layer': sourceLayer,
       }
       layers.push(glLayer)
     })
