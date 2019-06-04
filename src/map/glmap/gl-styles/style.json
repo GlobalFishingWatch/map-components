@@ -175,15 +175,11 @@
     },
     "chile_aquaculture": {
       "type": "vector",
-      "tiles": [
-        "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-aquaculture-v1/{z}%2F{x}%2F{y}.pbf"
-      ]
+      "tiles": []
     },
     "chile_transport": {
       "type": "vector",
-      "tiles": [
-        "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-transport-v1/{z}%2F{x}%2F{y}.pbf"
-      ]
+      "tiles": []
     },
     "events_fishing": {
       "type": "vector",
