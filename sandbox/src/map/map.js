@@ -39,15 +39,15 @@ class MapPage extends Component {
         <MapModule
           viewport={viewport}
           onViewportChange={this.onViewportChange}
-          // staticLayers={[]}
-          staticLayers={[
-            {
-              id: 'encounters_ais',
-              visible: true,
-              interactive: true,
-              color: '#eeff00'
-            },
-          ]}
+          staticLayers={[]}
+          // staticLayers={[
+          //   {
+          //     id: 'encounters_ais',
+          //     visible: true,
+          //     interactive: true,
+          //     color: '#eeff00'
+          //   },
+          // ]}
           temporalExtent={this.temporalExtent}
           loadTemporalExtent={this.loadTemporalExtent}
           onClick={this.onFeatureClick}

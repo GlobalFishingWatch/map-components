@@ -150,6 +150,7 @@ class Map extends React.Component {
       onClosePopup,
       clickPopup,
       hoverPopup,
+      hasHeatmapLayers,
       interactiveLayerIds,
     } = this.props
     return (
@@ -180,7 +181,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
         >
-          <ActivityLayers />
+          {hasHeatmapLayers !== false && <ActivityLayers />}
           {clickPopup !== undefined && clickPopup !== null && (
             <PopupWrapper
               latitude={clickPopup.latitude}
@@ -221,6 +222,7 @@ Map.propTypes = {
   onClosePopup: PropTypes.func,
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
+  hasHeatmapLayers: PropTypes.bool.isRequired,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 }
 
