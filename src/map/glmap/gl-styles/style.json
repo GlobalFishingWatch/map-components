@@ -173,14 +173,6 @@
         "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
       ]
     },
-    "chile_aquaculture": {
-      "type": "vector",
-      "tiles": []
-    },
-    "chile_transport": {
-      "type": "vector",
-      "tiles": []
-    },
     "events_fishing": {
       "type": "vector",
       "tiles": [
@@ -566,36 +558,6 @@
         "circle-stroke-color": "#e5647d",
         "circle-stroke-width": 1,
         "circle-radius": 6
-      }
-    },
-    {
-      "id": "chile_aquaculture",
-      "type": "circle",
-      "source": "chile_aquaculture",
-      "source-layer": "chile_aquaculture",
-      "metadata": {
-        "gfw:temporal": true,
-        "mapbox:group": "temporal"
-      },
-      "paint": {
-        "circle-color": "#e5647d",
-        "circle-radius": 3,
-        "circle-opacity": 0.9
-      }
-    },
-    {
-      "id": "chile_transport",
-      "type": "circle",
-      "source": "chile_transport",
-      "source-layer": "chile_transport",
-      "metadata": {
-        "gfw:temporal": true,
-        "mapbox:group": "temporal"
-      },
-      "paint": {
-        "circle-color": "#e5647d",
-        "circle-radius": 3,
-        "circle-opacity": 0.9
       }
     },
     {
