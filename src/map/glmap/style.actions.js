@@ -58,8 +58,6 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     const isLegacy = glLayer.metadata && glLayer.metadata['gfw:temporalField'] === 'timeIndex'
     currentFilter[1][2] = isLegacy ? startIndex : start
     currentFilter[2][2] = isLegacy ? endIndex : end
-    // currentFilter[1][2] = start
-    // currentFilter[2][2] = end
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
@@ -311,12 +309,14 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
         layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
       }
       const defaultGlLayer = setLayerStyleDefaults(workspaceGlLayer)
+
       const glLayer = {
         ...defaultGlLayer,
         id: layerId,
         source: id,
         'source-layer': sourceLayer,
       }
+
       layers.push(glLayer)
     })
 
@@ -325,9 +325,8 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   })
 
   dispatch(setMapStyle(style))
-
-  // TODO MAP MODULE
-  // dispatch(updateMapStyle());
+  console.log(state.map.module.temporalExtent)
+  dispatch(applyTemporalExtent(state.map.module.temporalExtent))
 }
 
 const getCartoLayerInstanciatePromise = ({ sourceId, sourceCartoSQL }) => {
