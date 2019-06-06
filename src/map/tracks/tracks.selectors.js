@@ -20,6 +20,8 @@ const filterGeojsonByTimerange = (geojson, { start, end }) => {
   if (!geojson || !geojson.features) return null
   const featuresFiltered = geojson.features.reduce((filteredFeatures, feature) => {
     const hasTimes =
+      feature.properties &&
+      feature.properties.coordinateProperties &&
       feature.properties.coordinateProperties.times &&
       feature.properties.coordinateProperties.times.length > 0
     if (hasTimes) {
