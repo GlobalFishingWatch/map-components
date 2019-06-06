@@ -56,11 +56,12 @@ class MapPage extends Component {
     temporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 31)],
     highlightTemporalExtent: [new Date(2017, 1, 1), new Date(2017, 1, 10)],
     viewport: {
-      center: [0, -80],
+      center: [-40, -80],
       zoom: 4,
     },
     fishingHeaders: null,
     showHeatmap: false,
+    workspaceGL: []
   }
 
   loadTemporalExtent = [new Date(2017, 12, 1), new Date(2017, 11, 31)]
@@ -75,7 +76,40 @@ class MapPage extends Component {
     Promise.all(promises)
       .then(headers => {
         this.setState({
-          fishingHeaders: headers
+          fishingHeaders: headers,
+          // workspaceGL: [
+          //   {
+          //     "id": "chile_aquaculture",
+          //     "url": "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-chile-seconds-transport-v1/{z}%2F{x}%2F{y}.pbf",
+          //     "color": "#2ef031",
+          //     "visible": true,
+          //     "gl": {
+          //       "source": {
+          //         "type": "vector",
+          //         "tiles": [],
+          //         "maxzoom": 3
+          //       },
+          //       "layers": [
+          //         {
+          //           "type": "circle",
+          //           "source-layer": "chile_aquaculture",
+          //           "metadata": {
+          //             // "gfw:temporal": true,
+          //             "mapbox:group": "temporal"
+          //           },
+          //           "paint": {
+          //             "circle-radius": 3,
+          //             "circle-opacity": 0.9,
+          //             "circle-color": "#2ef031"
+          //           },
+          //           "layout": {
+          //             "visibility": "visible"
+          //           }
+          //         },
+          //       ]
+          //     }
+          //   }
+          // ]
         })
       })
   }
@@ -94,7 +128,7 @@ class MapPage extends Component {
   }
 
   render() {
-    const { viewport, temporalExtent, fishingHeaders, showHeatmap } = this.state
+    const { viewport, temporalExtent, fishingHeaders, showHeatmap, workspaceGL } = this.state
 
     let heatmapLayers = []
     if (fishingHeaders !== null) {
@@ -121,12 +155,12 @@ class MapPage extends Component {
         // }
       ]
     }
-
+    console.log(workspaceGL)
     return (
       <div className={styles.MapWrapper}>
         <div onClick={() => { 
           this.setState(state => ({
-            showHeatmap: !state.showHeatmap,
+            // showHeatmap: !state.showHeatmap,
             temporalExtent: [new Date(2017, 1, 1), new Date(2017, 3, 31)]
           }))
         }}>
@@ -137,31 +171,40 @@ class MapPage extends Component {
           onViewportChange={this.onViewportChange}
           autoClusterZoom={false}
           heatmapLayers={showHeatmap ? heatmapLayers : []}
-          staticLayers={[]}
-          // staticLayers={[
-          //   {
-          //     id: 'encounters_ais',
-          //     visible: true,
-          //     interactive: true,
-          //     color: '#eeff00'
-          //   },
-          //   {
-          //     id: 'eez',
-          //     visible: true,
-          //     color: '#ff00ff',
-          //     interactive: true
-          //   },
-          //   {
-          //     id: 'events_encounter_vessel',
-          //     visible: true,
-          //     color: '#f56700',
-          //     interactive: true,
-          //     data: {
-          //       "type": "FeatureCollection",
-          //       "features": someClusters,
-          //     }
-          //   }
-          // ]}
+          // staticLayers={[]}
+          staticLayers={[
+            {
+              "id": "chile_aquaculture",
+              "url": "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-chile-seconds-transport-v1/{z}%2F{x}%2F{y}.pbf",
+              "color": "#2ef031",
+              "visible": true,
+              "gl": {
+                "source": {
+                  "type": "vector",
+                  "tiles": [],
+                  "maxzoom": 3
+                },
+                "layers": [
+                  {
+                    "type": "circle",
+                    "source-layer": "chile_aquaculture",
+                    "metadata": {
+                      // "gfw:temporal": true,
+                      "mapbox:group": "temporal"
+                    },
+                    "paint": {
+                      "circle-radius": 3,
+                      "circle-opacity": 0.9,
+                      "circle-color": "#2ef031"
+                    },
+                    "layout": {
+                      "visibility": "visible"
+                    }
+                  },
+                ]
+              }
+            }
+          ]}
           temporalExtent={temporalExtent}
           loadTemporalExtent={this.loadTemporalExtent}
           onClick={this.onFeatureClick}
