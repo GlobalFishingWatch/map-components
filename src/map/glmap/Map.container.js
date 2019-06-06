@@ -9,7 +9,14 @@ import { setViewport, transitionEnd } from './viewport.actions.js'
 import Map from './Map'
 
 const getStaticLayers = (state) => state.map.style.staticLayers
+const getHeatmapLayers = (state) => state.map.heatmap.heatmapLayers
 
+const hasHeatmapLayers = createSelector(
+  [getHeatmapLayers],
+  (heatmapLayers) => {
+    return Object.keys(heatmapLayers).length > 0
+  }
+)
 const getInteractiveLayerIds = createSelector(
   [getStaticLayers],
   // Note: here we assume that layer IDs provided with module match the GL layers that should
@@ -48,6 +55,7 @@ const mapStateToProps = (state, ownProps) => ({
   cursor: state.map.interaction.cursor,
   token: state.map.module.token,
   mapStyle: getMapStyle(state),
+  hasHeatmapLayers: hasHeatmapLayers(state),
   interactiveLayerIds: getInteractiveLayerIds(state),
 })
 

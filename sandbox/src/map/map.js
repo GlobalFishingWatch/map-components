@@ -60,6 +60,7 @@ class MapPage extends Component {
       zoom: 4,
     },
     fishingHeaders: null,
+    showHeatmap: false,
   }
 
   loadTemporalExtent = [new Date(2017, 12, 1), new Date(2017, 11, 31)]
@@ -93,7 +94,7 @@ class MapPage extends Component {
   }
 
   render() {
-    const { viewport, temporalExtent, fishingHeaders } = this.state
+    const { viewport, temporalExtent, fishingHeaders, showHeatmap } = this.state
 
     let heatmapLayers = []
     if (fishingHeaders !== null) {
@@ -121,44 +122,46 @@ class MapPage extends Component {
       ]
     }
 
-
     return (
-      <div className={styles.MapWrapper} onClick={() => { 
-        this.setState({
-          temporalExtent: [new Date(2017, 1, 1), new Date(2017, 3, 31)]
-        })
-      }}>
-        click me
+      <div className={styles.MapWrapper}>
+        <div onClick={() => { 
+          this.setState(state => ({
+            showHeatmap: !state.showHeatmap,
+            temporalExtent: [new Date(2017, 1, 1), new Date(2017, 3, 31)]
+          }))
+        }}>
+          showHeatmap:{showHeatmap.toString()}
+        </div>
         <MapModule
           viewport={viewport}
           onViewportChange={this.onViewportChange}
           autoClusterZoom={false}
-          heatmapLayers={heatmapLayers}
-          // staticLayers={[]}
-          staticLayers={[
-            {
-              id: 'encounters_ais',
-              visible: true,
-              interactive: true,
-              color: '#eeff00'
-            },
-            {
-              id: 'eez',
-              visible: true,
-              color: '#ff00ff',
-              interactive: true
-            },
-            {
-              id: 'events_encounter_vessel',
-              visible: true,
-              color: '#f56700',
-              interactive: true,
-              data: {
-                "type": "FeatureCollection",
-                "features": someClusters,
-              }
-            }
-          ]}
+          heatmapLayers={showHeatmap ? heatmapLayers : []}
+          staticLayers={[]}
+          // staticLayers={[
+          //   {
+          //     id: 'encounters_ais',
+          //     visible: true,
+          //     interactive: true,
+          //     color: '#eeff00'
+          //   },
+          //   {
+          //     id: 'eez',
+          //     visible: true,
+          //     color: '#ff00ff',
+          //     interactive: true
+          //   },
+          //   {
+          //     id: 'events_encounter_vessel',
+          //     visible: true,
+          //     color: '#f56700',
+          //     interactive: true,
+          //     data: {
+          //       "type": "FeatureCollection",
+          //       "features": someClusters,
+          //     }
+          //   }
+          // ]}
           temporalExtent={temporalExtent}
           loadTemporalExtent={this.loadTemporalExtent}
           onClick={this.onFeatureClick}
