@@ -209,18 +209,18 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
         .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
-        // .setIn(
-        //   ['layers', glLayerIndex, 'paint', 'circle-radius'],
-        //   initialGLLayer.paint['circle-radius']
-        // )
-        // .setIn(
-        //   ['layers', glLayerIndex, 'paint', 'circle-stroke-color'],
-        //   initialGLLayer.paint['circle-stroke-color'] || '#000'
-        // )
-        // .setIn(
-        //   ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
-        //   initialGLLayer.paint['circle-stroke-width'] || 1
-        // )
+      // .setIn(
+      //   ['layers', glLayerIndex, 'paint', 'circle-radius'],
+      //   initialGLLayer.paint['circle-radius']
+      // )
+      // .setIn(
+      //   ['layers', glLayerIndex, 'paint', 'circle-stroke-color'],
+      //   initialGLLayer.paint['circle-stroke-color'] || '#000'
+      // )
+      // .setIn(
+      //   ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
+      //   initialGLLayer.paint['circle-stroke-width'] || 1
+      // )
 
       if (refLayer.color !== undefined) {
         const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
@@ -325,7 +325,6 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   })
 
   dispatch(setMapStyle(style))
-  console.log(state.map.module.temporalExtent)
   dispatch(applyTemporalExtent(state.map.module.temporalExtent))
 }
 
@@ -455,6 +454,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
         // Using default tiles url as a fallback
         const newTiles =
           tiles !== undefined && tiles.length > 0 ? uniq([refLayer.url, ...tiles]) : [refLayer.url]
+
         style = style.setIn(['sources', sourceId, 'tiles'], fromJS(newTiles))
       }
     }

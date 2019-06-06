@@ -14,8 +14,7 @@ const getAreaKm2 = (glFeature) => {
   return formatted
 }
 
-const getFields = (glFeature, sourceId = null) => {
-  const source = sourceId === null ? null : GL_STYLE.sources[sourceId]
+const getFields = (glFeature, source = null) => {
   if (source === null || source === undefined) {
     // console.warn('Couldnt find source when looking for fields of layer', sourceId)
   }
@@ -43,11 +42,16 @@ const getFields = (glFeature, sourceId = null) => {
       value,
       title: `${label}: ${value}`,
       isLink: def.isLink,
+      isMain: def.isMain,
     }
   })
 
   const mainField =
-    fields.find((f) => f.id === 'name') || fields.find((f) => f.id === 'id') || fields[0]
+    fields.find((f) => f.isMain === true) ||
+    fields.find((f) => f.id === 'name') ||
+    fields.find((f) => f.id === 'id') ||
+    fields[0]
+
   if (mainField !== undefined) {
     mainField.isMain = true
   }
@@ -75,11 +79,11 @@ const getCluster = (glFeature, glGetSource) => {
   return promise
 }
 
-const getFeature = (glFeature, layerId) => {
+const getFeature = (glFeature, layerId, source) => {
   const feature = {
     properties: glFeature.properties,
   }
-  const fields = getFields(glFeature, layerId)
+  const fields = getFields(glFeature, source)
   feature.fields = fields
 
   // Get most likely feature title
@@ -96,6 +100,8 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
   if (interactionType === 'click') {
     dispatch(clearHighlightedClickedVessel())
   }
+
+  const currentStyle = getState().map.style.mapStyle.toJS()
 
   const event = {
     latitude,
@@ -141,12 +147,13 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
   const allGlFeatures = glFeatures || []
   allGlFeatures.forEach((glFeature) => {
     const layerId = getStaticLayerIdFromGlFeature(glFeature)
+    const source = currentStyle.sources[layerId]
     const feature = {
       layer: {
-        id: getStaticLayerIdFromGlFeature(glFeature),
+        id: layerId,
         group: glFeature.layer.metadata && glFeature.layer.metadata['mapbox:group'],
       },
-      ...getFeature(glFeature, layerId),
+      ...getFeature(glFeature, layerId, source),
     }
 
     if (glFeature.properties.cluster === true) {
