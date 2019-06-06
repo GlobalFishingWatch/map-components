@@ -19,6 +19,8 @@ const getTrackDataParsed = (geojson) => {
   if (geojson && geojson.features) {
     geojson.features.forEach((feature) => {
       const hasTimes =
+        feature.properties &&
+        feature.properties.coordinateProperties &&
         feature.properties.coordinateProperties.times &&
         feature.properties.coordinateProperties.times.length > 0
       if (hasTimes) {
