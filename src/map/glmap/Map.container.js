@@ -13,7 +13,9 @@ const getHeatmapLayers = (state) => state.map.heatmap.heatmapLayers
 
 const hasHeatmapLayers = createSelector(
   [getHeatmapLayers],
-  (heatmapLayers) => heatmapLayers.length > 0 || false
+  (heatmapLayers) => {
+    return Object.keys(heatmapLayers).length > 0
+  }
 )
 const getInteractiveLayerIds = createSelector(
   [getStaticLayers],

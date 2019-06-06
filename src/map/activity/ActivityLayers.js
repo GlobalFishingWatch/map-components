@@ -97,6 +97,10 @@ class ActivityLayers extends BaseControl {
     })
   }
 
+  componentWillUnmount() {
+    this._destroy()
+  }
+
   componentWillReceiveProps(nextProps) {
     this.props.exportNativeViewport(this._context.viewport)
 
@@ -133,6 +137,10 @@ class ActivityLayers extends BaseControl {
     this.stage.addChild(this.heatmapStage)
 
     this.pixi.ticker.add(this._onTick)
+  }
+
+  _destroy() {
+    this.pixi.destroy()
   }
 
   _updateViewportSize(viewportWidth, viewportHeight) {
