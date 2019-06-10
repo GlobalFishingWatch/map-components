@@ -63,7 +63,7 @@ const getCursor = createSelector(
 
 const defaultTransitions = {}
 const transitions = {
-  transitionDuration: 200,
+  transitionDuration: 300,
   transitionEasing: easeCubicInOut,
   transitionInterpolator: new LinearInterpolator(),
 }

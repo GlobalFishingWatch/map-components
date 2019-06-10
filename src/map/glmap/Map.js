@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import MapGL, { Popup } from 'react-map-gl'
+import MapGL, { Popup, Marker } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
@@ -137,6 +137,7 @@ class Map extends React.Component {
       clickPopup,
       hoverPopup,
       hasHeatmapLayers,
+      markers,
       interactiveLayerIds,
     } = this.props
     return (
@@ -189,6 +190,13 @@ class Map extends React.Component {
               {hoverPopup.content}
             </PopupWrapper>
           )}
+          {markers !== null &&
+            markers.length &&
+            markers.map((marker, i) => (
+              <Marker key={i} latitude={marker.latitude} longitude={marker.longitude}>
+                {marker.content}
+              </Marker>
+            ))}
         </MapGL>
         <div className={styles.googleLogo} />
       </div>
@@ -211,6 +219,7 @@ Map.propTypes = {
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
   hasHeatmapLayers: PropTypes.bool.isRequired,
+  markers: PropTypes.array,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 }
 
@@ -222,6 +231,7 @@ Map.defaultProps = {
   onClosePopup: () => {},
   transitionEnd: () => {},
   cursor: null,
+  markers: null,
   interactiveLayerIds: null,
 }
 

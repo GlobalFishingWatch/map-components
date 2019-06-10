@@ -78,10 +78,17 @@ export interface MapModuleClickPopup {
   longitude: number
 }
 
+export interface MapModuleMarker {
+  latitude: number
+  longitude: number
+  content: React.ReactNode
+}
+
 export interface MapModuleProps {
   viewport: MapModuleViewport
   token?: string
   transitionsEnabled?: boolean
+  markers: MapModuleMarker[]
   tracks?: MapModuleTrack[]
   heatmapLayers?: MapModuleHeatmapLayers[]
   temporalExtent?: Date[]
