@@ -1,6 +1,7 @@
 import { fromJS } from 'immutable'
 import convert from '@globalfishingwatch/map-convert'
 import uniq from 'lodash/uniq'
+import throttle from 'lodash/throttle'
 import { hexToRgb } from '../utils/map-colors'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
@@ -26,7 +27,7 @@ const setMapStyle = (style) => ({
   payload: style,
 })
 
-export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
+const setStyleTemporalExtent = (dispatch, getState, temporalExtent, applyToThrottled = false) => {
   const state = getState().map.style
   let style = state.mapStyle
   const currentStyle = style.toJS()
@@ -46,6 +47,13 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
       continue
     }
 
+    if (
+      (applyToThrottled === true && glLayer.metadata['gfw:temporal:throttled'] !== true) ||
+      (applyToThrottled === false && glLayer.metadata['gfw:temporal:throttled'] === true)
+    ) {
+      continue
+    }
+
     // if layer is temporal, a filter must always be preset on the style.json object
     // because each layer can have a different time field to be filtered
     const currentFilter = style.getIn(['layers', i, 'filter']).toJS()
@@ -61,6 +69,15 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
+}
+
+const applyTemporalExtentThrottled = throttle((dispatch, getState, temporalExtent) => {
+  setStyleTemporalExtent(dispatch, getState, temporalExtent, true)
+}, 400)
+
+export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
+  setStyleTemporalExtent(dispatch, getState, temporalExtent)
+  applyTemporalExtentThrottled(dispatch, getState, temporalExtent)
 }
 
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
