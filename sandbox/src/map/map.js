@@ -77,39 +77,6 @@ class MapPage extends Component {
       .then(headers => {
         this.setState({
           fishingHeaders: headers,
-          // workspaceGL: [
-          //   {
-          //     "id": "chile_aquaculture",
-          //     "url": "https://api-dot-world-fishing-827.appspot.com/v2/tilesets/test-chile-seconds-transport-v1/{z}%2F{x}%2F{y}.pbf",
-          //     "color": "#2ef031",
-          //     "visible": true,
-          //     "gl": {
-          //       "source": {
-          //         "type": "vector",
-          //         "tiles": [],
-          //         "maxzoom": 3
-          //       },
-          //       "layers": [
-          //         {
-          //           "type": "circle",
-          //           "source-layer": "chile_aquaculture",
-          //           "metadata": {
-          //             // "gfw:temporal": true,
-          //             "mapbox:group": "temporal"
-          //           },
-          //           "paint": {
-          //             "circle-radius": 3,
-          //             "circle-opacity": 0.9,
-          //             "circle-color": "#2ef031"
-          //           },
-          //           "layout": {
-          //             "visibility": "visible"
-          //           }
-          //         },
-          //       ]
-          //     }
-          //   }
-          // ]
         })
       })
   }
@@ -160,7 +127,7 @@ class MapPage extends Component {
       <div className={styles.MapWrapper}>
         <div onClick={() => { 
           this.setState(state => ({
-            // showHeatmap: !state.showHeatmap,
+            showHeatmap: !state.showHeatmap,
             temporalExtent: [new Date(2017, 1, 1), new Date(2017, 3, 31)]
           }))
         }}>
