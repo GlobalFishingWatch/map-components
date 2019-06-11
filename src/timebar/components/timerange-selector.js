@@ -9,13 +9,14 @@ import styles from './timerange-selector.module.css'
 const ONE_DAY_MS = 1000 * 60 * 60 * 24 - 1
 
 class TimeRangeSelector extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+    const { start, end, absoluteStart, absoluteEnd } = props
     this.state = {
-      startCanIncrement: true,
-      startCanDecrement: true,
-      endCanIncrement: true,
-      endCanDecrement: true,
+      startCanIncrement: start < end,
+      startCanDecrement: start > absoluteStart,
+      endCanIncrement: getTime(end) + ONE_DAY_MS < getTime(absoluteEnd),
+      endCanDecrement: end > start,
     }
   }
 
@@ -48,11 +49,21 @@ class TimeRangeSelector extends Component {
     let newDateMs = newDate.toDate().getTime()
     newDateMs = Math.min(bounds.max, Math.max(bounds.min, newDateMs))
 
-    this.setState({
-      [which]: new Date(newDateMs),
-      [`${which}CanIncrement`]: newDateMs !== bounds.max,
-      [`${which}CanDecrement`]: newDateMs !== bounds.min,
-    })
+    if (which === 'start') {
+      this.setState({
+        start: new Date(newDateMs),
+        startCanIncrement: newDateMs !== bounds.max,
+        startCanDecrement: newDateMs !== bounds.min,
+        endCanDecrement: newDateMs !== bounds.max,
+      })
+    } else {
+      this.setState({
+        end: new Date(newDateMs),
+        endCanIncrement: newDateMs !== bounds.max,
+        endCanDecrement: newDateMs !== bounds.min,
+        startCanIncrement: newDateMs !== bounds.min,
+      })
+    }
   }
 
   last30days = () => {
@@ -92,6 +103,15 @@ class TimeRangeSelector extends Component {
     }
     const mStart = dayjs(start)
     const mEnd = dayjs(end)
+
+    let errorMessage = ''
+    if (!startCanDecrement)
+      errorMessage = 'Your start date is the earliest date with data available'
+    if (!endCanIncrement) errorMessage = 'Your end date is the latest date with data available'
+    if (!startCanIncrement && !endCanDecrement)
+      errorMessage = 'Your start and end date must be at least one day apart'
+    if (!startCanDecrement && !endCanIncrement)
+      errorMessage = 'Your time range is the maximum range with data available'
 
     return (
       <div className={styles.TimeRangeSelector}>
@@ -154,6 +174,7 @@ class TimeRangeSelector extends Component {
               />
             </div>
           </div>
+          <span className={styles.errorMessage}>{errorMessage}</span>
           <div className={styles.actions}>
             <button
               type="button"
