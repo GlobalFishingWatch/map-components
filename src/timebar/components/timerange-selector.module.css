@@ -35,7 +35,7 @@ h2 {
 
 .selectorsContainer {
   display: flex;
-  margin-bottom: 2.6rem;
+  margin-bottom: 0.6rem;
 }
 
 .selectorGroup {
@@ -82,6 +82,14 @@ h2 {
 .secondary:focus {
   background: rgba(255, 255, 255, 0.05);
   outline: none;
+}
+
+.errorMessage {
+  display: block;
+  opacity: 0.5;
+  margin-bottom: 1.2rem;
+  min-height: 2rem;
+  line-height: 2rem;
 }
 
 @media only screen and (max-width: 540px) {
