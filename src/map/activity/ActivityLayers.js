@@ -256,7 +256,7 @@ class ActivityLayers extends BaseControl {
         {
           hue,
           filterValues: {
-            series: [highlightedClickedVessel.seriesgroup],
+            series: [highlightedClickedVessel.id],
           },
         },
       ]

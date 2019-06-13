@@ -90,8 +90,8 @@ Boolean. When set to true, the whole track will render in white (notwithstanding
 
 ### `track.type`
 
-String. Track type, only supported `geojson` for now.
-This is needed to keep the compatibility with older tracks format.
+String. Track type: `geojson` or `pelagos`.
+This is needed to keep the compatibility with older pelagos tracks format.
 
 ### `track.fitBoundsOnLoad`
 

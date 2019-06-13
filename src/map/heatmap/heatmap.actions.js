@@ -397,15 +397,15 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
     // layersVesselsResults should contain a single result
     layerVesselsResult = layersVesselsResults[0]
 
-    // we can get multiple points with similar series and seriesgroup, in which case
+    // we can get multiple points with similar series and id, in which case
     // we should treat that as a successful vessel query, not a cluster
     const vessels = layerVesselsResult.vessels
 
     if (vessels.length === 0) {
       isEmpty = true
     } else {
-      // look up for any negatives seriesgroup (clusters on the server side)
-      const clusteredVessels = vessels.filter((v) => v.seriesgroup < 0)
+      // look up for any negatives ids (clusters on the server side)
+      const clusteredVessels = vessels.filter((v) => v.id < 0)
       if (clusteredVessels.length) {
         isCluster = true
       } else {
@@ -469,10 +469,10 @@ export function highlightVesselFromHeatmap(tileQuery, temporalExtentIndexes) {
   }
 }
 
-export const highlightClickedVessel = (seriesgroup, layerId) => ({
+export const highlightClickedVessel = (id, layerId) => ({
   type: HIGHLIGHT_CLICKED_VESSEL,
   payload: {
-    seriesgroup,
+    id,
     layerId,
   },
 })

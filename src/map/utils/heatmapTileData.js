@@ -13,18 +13,15 @@ import getPBFTile from './getPBFTile'
  *
  * @param {string} tilesetUrl       the tileset base URL
  * @param {array} temporalExtents   all tileset temporal extents
- * @param {object} params           - seriesgroup: a seriesgroup id, used for tracks loading
- *                                  - tileCoordinates: this tiles tile coordinates (zoom, x, y). Will default to 0,0,0
+ * @param {object} params           - tileCoordinates: this tiles tile coordinates (zoom, x, y). Will default to 0,0,0
  *                                  - temporalExtentsIndices: restrict to these temporalExtents indices
  * @returns {Array}                 an array of URLs for this tile
  */
-const getTemporalTileURLs = (urlTemplate, temporalExtents, params) => {
+const getTemporalTileURLs = (urlTemplate, temporalExtents, params = {}) => {
   const urls = []
 
   ;(temporalExtents || [null]).forEach((extent, index) => {
-    const urlParams = {
-      id: params.seriesgroup,
-    }
+    const urlParams = {}
     if (extent !== null && params.temporalExtentsLess !== true) {
       urlParams.startTimeISO = new Date(extent[0]).toISOString()
       urlParams.endTimeISO = new Date(extent[1]).toISOString()
@@ -51,7 +48,7 @@ const getTemporalTileURLs = (urlTemplate, temporalExtents, params) => {
 /**
  * See getTemporalTileURLs.
  */
-export const getTilePromises = (tilesetUrl, token, temporalExtents, params) => {
+export const getTilePromises = (tilesetUrl, token, temporalExtents, params = {}) => {
   const promises = []
   const urls = getTemporalTileURLs(tilesetUrl, temporalExtents, params)
   for (let urlIndex = 0, length = urls.length; urlIndex < length; urlIndex++) {
