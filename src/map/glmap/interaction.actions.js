@@ -191,10 +191,10 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
     }
 
     const autoClusterZoom = getState().map.module.autoClusterZoom === true
-    if (autoClusterZoom && interactionType === 'click') {
+    if (autoClusterZoom) {
       const clusterBehavior = getState().map.module.isCluster(event)
       event.isCluster = clusterBehavior
-      if (event.isCluster === true) {
+      if (interactionType === 'click' && event.isCluster === true) {
         dispatch(clearHighlightedVessels())
         dispatch(zoomIntoVesselCenter(latitude, longitude))
       }
