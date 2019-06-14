@@ -130,7 +130,6 @@ Boolean.
 Object. Mandatory. Must be passed as is - mandatory fields are:
 
 - `endpoints` PropTypes.object,
-- `isPBF` PropTypes.bool,
 - `colsByName` PropTypes.object,
 - `temporalExtents` PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 - `temporalExtentsLess` PropTypes.bool

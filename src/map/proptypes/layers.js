@@ -19,7 +19,6 @@ export const heatmapLayerTypes = {
   ),
   header: PropTypes.shape({
     endpoints: PropTypes.object,
-    isPBF: PropTypes.bool,
     colsByName: PropTypes.object,
     temporalExtents: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
     temporalExtentsLess: PropTypes.bool,

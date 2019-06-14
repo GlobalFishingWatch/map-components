@@ -8,7 +8,6 @@ import {
   getTilePlaybackData,
   selectVesselsAt,
 } from '../utils/heatmapTileData'
-import { ENCOUNTERS } from '../constants'
 import { markTileAsLoaded } from './heatmapTiles.actions'
 import { startLoader, completeLoader } from '../module/module.actions'
 
@@ -56,7 +55,6 @@ function getTemporalExtentsVisibleIndices(loadTemporalExtent, layerTemporalExten
  * @param  {string} urls                 tile endpoints provided by header
  * @param  {array} temporalExtents       all of the layer's header temporal extents
  * @param  {bool} temporalExtentsLess    true = don't try to load different tiles based on current time extent
- * @param  {bool} isPBF                  true = read tile as MVT + PBF tile, rather than using Pelagos client
  * @return {Promise}                     a Promise that will be resolved when tile is loaded
  */
 function loadLayerTile(
@@ -64,7 +62,7 @@ function loadLayerTile(
   tileCoordinates,
   token,
   temporalExtentsIndices,
-  { url, temporalExtents, temporalExtentsLess, isPBF }
+  { url, temporalExtents, temporalExtentsLess }
 ) {
   // console.log('loadLayerTile', layerId, tileCoordinates, temporalExtentsIndices)
   if (url === undefined) {
@@ -74,7 +72,6 @@ function loadLayerTile(
     tileCoordinates,
     temporalExtentsIndices,
     temporalExtentsLess,
-    isPBF,
   })
   const allLayerPromises = Promise.all(pelagosPromises)
 
@@ -99,32 +96,16 @@ function loadLayerTile(
  * @param  {array} prevPlaybackData      (optional) in case some time extent was already loaded for this tile, append to this data
  * @return {Object}                      playback-ready merged data
  */
-function parseLayerTile(rawTileData, colsByName, isPBF, tileCoordinates, prevPlaybackData) {
+function parseLayerTile(rawTileData, colsByName, tileCoordinates, prevPlaybackData) {
   let data
-  if (isPBF === true) {
-    if (
-      rawTileData === undefined ||
-      !rawTileData.length ||
-      rawTileData[0] === undefined ||
-      !Object.keys(rawTileData[0].layers).length
-    ) {
-      return []
-    }
-    data = rawTileData[0].layers.points
-  } else {
-    const cleanVectorArrays = getCleanVectorArrays(rawTileData)
-    data = groupData(cleanVectorArrays, Object.keys(colsByName))
-    if (Object.keys(data).length === 0) {
-      return []
-    }
+
+  const cleanVectorArrays = getCleanVectorArrays(rawTileData)
+  data = groupData(cleanVectorArrays, Object.keys(colsByName))
+  if (Object.keys(data).length === 0) {
+    return []
   }
-  const playbackData = getTilePlaybackData(
-    data,
-    colsByName,
-    tileCoordinates,
-    isPBF,
-    prevPlaybackData
-  )
+
+  const playbackData = getTilePlaybackData(data, colsByName, tileCoordinates, prevPlaybackData)
   return playbackData
 }
 
@@ -149,7 +130,7 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
 
     layerIds.forEach((layerId) => {
       const heatmapLayerHeader = heatmapLayers[layerId].header
-      const { temporalExtents, temporalExtentsLess, isPBF, colsByName } = { ...heatmapLayerHeader }
+      const { temporalExtents, temporalExtentsLess, colsByName } = { ...heatmapLayerHeader }
       const url = heatmapLayerHeader.endpoints.tiles
 
       referenceTiles.forEach((referenceTile) => {
@@ -185,7 +166,6 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
             url,
             temporalExtents,
             temporalExtentsLess,
-            isPBF,
           }
         )
 
@@ -198,7 +178,6 @@ function getTiles(layerIds, referenceTiles, newTemporalExtentsToLoad = undefined
           tile.data = parseLayerTile(
             rawTileData,
             colsByName,
-            isPBF,
             referenceTile.tileCoordinates,
             tile.data
           )

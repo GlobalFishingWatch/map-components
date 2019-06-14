@@ -52,11 +52,7 @@ export const getTilePromises = (tilesetUrl, token, temporalExtents, params = {})
   const promises = []
   const urls = getTemporalTileURLs(tilesetUrl, temporalExtents, params)
   for (let urlIndex = 0, length = urls.length; urlIndex < length; urlIndex++) {
-    if (params.isPBF === true) {
-      promises.push(getPBFTile(urls[urlIndex], token))
-    } else {
-      promises.push(new PelagosClient().obtainTile(urls[urlIndex], token))
-    }
+    promises.push(new PelagosClient().obtainTile(urls[urlIndex], token))
   }
 
   return promises
@@ -115,10 +111,9 @@ export const groupData = (cleanVectorArrays, columns) => {
  *  - an array of points int the case of PBF tiles
  * @param colsByName the columns present on the dataset, determined by tileset headers
  * @param tileCoordinates x, y, z
- * @param isPBF bool whether data is a PBF vector tile (true) or a Pelagos tile (false)
  * @param prevPlaybackData an optional previously loaded tilePlaybackData array (when adding time range)
  */
-export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, prevPlaybackData) => {
+export const getTilePlaybackData = (data, colsByName, tileCoordinates, prevPlaybackData) => {
   const tilePlaybackData = prevPlaybackData === undefined ? [] : prevPlaybackData
 
   const zoom = tileCoordinates.zoom
@@ -156,25 +151,13 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, isPBF, pr
   pull(storedColumns, 'sigma', 'weight')
   storedColumns = uniq(storedColumns)
 
-  const numPoints = isPBF === true ? data.length : data.latitude.length
+  const numPoints = data.latitude.length
 
   for (let index = 0, length = numPoints; index < length; index++) {
-    let point
-    if (isPBF === true) {
-      const feature = data.feature(index)
-      point = feature.properties
-      // WARNING: toGeoJSON is expensive. Avoid using raw coordinates in PBF tiles, pregenerate world coords
-      // FIXME: this should not be done when headers declare worldX/Y -  if (!columns.worldX) {
-      const geom = feature.toGeoJSON(tileCoordinates.x, tileCoordinates.y, zoom).geometry
-        .coordinates
-      point.longitude = geom[0]
-      point.latitude = geom[1]
-    } else {
-      point = {}
-      columnsArr.forEach((c) => {
-        point[c] = data[c][index]
-      })
-    }
+    let point = {}
+    columnsArr.forEach((c) => {
+      point[c] = data[c][index]
+    })
 
     const timeIndex = columns.timeIndex
       ? point.timeIndex
