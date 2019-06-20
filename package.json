@@ -13,7 +13,7 @@
   "browserslist": [
     ">0.2%",
     "not dead",
-    "not ie <= 11"
+    "not ie < 11"
   ],
   "scripts": {
     "build": "rimraf ./components/* && cross-env NODE_ENV=production rollup -c",
@@ -32,7 +32,7 @@
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "classnames": "^2.2.6",
-    "countryflag": "^2.3.2",
+    "countryflag": "^2.3.3",
     "d3-ease": "^1.0.5",
     "d3-geo": "^1.11.3",
     "d3-scale": "^2.2.2",
