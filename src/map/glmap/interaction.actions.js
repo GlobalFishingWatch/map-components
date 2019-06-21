@@ -1,7 +1,6 @@
 import area from '@turf/area'
 import { POLYGON_LAYERS_AREA } from '../constants'
 import { clearHighlightedVessels, clearHighlightedClickedVessel } from '../heatmap/heatmap.actions'
-import GL_STYLE from './gl-styles/style.json'
 import { zoomIntoVesselCenter } from './viewport.actions'
 
 export const SET_POPUP = 'SET_POPUP'

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import Pack from './Pack'
 
 class PelagosClient {

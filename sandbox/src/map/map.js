@@ -95,7 +95,7 @@ class MapPage extends Component {
   }
 
   render() {
-    const { viewport, temporalExtent, fishingHeaders, showHeatmap, workspaceGL } = this.state
+    const { viewport, temporalExtent, fishingHeaders, showHeatmap } = this.state
 
     let heatmapLayers = []
     if (fishingHeaders !== null) {

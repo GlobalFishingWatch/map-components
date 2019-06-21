@@ -6,8 +6,6 @@ import convert from '@globalfishingwatch/map-convert'
 import buildEndpoint from './buildEndpoint'
 import PelagosClient from '../lib/pelagosClient'
 
-import getPBFTile from './getPBFTile'
-
 /**
  * Generates the URLs to load vessel track data for a tile
  *
