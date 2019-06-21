@@ -43,7 +43,6 @@ const transitionTo = (increment, latitude = null, longitude = null, zoom = null)
 }
 
 export const transitionToZoom = (zoom) => (dispatch) => {
-  debugger
   dispatch(transitionTo(null, null, null, zoom))
 }
 
@@ -55,8 +54,8 @@ export const transitionEnd = () => (dispatch) => {
   dispatch(onViewportChange())
 }
 
-export const zoomIntoVesselCenter = (latitude, longitude) => (dispatch) => {
-  dispatch(transitionTo(CLUSTER_CLICK_ZOOM_INCREMENT, latitude, longitude))
+export const zoomIntoVesselCenter = (latitude, longitude, zoom = null) => (dispatch) => {
+  dispatch(transitionTo(CLUSTER_CLICK_ZOOM_INCREMENT, latitude, longitude, zoom))
 }
 
 export const fitToBounds = (bounds) => (dispatch, getState) => {

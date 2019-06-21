@@ -18,6 +18,7 @@ const getFields = (glFeature, source = null) => {
   if (source === null || source === undefined) {
     // console.warn('Couldnt find source when looking for fields of layer', sourceId)
   }
+
   const fieldsDefinition =
     source === undefined ||
     source.metadata === undefined ||
@@ -68,7 +69,9 @@ const getCluster = (glFeature, glGetSource) => {
         if (err1 || err2) {
           reject()
         }
-        const childrenFeatures = children.map((child) => getFeature(child, sourceId))
+        const childrenFeatures = children.map((child) =>
+          getFeature(child, glFeature.layer.id, glSource)
+        )
         resolve({
           zoom,
           childrenFeatures,
@@ -190,13 +193,19 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
       event.feature = event.features[0]
     }
 
+    // When autoClusterZoom is set to true, we handle zoom here
     const autoClusterZoom = getState().map.module.autoClusterZoom === true
+
+    // Check if cluster using customizable isCluster() callback
+    // If not set resolves simply to (event) => event.isCluster === true
+    const clusterBehavior = getState().map.module.isCluster(event)
+    event.isCluster = clusterBehavior
+
     if (autoClusterZoom) {
-      const clusterBehavior = getState().map.module.isCluster(event)
-      event.isCluster = clusterBehavior
       if (interactionType === 'click' && event.isCluster === true) {
         dispatch(clearHighlightedVessels())
-        dispatch(zoomIntoVesselCenter(latitude, longitude))
+        const clusterZoom = event.features[0].cluster && event.features[0].cluster.zoom
+        dispatch(zoomIntoVesselCenter(latitude, longitude, clusterZoom))
       }
     }
 

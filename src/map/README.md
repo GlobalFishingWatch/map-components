@@ -323,10 +323,16 @@ Function. Returns an event:
                         title:string,
                         isLink:bool
                     }
-                ]
+                ],
+                cluster: undefined || {
+                    childrenFeatures: [
+                        properties
+                        fields,
+                    ],
+                    zoom
+                }
             }
-        ],
-        feature: {} - set if there's only one feature
+        ]
     }
 ```
 

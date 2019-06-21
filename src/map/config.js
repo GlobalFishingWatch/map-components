@@ -23,7 +23,7 @@ export const MAX_SPRITES_PER_LAYER = 200000
 // ie how large the clicked region should be for including vessels
 export const VESSEL_CLICK_TOLERANCE_PX = 10
 
-export const CLUSTER_CLICK_ZOOM_INCREMENT = 2
+export const CLUSTER_CLICK_ZOOM_INCREMENT = 1
 
 export const MIN_ZOOM_LEVEL = 1
 // user can zoom up to this z level, but it doesn't guarantee availability of tiles
