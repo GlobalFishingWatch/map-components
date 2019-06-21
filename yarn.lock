@@ -4368,10 +4368,10 @@ cosmiconfig@^5.0.0, cosmiconfig@^5.0.2, cosmiconfig@^5.0.5, cosmiconfig@^5.0.7, 
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
-countryflag@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/countryflag/-/countryflag-2.3.3.tgz#d732d75f164ae1121ee46fc2d4e7daad83d44e02"
-  integrity sha512-n7R7cNXCQ25dCjqPYg/JArBdrnw3ZFw3zao1ZZvz/t4dCcTrzZUjXP90WG7+NgGVbeIbGfkZvU3I/Ki/IT8yyA==
+countryflag@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/countryflag/-/countryflag-2.4.0.tgz#a3a299603838f36fb028f9ae6e37d8373a2c195f"
+  integrity sha512-NuAAvNnc/OinEvO3pbFZ7nnrjAEu0suzsMcPKczm8QZZBot6/IiKDZNaOx1clfU4QlqlDGgBpDxDMcvAcYn8YA==
   dependencies:
     core-js "^3.1.4"
     if-emoji "^0.1.0"
