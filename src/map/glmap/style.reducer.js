@@ -15,26 +15,31 @@ const attributions = uniq(
     .filter((source) => source !== undefined)
 )
 
+export const setLayerStyleDefaults = (layer) => {
+  if (layer.layout === undefined) {
+    layer.layout = {}
+  }
+  if (layer.paint === undefined) {
+    layer.paint = {}
+  }
+  // initialize time filter for time-filterable layers
+  if (layer.metadata && layer.metadata['gfw:temporal'] === true) {
+    const temporalField =
+      layer.metadata['gfw:temporalField'] === undefined
+        ? 'timestamp'
+        : layer.metadata['gfw:temporalField']
+    layer.filter = ['all', ['>', temporalField, 0], ['<', temporalField, 999999999999]]
+  }
+  // set all layers to not visible except layers explicitely marked as visible (default basemap)
+  if (layer.layout.visibility !== 'visible') {
+    layer.layout.visibility = 'none'
+  }
+  return layer
+}
+
 const setStyleDefaults = (style) => {
   style.layers.forEach((layer) => {
-    if (layer.layout === undefined) {
-      layer.layout = {}
-    }
-    if (layer.paint === undefined) {
-      layer.paint = {}
-    }
-    // initialize time filter for time-filterable layers
-    if (layer.metadata && layer.metadata['gfw:temporal'] === true) {
-      const temporalField =
-        layer.metadata['gfw:temporalField'] === undefined
-          ? 'timestamp'
-          : layer.metadata['gfw:temporalField']
-      layer.filter = ['all', ['>', temporalField, 0], ['<', temporalField, 999999999999]]
-    }
-    // set all layers to not visible except layers explicitely marked as visible (default basemap)
-    if (layer.layout.visibility !== 'visible') {
-      layer.layout.visibility = 'none'
-    }
+    setLayerStyleDefaults(layer)
   })
   return style
 }

@@ -83,29 +83,13 @@ class Map extends React.Component {
   }
 
   onMapInteraction = (event, type) => {
-    // console.log(type, event, event.features)
-    const callback = type === 'hover' ? this.props.mapHover : this.props.mapClick
-    if (this.glMap !== undefined && event.features !== undefined && event.features.length) {
-      const feature = event.features[0]
-      if (feature.properties.cluster === true) {
-        const clusterId = feature.properties.cluster_id
-        const sourceId = feature.source
-        const glSource = this.glMap.getSource(sourceId)
-        glSource.getClusterExpansionZoom(clusterId, (err1, zoom) => {
-          glSource.getClusterLeaves(clusterId, 99, 0, (err2, children) => {
-            if (err1 || err2) {
-              return
-            }
-            callback(event.lngLat[1], event.lngLat[0], event.features, {
-              zoom,
-              children,
-            })
-          })
-        })
-        return
-      }
-    }
-    callback(event.lngLat[1], event.lngLat[0], event.features)
+    this.props.mapInteraction(
+      type,
+      event.lngLat[1],
+      event.lngLat[0],
+      event.features,
+      this.glGetSource
+    )
   }
 
   onHover = (event) => {
@@ -119,6 +103,7 @@ class Map extends React.Component {
   getRef = (ref) => {
     if (ref !== null) {
       this.glMap = ref.getMap()
+      this.glGetSource = this.glMap.getSource.bind(this.glMap)
     }
   }
 
@@ -150,6 +135,7 @@ class Map extends React.Component {
       onClosePopup,
       clickPopup,
       hoverPopup,
+      hasHeatmapLayers,
       interactiveLayerIds,
     } = this.props
     return (
@@ -180,7 +166,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
         >
-          <ActivityLayers />
+          {hasHeatmapLayers !== false && <ActivityLayers />}
           {clickPopup !== undefined && clickPopup !== null && (
             <PopupWrapper
               latitude={clickPopup.latitude}
@@ -216,11 +202,11 @@ Map.propTypes = {
   maxZoom: PropTypes.number.isRequired,
   minZoom: PropTypes.number.isRequired,
   setViewport: PropTypes.func.isRequired,
-  mapHover: PropTypes.func,
-  mapClick: PropTypes.func,
+  mapInteraction: PropTypes.func,
   onClosePopup: PropTypes.func,
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
+  hasHeatmapLayers: PropTypes.bool.isRequired,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 }
 
@@ -228,8 +214,7 @@ Map.defaultProps = {
   token: null,
   clickPopup: null,
   hoverPopup: null,
-  mapHover: () => {},
-  mapClick: () => {},
+  mapInteraction: () => {},
   onClosePopup: () => {},
   transitionEnd: () => {},
   cursor: null,

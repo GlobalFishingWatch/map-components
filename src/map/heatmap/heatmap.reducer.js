@@ -58,7 +58,7 @@ export default function(state = initialState, action) {
 
     case REMOVE_HEATMAP_LAYER: {
       const heatmapLayers = Object.assign({}, state.heatmapLayers)
-      delete heatmapLayers[action.payload.layerId]
+      delete heatmapLayers[action.payload.id]
       return Object.assign({}, state, { heatmapLayers })
     }
 

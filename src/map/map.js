@@ -79,6 +79,8 @@ class MapModule extends React.Component {
       store.dispatch(
         initModule({
           token: this.props.token,
+          autoClusterZoom: this.props.autoClusterZoom,
+          isCluster: this.props.isCluster,
           onViewportChange: this.props.onViewportChange,
           onHover: this.props.onHover,
           onClick: this.props.onClick,
@@ -235,6 +237,8 @@ class MapModule extends React.Component {
 MapModule.propTypes = {
   token: PropTypes.string,
   viewport: PropTypes.shape(viewportTypes).isRequired,
+  autoClusterZoom: PropTypes.bool,
+  isCluster: PropTypes.func,
   tracks: PropTypes.arrayOf(PropTypes.exact(trackTypes)),
   heatmapLayers: PropTypes.arrayOf(PropTypes.shape(heatmapLayerTypes)),
   temporalExtent: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
@@ -258,6 +262,8 @@ MapModule.propTypes = {
 MapModule.defaultProps = {
   token: null,
   glyphsPath: null,
+  autoClusterZoom: true,
+  isCluster: (event) => event.isCluster === true,
   highlightTemporalExtent: null,
   tracks: null,
   hoverPopup: null,

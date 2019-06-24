@@ -5,7 +5,7 @@ export const trackTypes = {
   url: PropTypes.string,
   data: PropTypes.object,
   color: PropTypes.string,
-  type: PropTypes.oneOf(['geojson', undefined]),
+  type: PropTypes.oneOf(['geojson', 'pelagos', undefined]),
   layerTemporalExtents: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   fitBoundsOnLoad: PropTypes.bool,
 }

@@ -538,7 +538,8 @@
       "paint": {
         "circle-color": "#e5647d",
         "circle-radius": 3,
-        "circle-opacity": 0.9
+        "circle-opacity": 0.9,
+        "circle-stroke-opacity": 0
       }
     },
     {

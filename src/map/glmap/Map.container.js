@@ -4,12 +4,19 @@ import { fromJS } from 'immutable'
 import { TRACKS_LAYER_IN_FRONT_OF_GROUP } from '../config'
 import { closePopup } from '../module/module.actions.js'
 import { getTracksStyles } from '../tracks/tracks.selectors.js'
-import { mapHover, mapClick } from './interaction.actions.js'
+import { mapInteraction } from './interaction.actions.js'
 import { setViewport, transitionEnd } from './viewport.actions.js'
 import Map from './Map'
 
 const getStaticLayers = (state) => state.map.style.staticLayers
+const getHeatmapLayers = (state) => state.map.heatmap.heatmapLayers
 
+const hasHeatmapLayers = createSelector(
+  [getHeatmapLayers],
+  (heatmapLayers) => {
+    return Object.keys(heatmapLayers).length > 0
+  }
+)
 const getInteractiveLayerIds = createSelector(
   [getStaticLayers],
   // Note: here we assume that layer IDs provided with module match the GL layers that should
@@ -48,6 +55,7 @@ const mapStateToProps = (state, ownProps) => ({
   cursor: state.map.interaction.cursor,
   token: state.map.module.token,
   mapStyle: getMapStyle(state),
+  hasHeatmapLayers: hasHeatmapLayers(state),
   interactiveLayerIds: getInteractiveLayerIds(state),
 })
 
@@ -55,11 +63,8 @@ const mapDispatchToProps = (dispatch) => ({
   setViewport: (viewport) => {
     dispatch(setViewport(viewport))
   },
-  mapHover: (lat, long, features, cluster) => {
-    dispatch(mapHover(lat, long, features, cluster))
-  },
-  mapClick: (lat, long, features, cluster) => {
-    dispatch(mapClick(lat, long, features, cluster))
+  mapInteraction: (type, lat, long, features, cluster, glGetSource) => {
+    dispatch(mapInteraction(type, lat, long, features, cluster, glGetSource))
   },
   transitionEnd: () => {
     dispatch(transitionEnd())

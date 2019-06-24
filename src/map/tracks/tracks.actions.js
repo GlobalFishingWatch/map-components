@@ -132,7 +132,8 @@ function loadTrack(track) {
     if (type !== 'geojson') {
       // Deprecated tracks format logic to be deleted some day
       const token = state.map.module.token
-      const promises = getTilePromises(url, token, layerTemporalExtents, { seriesgroup: id })
+
+      const promises = getTilePromises(url, token, layerTemporalExtents)
 
       Promise.all(promises.map((p) => p.catch((e) => e))).then((rawTileData) => {
         const cleanData = getCleanVectorArrays(rawTileData)

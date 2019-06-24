@@ -1,3 +1,4 @@
+/* eslint-disable */
 var byname = {
   Uint8: {
     size: Uint8Array.BYTES_PER_ELEMENT,

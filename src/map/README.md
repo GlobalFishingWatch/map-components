@@ -56,6 +56,14 @@ Number.
 
 Array of [latitude, longitude]
 
+### `autoClusterZoom`
+
+Boolean. Default true. Have the map zoom in to an appropriate zoom level when user clicks on a cluster (several features under a point or one feature defined as a cluster)
+
+### `isCluster`
+
+Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features. 
+
 ## `tracks`
 
 Array of `track`. Sets the tracks to load and display (loading/displaying is triggered by diffing incoming array with existing array).
@@ -82,8 +90,8 @@ Boolean. When set to true, the whole track will render in white (notwithstanding
 
 ### `track.type`
 
-String. Track type, only supported `geojson` for now.
-This is needed to keep the compatibility with older tracks format.
+String. Track type: `geojson` or `pelagos`.
+This is needed to keep the compatibility with older pelagos tracks format.
 
 ### `track.fitBoundsOnLoad`
 
@@ -105,17 +113,13 @@ String. Mandatory. Identifies layer uniquely, can be workspace id for instance.
 
 String. Mandatory. Identifies tileset uniquely
 
-### `heatmapLayer.subtype`
-
-String. Allowed values are: `encounters`.
-
 ### `heatmapLayer.hue`
 
 A Number between 0 and 360. Colors for heatmap layers can only be expressed as hues (degrees in the color wheel, saturation and luminance being hardcoded) for internal technical reasons.
 
 ### `heatmapLayer.opacity`
 
-A Number between 0 and 1.
+A Number between 0 and 1. 0 by default.
 
 ### `heatmapLayer.visible`
 
@@ -126,7 +130,6 @@ Boolean.
 Object. Mandatory. Must be passed as is - mandatory fields are:
 
 - `endpoints` PropTypes.object,
-- `isPBF` PropTypes.bool,
 - `colsByName` PropTypes.object,
 - `temporalExtents` PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 - `temporalExtentsLess` PropTypes.bool
@@ -297,11 +300,45 @@ Function. TODO
 
 ## `onClick`
 
-Function. TODO
+Function. Returns an event:
+```
+    {
+        latitude,
+        longitude,
+        isCluster:bool,
+        count:int - will be -1 if cluster size can't be determined
+        features: [
+            {
+                layer: {
+                    id:string,
+                    group:string - matches mapbox:group defined in style.json
+                },
+                properties:[] - all available properties,
+                title:string - human readable title,
+                fields: [ - human readable properties
+                    {
+                        id:string,
+                        label:string,
+                        value:any,
+                        title:string,
+                        isLink:bool
+                    }
+                ],
+                cluster: undefined || {
+                    childrenFeatures: [
+                        properties
+                        fields,
+                    ],
+                    zoom
+                }
+            }
+        ]
+    }
+```
 
 ## `onHover`
 
-Function. TODO
+Function. See `onClick`
 
 ## `onAttributionsChange`
 

@@ -1,10 +1,12 @@
 import { fromJS } from 'immutable'
 import convert from '@globalfishingwatch/map-convert'
 import uniq from 'lodash/uniq'
+import throttle from 'lodash/throttle'
 import { hexToRgb } from '../utils/map-colors'
 import { STATIC_LAYERS_CARTO_ENDPOINT, STATIC_LAYERS_CARTO_TILES_ENDPOINT } from '../config'
 import { CUSTOM_LAYERS_SUBTYPES, GL_TRANSPARENT } from '../constants'
 import GL_STYLE from './gl-styles/style.json'
+import { setLayerStyleDefaults } from './style.reducer.js'
 import getMainGeomType from '../utils/getMainGeomType'
 
 export const INIT_MAP_STYLE = 'INIT_MAP_STYLE'
@@ -25,14 +27,14 @@ const setMapStyle = (style) => ({
   payload: style,
 })
 
-export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
+const setStyleTemporalExtent = (dispatch, getState, temporalExtent, applyToThrottled = false) => {
   const state = getState().map.style
   let style = state.mapStyle
   const currentStyle = style.toJS()
   const glLayers = currentStyle.layers
 
-  const start = Math.round(temporalExtent[0].getTime() / 1000)
-  const end = Math.round(temporalExtent[1].getTime() / 1000)
+  let start = Math.round(temporalExtent[0].getTime() / 1000)
+  let end = Math.round(temporalExtent[1].getTime() / 1000)
 
   // TEMPORARY, remove later - temporal layers points should have a timestamp, this is legacy
   // logic for legacy encounters layer that only have a 'timeIndex'
@@ -42,6 +44,13 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
   for (let i = 0; i < glLayers.length; i++) {
     const glLayer = glLayers[i]
     if (glLayer.metadata === undefined || glLayer.metadata['gfw:temporal'] !== true) {
+      continue
+    }
+
+    if (
+      (applyToThrottled === true && glLayer.metadata['gfw:temporal:throttled'] !== true) ||
+      (applyToThrottled === false && glLayer.metadata['gfw:temporal:throttled'] === true)
+    ) {
       continue
     }
 
@@ -57,11 +66,18 @@ export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
     const isLegacy = glLayer.metadata && glLayer.metadata['gfw:temporalField'] === 'timeIndex'
     currentFilter[1][2] = isLegacy ? startIndex : start
     currentFilter[2][2] = isLegacy ? endIndex : end
-    // currentFilter[1][2] = start
-    // currentFilter[2][2] = end
     style = style.setIn(['layers', i, 'filter'], fromJS(currentFilter))
   }
   dispatch(setMapStyle(style))
+}
+
+const applyTemporalExtentThrottled = throttle((dispatch, getState, temporalExtent) => {
+  setStyleTemporalExtent(dispatch, getState, temporalExtent, true)
+}, 400)
+
+export const applyTemporalExtent = (temporalExtent) => (dispatch, getState) => {
+  setStyleTemporalExtent(dispatch, getState, temporalExtent)
+  applyTemporalExtentThrottled(dispatch, getState, temporalExtent)
 }
 
 const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) => {
@@ -166,7 +182,6 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
     return newStyle
   }
 
-  const initialGLLayer = GL_STYLE.layers.find((l) => l.id === glLayerId)
   const refLayerOpacity = refLayer.opacity === undefined ? 1 : refLayer.opacity
 
   // color/opacity
@@ -210,18 +225,6 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'circle-opacity'], refLayerOpacity)
         .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-radius'],
-          initialGLLayer.paint['circle-radius']
-        )
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-stroke-color'],
-          initialGLLayer.paint['circle-stroke-color'] || '#000'
-        )
-        .setIn(
-          ['layers', glLayerIndex, 'paint', 'circle-stroke-width'],
-          initialGLLayer.paint['circle-stroke-width'] || 1
-        )
 
       if (refLayer.color !== undefined) {
         const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
@@ -302,12 +305,22 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
     style = style.setIn(['sources', id], finalSource)
 
     const layers = []
-    gl.layers.forEach((srcGlLayer) => {
-      const glLayer = {
-        ...srcGlLayer,
-        source: id,
-        'source-layer': id,
+    gl.layers.forEach((workspaceGlLayer) => {
+      const sourceLayer =
+        workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
+      let layerId = workspaceGlLayer.id
+      if (layerId === undefined) {
+        layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
       }
+      const defaultGlLayer = setLayerStyleDefaults(workspaceGlLayer)
+
+      const glLayer = {
+        ...defaultGlLayer,
+        id: layerId,
+        source: id,
+        'source-layer': sourceLayer,
+      }
+
       layers.push(glLayer)
     })
 
@@ -316,9 +329,7 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   })
 
   dispatch(setMapStyle(style))
-
-  // TODO MAP MODULE
-  // dispatch(updateMapStyle());
+  dispatch(applyTemporalExtent(state.map.module.temporalExtent))
 }
 
 const getCartoLayerInstanciatePromise = ({ sourceId, sourceCartoSQL }) => {
@@ -447,6 +458,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
         // Using default tiles url as a fallback
         const newTiles =
           tiles !== undefined && tiles.length > 0 ? uniq([refLayer.url, ...tiles]) : [refLayer.url]
+
         style = style.setIn(['sources', sourceId, 'tiles'], fromJS(newTiles))
       }
     }
