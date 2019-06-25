@@ -321,11 +321,10 @@ const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
       .toJS()
       .map((l) => l.id)
     const layersToAdd = gl.layers.filter((l) => !existingLayerIds.includes(l.id))
-    layersToAdd.forEach((layerToAdd) => {
-
-      let layerToAddId = id
-      if (gl.layers.length > 1) {
-        layerToAddId = `${id}-${new Date().getTime()}`
+    layersToAdd.forEach((layerToAdd, index) => {
+      let layerToAddId = layerToAdd.id
+      if (!layerToAddId && gl.layers.length > 1) {
+        layerToAddId = `${id}-${index}`
       }
       const defaultGlLayer = setLayerStyleDefaults(layerToAdd)
 
@@ -338,7 +337,7 @@ const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
       // set source-layer - defaults to source id
       if (gl.source.type === 'vector') {
         const sourceLayer =
-          workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
+          workspaceGLLayer['source-layer'] === undefined ? id : workspaceGLLayer['source-layer']
         glLayer['source-layer'] = sourceLayer
       }
 
