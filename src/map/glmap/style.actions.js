@@ -320,12 +320,13 @@ const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
       .get('layers')
       .toJS()
       .map((l) => l.id)
-    const layersToAdd = gl.layers.filter((l) => !existingLayerIds.includes(l.id))
+    const layersToAdd = gl.layers.filter((layer, index) => {
+      const layerId = layer.id || index > 0 ? `${id}-${index}` : id
+      return !existingLayerIds.includes(layerId)
+    })
     layersToAdd.forEach((layerToAdd, index) => {
-      let layerToAddId = layerToAdd.id
-      if (!layerToAddId && gl.layers.length > 1) {
-        layerToAddId = `${id}-${index}`
-      }
+      // doesn't add a sufix in the first elements but it will for the following ones
+      let layerToAddId = layerToAdd.id || index > 0 ? `${id}-${index}` : id
       const defaultGlLayer = setLayerStyleDefaults(layerToAdd)
 
       const glLayer = {

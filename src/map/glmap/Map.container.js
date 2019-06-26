@@ -25,8 +25,23 @@ const getInteractiveLayerIds = createSelector(
   [getStaticLayers],
   // Note: here we assume that layer IDs provided with module match the GL layers that should
   // be interactive or not, ie typically the fill layer if a label layer is present
-  (staticLayers) =>
-    staticLayers.filter((l) => l.interactive === true && l.visible === true).map((l) => l.id)
+  (staticLayers) => {
+    return staticLayers.reduce((acc, layer) => {
+      if (!layer.interactive || !layer.visible) return acc
+      // We also need to check nested layers interactivity when custom gl layers are provided
+      if (layer.gl !== undefined) {
+        layer.gl.layers.forEach((glLayer, index) => {
+          if (index === 0 || glLayer.interactive === true) {
+            const glLayerId = glLayer.id || index > 0 ? `${layer.id}-${index}` : layer.id
+            acc.push(glLayerId)
+          }
+        })
+      } else {
+        acc.push(layer.id)
+      }
+      return acc
+    }, [])
+  }
 )
 
 const getMapStyles = (state) => state.map.style.mapStyle
