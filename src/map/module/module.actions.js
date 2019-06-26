@@ -46,10 +46,6 @@ export const onViewportChange = () => (dispatch, getState) => {
   }
   const viewport = state.map.viewport
 
-  if (viewport.bounds === undefined) {
-    return
-  }
-
   callback({
     zoom: viewport.viewport.zoom,
     center: [viewport.viewport.latitude, viewport.viewport.longitude],
