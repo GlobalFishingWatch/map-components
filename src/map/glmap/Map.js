@@ -78,8 +78,8 @@ class Map extends React.Component {
     }
   }
 
-  onViewportChange = (viewport) => {
-    this.props.setViewport(viewport)
+  onViewportChange = (viewport, interactionState) => {
+    this.props.setViewport(viewport, interactionState)
   }
 
   onMapInteraction = (event, type) => {

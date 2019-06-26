@@ -62,7 +62,7 @@ Boolean. Default true. Have the map zoom in to an appropriate zoom level when us
 
 ### `isCluster`
 
-Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features. 
+Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features.
 
 ## `tracks`
 
@@ -292,7 +292,19 @@ Function. Called when a user clicks on the close button of a click popup.
 
 ## `onViewportChange`
 
-Function. TODO
+Callback that returns the following properties:
+```js
+{
+    interactionState, // interaction that triggered the change see
+    // https://github.com/uber/react-map-gl/blob/master/docs/components/interactive-map.md#oninteractionstatechange-function
+    zoom: viewport.viewport.zoom,
+    center: [viewport.viewport.latitude, viewport.viewport.longitude],
+    bounds: viewport.bounds,
+    canZoomIn: viewport.canZoomIn,
+    canZoomOut: viewport.canZoomOut,
+    mouseLatLong: viewport.mouseLatLong,
+}
+```
 
 ## `onLoadStart`
 

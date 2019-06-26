@@ -96,8 +96,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  setViewport: (viewport) => {
-    dispatch(setViewport(viewport))
+  setViewport: (viewport, interactionState) => {
+    dispatch(setViewport(viewport, interactionState))
   },
   mapInteraction: (type, lat, long, features, cluster, glGetSource) => {
     dispatch(mapInteraction(type, lat, long, features, cluster, glGetSource))

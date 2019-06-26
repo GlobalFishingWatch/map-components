@@ -10,13 +10,13 @@ export const SET_MOUSE_LAT_LONG = 'SET_MOUSE_LAT_LONG'
 export const TRANSITION_END = 'TRANSITION_END'
 export const SET_NATIVE_VIEWPORT = 'SET_NATIVE_VIEWPORT'
 
-export const setViewport = (viewport) => (dispatch) => {
+export const setViewport = (viewport, interactionState) => (dispatch) => {
   dispatch({
     type: SET_VIEWPORT,
     payload: viewport,
   })
   dispatch(updateHeatmapTilesFromViewport())
-  dispatch(onViewportChange())
+  dispatch(onViewportChange(interactionState))
 }
 
 export const updateViewport = (viewportUpdate) => (dispatch) => {

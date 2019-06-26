@@ -37,7 +37,7 @@ export const completeLoader = (loaderId) => (dispatch, getState) => {
   }
 }
 
-export const onViewportChange = () => (dispatch, getState) => {
+export const onViewportChange = (interactionState) => (dispatch, getState) => {
   const state = getState()
   const callback = state.map.module.onViewportChange
 
@@ -47,6 +47,7 @@ export const onViewportChange = () => (dispatch, getState) => {
   const viewport = state.map.viewport
 
   callback({
+    interactionState,
     zoom: viewport.viewport.zoom,
     center: [viewport.viewport.latitude, viewport.viewport.longitude],
     bounds: viewport.bounds,
