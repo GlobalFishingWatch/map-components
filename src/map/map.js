@@ -216,7 +216,7 @@ class MapModule extends React.Component {
       ) {
         // if zoom delta is precisely === 1, zoom with a transition
         if (Math.abs(currentViewport.zoom - this.props.viewport.zoom) === 1) {
-          store.dispatch(transitionToZoom(this.props.viewport.zoom))
+          store.dispatch(transitionToZoom(this.props.viewport))
         } else {
           updateViewportFromIncomingProps(this.props.viewport)
         }

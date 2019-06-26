@@ -42,8 +42,8 @@ const transitionTo = (increment, latitude = null, longitude = null, zoom = null)
   dispatch(onViewportChange())
 }
 
-export const transitionToZoom = (zoom) => (dispatch) => {
-  dispatch(transitionTo(null, null, null, zoom))
+export const transitionToZoom = (viewport) => (dispatch) => {
+  dispatch(transitionTo(null, viewport.center[0], viewport.center[1], viewport.zoom))
 }
 
 export const transitionEnd = () => (dispatch) => {
