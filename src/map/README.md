@@ -243,7 +243,9 @@ Object. If specified, overrides all style info with raw Mapbox GL JSON styles, f
 
 ## `basemapLayers`
 
-TODO
+Available basemap layers by id:
+
+`'satellite', 'north-star', 'labels', 'graticules', 'bathymetry'`
 
 basemapLayers: PropTypes.arrayOf(PropTypes.shape({
 id: PropTypes.string,
