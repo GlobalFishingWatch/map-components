@@ -286,6 +286,10 @@ Number. Mandatory. Latitude for anchor point.
 
 Number. Mandatory. Longitude for anchor point.
 
+## `onClosePopup`
+
+Function. Called when a user clicks on the close button of a click popup.
+
 ## `onViewportChange`
 
 Function. TODO
