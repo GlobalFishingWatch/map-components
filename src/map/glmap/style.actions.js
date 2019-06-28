@@ -304,7 +304,6 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
     const finalSource = fromJS(gl.source)
     style = style.setIn(['sources', id], finalSource)
 
-    const layers = []
     gl.layers.forEach((workspaceGlLayer) => {
       const sourceLayer =
         workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
@@ -320,12 +319,13 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
         source: id,
         'source-layer': sourceLayer,
       }
-
-      layers.push(glLayer)
+      const existingLayers = style.get('layers')
+      const newLayerGroup = glLayer.metadata['mapbox:group']
+      const newLayerIndex = existingLayers.findLastIndex((l) => {
+        return newLayerGroup === l.toJS().metadata['mapbox:group']
+      })
+      style = style.set('layers', existingLayers.splice(newLayerIndex, 0, fromJS(glLayer)))
     })
-
-    const finalLayers = fromJS(layers)
-    style = style.set('layers', style.get('layers').concat(finalLayers))
   })
 
   dispatch(setMapStyle(style))

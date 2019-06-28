@@ -43,7 +43,6 @@ const getMapStyle = createSelector(
       mapStylesLayers = mapStylesLayers.insert(trackLayersIndex + i, fromJS(trackLayer))
     })
     finalMapStyles = finalMapStyles.set('layers', mapStylesLayers)
-
     return finalMapStyles
   }
 )
