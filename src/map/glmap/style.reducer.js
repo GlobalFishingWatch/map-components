@@ -22,14 +22,22 @@ export const setLayerStyleDefaults = (layer) => {
   if (layer.paint === undefined) {
     layer.paint = {}
   }
+  if (layer.metadata === undefined) {
+    layer.metadata = {}
+  }
   // initialize time filter for time-filterable layers
-  if (layer.metadata && layer.metadata['gfw:temporal'] === true) {
+  if (layer.metadata['gfw:temporal'] === true) {
     const temporalField =
       layer.metadata['gfw:temporalField'] === undefined
         ? 'timestamp'
         : layer.metadata['gfw:temporalField']
     layer.filter = ['all', ['>', temporalField, 0], ['<', temporalField, 999999999999]]
   }
+
+  if (layer.metadata['mapbox:group'] === undefined) {
+    layer.metadata['mapbox:group'] = 'temporal'
+  }
+
   // set all layers to not visible except layers explicitely marked as visible (default basemap)
   if (layer.layout.visibility !== 'visible') {
     layer.layout.visibility = 'none'
