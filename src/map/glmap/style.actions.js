@@ -207,9 +207,10 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
       break
     }
     case 'line': {
+      const color = refLayer.color || (glLayer.paint && glLayer.paint['line-color'])
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'line-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'line-color'], refLayer.color)
+        .setIn(['layers', glLayerIndex, 'paint', 'line-color'], color)
       break
     }
     case 'symbol': {
@@ -410,7 +411,7 @@ const instanciateCartoLayers = (layers) => (dispatch, getState) => {
           })
         )
 
-        // change source in all layers that are using it (genrally polygon + labels)
+        // change source in all layers that are using it (generally polygon + labels)
         currentStyle.layers.forEach((glLayer, glLayerIndex) => {
           if (glLayer.source === cartoLayer.sourceId) {
             style = style.setIn(['layers', glLayerIndex, 'source'], newSourceId)
