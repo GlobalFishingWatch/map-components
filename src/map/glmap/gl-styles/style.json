@@ -232,6 +232,13 @@
         "type": "FeatureCollection",
         "features": []
       }
+    },
+    "rulers": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
     }
   },
   "layers": [
@@ -762,6 +769,49 @@
       },
       "type": "raster",
       "source": "labels"
+    },
+    {
+      "id": "rulers",
+      "source": "rulers",
+      "type": "line",
+      "metadata": {
+        "mapbox:group": "tools"
+      },
+      "paint": {
+        "line-dasharray": [2,1],
+        "line-width": [
+          "case",
+          ["==", ["get", "isNew"], true],
+          1.5,
+          1
+        ]
+      }
+    },
+    {
+      "id": "ruler-labels",
+      "source": "rulers",
+      "type": "symbol",
+      "layout": {
+        "text-field": "{label}",
+        "symbol-placement": "line",
+        "text-allow-overlap": true,
+        "text-offset": [0, -0.8],
+        "text-font": [
+          "case",
+          ["==", ["get", "isNew"], true],
+          ["literal", ["Roboto Medium"]],
+          ["literal", ["Roboto Mono Light"]]
+        ],
+        "text-size": [
+          "case",
+          ["==", ["get", "isNew"], true],
+          13,
+          11
+        ]
+      },
+      "metadata": {
+        "mapbox:group": "tools"
+      }
     }
   ]
 }
