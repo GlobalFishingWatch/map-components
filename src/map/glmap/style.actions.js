@@ -305,8 +305,6 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
     style = style.setIn(['sources', id], finalSource)
 
     gl.layers.forEach((workspaceGlLayer) => {
-      const sourceLayer =
-        workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
       let layerId = workspaceGlLayer.id
       if (layerId === undefined) {
         layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
@@ -317,7 +315,11 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
         ...defaultGlLayer,
         id: layerId,
         source: id,
-        'source-layer': sourceLayer,
+      }
+      if (gl.source.type === 'vector') {
+        const sourceLayer =
+          workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
+        glLayer['source-layer'] = sourceLayer
       }
       const existingLayers = style.get('layers')
       const newLayerGroup = glLayer.metadata['mapbox:group']
@@ -449,7 +451,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   // update source when needed
   staticLayers.forEach((refLayer) => {
     const sourceId = refLayer.id
-    if (currentGLSources[sourceId] !== undefined) {
+    if (currentGLSources[sourceId] !== undefined && refLayer.visible === true) {
       if (refLayer.data !== undefined) {
         style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
       }
