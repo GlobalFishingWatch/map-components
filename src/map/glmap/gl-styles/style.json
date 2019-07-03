@@ -239,6 +239,13 @@
         "type": "FeatureCollection",
         "features": []
       }
+    },
+    "rulers-points": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
     }
   },
   "layers": [
@@ -806,11 +813,26 @@
           "case",
           ["==", ["get", "isNew"], true],
           13,
-          11
+          12
         ]
       },
       "metadata": {
         "mapbox:group": "tools"
+      }
+    },
+    {
+      "id": "rulers-points",
+      "source": "rulers-points",
+      "type": "circle",
+      "paint": {
+        "circle-radius": [
+          "case",
+          ["==", ["get", "isNew"], true],
+          6,
+          3
+        ],
+        "circle-opacity": 1,
+        "circle-stroke-opacity": 0
       }
     }
   ]
