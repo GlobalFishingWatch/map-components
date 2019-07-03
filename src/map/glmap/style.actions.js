@@ -451,7 +451,7 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   // update source when needed
   staticLayers.forEach((refLayer) => {
     const sourceId = refLayer.id
-    if (currentGLSources[sourceId] !== undefined) {
+    if (currentGLSources[sourceId] !== undefined && refLayer.visible === true) {
       if (refLayer.data !== undefined) {
         style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
       }

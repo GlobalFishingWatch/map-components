@@ -142,9 +142,14 @@ class MapModule extends React.Component {
       (this.props.basemapLayers !== null && this.props.basemapLayers.length) ||
       (this.props.staticLayers !== null && this.props.staticLayers.length)
     ) {
-      store.dispatch(
-        commitStyleUpdates(this.props.staticLayers || [], this.props.basemapLayers || [])
-      )
+      if (
+        this.props.basemapLayers !== prevProps.basemapLayers ||
+        this.props.staticLayers !== prevProps.staticLayers
+      ) {
+        store.dispatch(
+          commitStyleUpdates(this.props.staticLayers || [], this.props.basemapLayers || [])
+        )
+      }
     }
 
     // loadTemporalExtent
