@@ -6,6 +6,7 @@ import {
   SET_HIGHLIGHT_TEMPORAL_EXTENT,
   START_LOADER,
   COMPLETE_LOADER,
+  SET_MODULE_CURSOR,
 } from './module.actions'
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   token: undefined,
   temporalExtent: [new Date(1970), new Date()],
   highlightTemporalExtent: null,
+  cursor: null,
   onViewportChange: undefined,
   onHover: undefined,
   onClick: undefined,
@@ -56,6 +58,10 @@ const moduleReducer = (state = initialState, action) => {
       const loaderIndex = loaders.findIndex((l) => l === action.payload)
       loaders.splice(loaderIndex, 1)
       return { ...state, loaders }
+    }
+
+    case SET_MODULE_CURSOR: {
+      return { ...state, cursor: action.payload }
     }
 
     default:

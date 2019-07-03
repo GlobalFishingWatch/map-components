@@ -8,7 +8,12 @@ import { heatmapLayerTypes, basemapLayerTypes, staticLayerTypes } from './propty
 import { viewportTypes, popupTypes } from './proptypes/shared'
 
 import Map from './glmap/Map.container'
-import { initModule, setTemporalExtent, setHighlightTemporalExtent } from './module/module.actions'
+import {
+  initModule,
+  setTemporalExtent,
+  setHighlightTemporalExtent,
+  setCursor,
+} from './module/module.actions'
 import { updateViewport, transitionToZoom } from './glmap/viewport.actions'
 import { initStyle, commitStyleUpdates, applyTemporalExtent } from './glmap/style.actions'
 import { updateTracks } from './tracks/tracks.actions'
@@ -217,6 +222,12 @@ class MapModule extends React.Component {
         }
       }
     }
+
+    if (this.props.cursor !== undefined) {
+      if (this.props.cursor !== prevProps.cursor) {
+        store.dispatch(setCursor(this.props.cursor))
+      }
+    }
   }
   render() {
     if (this.state.error !== null) {
@@ -251,6 +262,7 @@ MapModule.propTypes = {
   loadTemporalExtent: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
   basemapLayers: PropTypes.arrayOf(PropTypes.shape(basemapLayerTypes)),
   staticLayers: PropTypes.arrayOf(PropTypes.shape(staticLayerTypes)),
+  cursor: PropTypes.string,
   // customLayers
   hoverPopup: PropTypes.shape(popupTypes),
   clickPopup: PropTypes.shape(popupTypes),
@@ -278,6 +290,7 @@ MapModule.defaultProps = {
   loadTemporalExtent: null,
   basemapLayers: null,
   staticLayers: null,
+  cursor: null,
   onViewportChange: () => {},
   onLoadStart: () => {},
   onLoadComplete: () => {},
