@@ -3,6 +3,7 @@ export const SET_TEMPORAL_EXTENT = 'SET_TEMPORAL_EXTENT'
 export const SET_HIGHLIGHT_TEMPORAL_EXTENT = 'SET_HIGHLIGHT_TEMPORAL_EXTENT'
 export const START_LOADER = 'START_LOADER'
 export const COMPLETE_LOADER = 'COMPLETE_LOADER'
+export const SET_MODULE_CURSOR = 'SET_MODULE_CURSOR'
 
 export const initModule = (props) => (dispatch) => {
   dispatch({
@@ -75,3 +76,8 @@ export const closePopup = () => (dispatch, getState) => {
     state.map.module.onClosePopup()
   }
 }
+
+export const setCursor = (cursor) => ({
+  type: SET_MODULE_CURSOR,
+  payload: cursor,
+})

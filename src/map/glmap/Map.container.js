@@ -10,6 +10,8 @@ import Map from './Map'
 
 const getStaticLayers = (state) => state.map.style.staticLayers
 const getHeatmapLayers = (state) => state.map.heatmap.heatmapLayers
+const getInternalCursor = (state) => state.map.interaction.cursor
+const getModuleCursor = (state) => state.map.module.cursor
 
 const hasHeatmapLayers = createSelector(
   [getHeatmapLayers],
@@ -47,11 +49,21 @@ const getMapStyle = createSelector(
   }
 )
 
-const mapStateToProps = (state, ownProps) => ({
+const getCursor = createSelector(
+  [getInternalCursor, getModuleCursor],
+  (internalCursor, moduleCursor) => {
+    if (moduleCursor !== null) {
+      return moduleCursor
+    }
+    return internalCursor
+  }
+)
+
+const mapStateToProps = (state) => ({
   viewport: state.map.viewport.viewport,
   maxZoom: state.map.viewport.maxZoom,
   minZoom: state.map.viewport.minZoom,
-  cursor: state.map.interaction.cursor,
+  cursor: getCursor(state),
   token: state.map.module.token,
   mapStyle: getMapStyle(state),
   hasHeatmapLayers: hasHeatmapLayers(state),

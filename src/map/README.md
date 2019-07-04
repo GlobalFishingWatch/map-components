@@ -348,6 +348,10 @@ Function. See `onClick`
 
 Function. Notify of attributions changes depending on layers toggled [PARTIALLY IMPLEMENTED] Will only fire at start.
 
+## `cursor`
+
+String. Override internally managed cursor (zoom for clusters, drag for pan etc) with a custom one.
+
 # Development
 
 As the module is using redux internally it is hard to debug the store or know which actions are being dispatched. To solve this you could run the [remote redux devtools](https://github.com/zalmoxisus/remote-redux-devtools) with the following steps:
