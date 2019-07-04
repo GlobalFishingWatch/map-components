@@ -223,10 +223,8 @@ class MapModule extends React.Component {
       }
     }
 
-    if (this.props.cursor !== undefined) {
-      if (this.props.cursor !== prevProps.cursor) {
-        store.dispatch(setCursor(this.props.cursor))
-      }
+    if (this.props.cursor !== prevProps.cursor) {
+      store.dispatch(setCursor(this.props.cursor))
     }
   }
   render() {
