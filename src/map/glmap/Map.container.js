@@ -75,17 +75,8 @@ const getCursor = createSelector(
     return internalCursor
   }
 )
-
-const defaultTransitions = {}
-const transitions = {
-  transitionDuration: 300,
-  transitionEasing: easeCubicInOut,
-  transitionInterpolator: new LinearInterpolator(),
-}
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, ownProps) => ({
   viewport: state.map.viewport.viewport,
-  transitions: ownProps.transitionsEnabled === true ? transitions : defaultTransitions,
   maxZoom: state.map.viewport.maxZoom,
   minZoom: state.map.viewport.minZoom,
   cursor: getCursor(state),

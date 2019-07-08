@@ -250,7 +250,6 @@ class MapModule extends React.Component {
 
 MapModule.propTypes = {
   token: PropTypes.string,
-  transitionsEnabled: PropTypes.bool,
   viewport: PropTypes.shape(viewportTypes).isRequired,
   autoClusterZoom: PropTypes.bool,
   isCluster: PropTypes.func,
@@ -277,7 +276,6 @@ MapModule.propTypes = {
 
 MapModule.defaultProps = {
   token: null,
-  transitionsEnabled: false,
   glyphsPath: null,
   autoClusterZoom: true,
   isCluster: (event) => event.isCluster === true,

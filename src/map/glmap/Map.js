@@ -128,7 +128,6 @@ class Map extends React.Component {
   render() {
     const {
       viewport,
-      transitions,
       maxZoom,
       minZoom,
       transitionEnd,
@@ -140,6 +139,7 @@ class Map extends React.Component {
       markers,
       interactiveLayerIds,
     } = this.props
+    console.log('TCL: render -> mapStyle', mapStyle.toJS())
     return (
       <div
         id="map"
@@ -156,7 +156,6 @@ class Map extends React.Component {
       >
         <MapGL
           {...viewport}
-          {...transitions}
           ref={this.getRef}
           transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
@@ -206,7 +205,6 @@ class Map extends React.Component {
 
 Map.propTypes = {
   token: PropTypes.string,
-  transitions: PropTypes.object.isRequired,
   viewport: PropTypes.object.isRequired,
   mapStyle: PropTypes.object.isRequired,
   clickPopup: PropTypes.object,

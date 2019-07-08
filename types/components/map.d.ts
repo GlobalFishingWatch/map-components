@@ -87,7 +87,6 @@ export interface MapModuleMarker {
 export interface MapModuleProps {
   viewport: MapModuleViewport
   token?: string
-  transitionsEnabled?: boolean
   markers: MapModuleMarker[]
   tracks?: MapModuleTrack[]
   heatmapLayers?: MapModuleHeatmapLayers[]
