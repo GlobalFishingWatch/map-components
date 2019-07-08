@@ -15,6 +15,19 @@ export const MARK_CARTO_LAYERS_AS_INSTANCIATED = 'MARK_CARTO_LAYERS_AS_INSTANCIA
 export const SET_STATIC_LAYERS = 'SET_STATIC_LAYERS'
 export const SET_BASEMAP_LAYERS = 'SET_BASEMAP_LAYERS'
 
+const setDefaultVectorTiles = (currentSource, refLayerUrl) => {
+  if (currentSource.type !== 'vector') {
+    return currentSource
+  }
+  const tiles = currentSource.tiles
+  const newTiles =
+    tiles !== undefined && tiles.length > 0 ? uniq([refLayerUrl, ...tiles]) : [refLayerUrl]
+  return {
+    ...currentSource,
+    tiles: newTiles,
+  }
+}
+
 export const initStyle = ({ glyphsPath }) => ({
   type: INIT_MAP_STYLE,
   payload: {
@@ -301,8 +314,8 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   workspaceGLLayers.forEach((workspaceGLLayer) => {
     const id = workspaceGLLayer.id
     const gl = workspaceGLLayer.gl
-    const finalSource = fromJS(gl.source)
-    style = style.setIn(['sources', id], finalSource)
+    const finalSource = setDefaultVectorTiles(gl.source, workspaceGLLayer.url)
+    style = style.setIn(['sources', id], fromJS(finalSource))
 
     gl.layers.forEach((workspaceGlLayer) => {
       let layerId = workspaceGlLayer.id
@@ -316,11 +329,15 @@ const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
         id: layerId,
         source: id,
       }
+
+      // set source-layer - defaults to source id
       if (gl.source.type === 'vector') {
         const sourceLayer =
           workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
         glLayer['source-layer'] = sourceLayer
       }
+
+      // find correct z-index
       const existingLayers = style.get('layers')
       const newLayerGroup = glLayer.metadata['mapbox:group']
       const newLayerIndex = existingLayers.findLastIndex((l) => {
@@ -456,12 +473,8 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
         style = style.setIn(['sources', sourceId, 'data'], fromJS(refLayer.data))
       }
       if (refLayer.url !== undefined) {
-        const { tiles } = currentGLSources[sourceId]
-        // Using default tiles url as a fallback
-        const newTiles =
-          tiles !== undefined && tiles.length > 0 ? uniq([refLayer.url, ...tiles]) : [refLayer.url]
-
-        style = style.setIn(['sources', sourceId, 'tiles'], fromJS(newTiles))
+        const newSource = setDefaultVectorTiles(currentGLSources[sourceId], refLayer.url)
+        style = style.setIn(['sources', sourceId], fromJS(newSource))
       }
     }
   })
