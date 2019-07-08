@@ -169,9 +169,7 @@
     },
     "encounters_ais": {
       "type": "vector",
-      "tiles": [
-        "https://api-dot-skytruth-pelagos-production.appspot.com/v2/tilesets/gfw-task-673-encounters-v3/{z},{x},{y}"
-      ]
+      "tiles": []
     },
     "events_fishing": {
       "type": "vector",
