@@ -153,6 +153,13 @@
       },
       "type": "vector"
     },
+    "cp_rfmo": {
+      "metadata": {
+        "gfw:carto-sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id, id as rfb FROM carrier_portal_rfmo_hi_res",
+        "gfw:popups": [{ "id": "rfb" }, { "id": "POLYGON_LAYERS_AREA" }]
+      },
+      "type": "vector"
+    },
     "6": {
       "metadata": {
         "gfw:carto-sql": "select * from kkp_regions",
@@ -417,6 +424,15 @@
       "type": "fill",
       "source": "rfmo",
       "source-layer": "rfmo"
+    },
+    {
+      "id": "cp_rfmo",
+      "metadata": {
+        "mapbox:group": "static"
+      },
+      "type": "fill",
+      "source": "cp_rfmo",
+      "source-layer": "cp_rfmo"
     },
     {
       "id": "rfmo-labels",
