@@ -783,13 +783,8 @@
         "mapbox:group": "tools"
       },
       "paint": {
-        "line-dasharray": [2,1],
-        "line-width": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          1.5,
-          1
-        ]
+        "line-dasharray": [2, 1],
+        "line-width": ["case", ["==", ["get", "isNew"], true], 1.5, 1]
       }
     },
     {
@@ -807,12 +802,7 @@
           ["literal", ["Roboto Medium"]],
           ["literal", ["Roboto Mono Light"]]
         ],
-        "text-size": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          13,
-          12
-        ]
+        "text-size": ["case", ["==", ["get", "isNew"], true], 13, 12]
       },
       "metadata": {
         "mapbox:group": "tools"
@@ -823,12 +813,7 @@
       "source": "rulers-points",
       "type": "circle",
       "paint": {
-        "circle-radius": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          6,
-          3
-        ],
+        "circle-radius": ["case", ["==", ["get", "isNew"], true], 6, 3],
         "circle-opacity": 1,
         "circle-stroke-opacity": 0
       }

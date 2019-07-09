@@ -139,7 +139,7 @@ class Map extends React.Component {
       markers,
       interactiveLayerIds,
     } = this.props
-    console.log('TCL: render -> mapStyle', mapStyle.toJS())
+
     return (
       <div
         id="map"

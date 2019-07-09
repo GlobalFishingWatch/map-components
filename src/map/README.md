@@ -187,18 +187,20 @@ A filter to apply specific rules per polygon. Polygon filter is defined as: Obje
 
 - `field`: String. A filterable field.
 - `values`: Array. All selected values (logical OR).
-- `style`: [NOT IMPLEMENTED] Object. Defines for each GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
+- `style`: Object. Defines for each GL type, then GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
 
 ```
 style: {
-'fill-color': [
-    SELECTED COLOR,
-    DEFAULT COLOR
-],
-'fill-opacity': [
-    SELECTED OPACITY,
-    DEFAULT OPACITY
-]
+    fill: {
+        'fill-color': [
+            SELECTED COLOR,
+            DEFAULT COLOR
+        ],
+        'fill-opacity': [
+            SELECTED OPACITY,
+            DEFAULT OPACITY
+        ]
+    }
 }
 ```
 
@@ -295,6 +297,7 @@ Function. Called when a user clicks on the close button of a click popup.
 ## `onViewportChange`
 
 Callback that returns the following properties:
+
 ```js
 {
     interactionState, // interaction that triggered the change see
@@ -319,6 +322,7 @@ Function. TODO
 ## `onClick`
 
 Function. Returns an event:
+
 ```
     {
         latitude,

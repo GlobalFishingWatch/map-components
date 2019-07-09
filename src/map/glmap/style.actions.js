@@ -102,13 +102,15 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
   ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
+    const refLayerStyle = features && features.style ? features.style[glType] : {}
     const hasFeatures = features !== null && features !== undefined && features.values.length > 0
     const applyStyleToAllFeatures = refLayer[styleType]
 
     const defaultStyle = defaultStyles[styleType][glType] || {}
     const layerStyle =
       (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
-    const allPaintProperties = { ...defaultStyle, ...layerStyle }
+    const allPaintProperties = { ...defaultStyle, ...layerStyle, ...refLayerStyle }
+
     if (Object.keys(allPaintProperties).length) {
       // go through each applicable gl paint property
       Object.keys(allPaintProperties).forEach((glPaintProperty) => {
