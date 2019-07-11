@@ -284,6 +284,7 @@ export function updateLayerLoadTemporalExtents(loadTemporalExtent) {
     const state = getState()
     const heatmapLayers = state.map.heatmap.heatmapLayers
     const indicesToAddByLayer = {}
+
     Object.keys(heatmapLayers).forEach((layerId) => {
       const heatmapLayer = heatmapLayers[layerId]
       const temporalExtents = heatmapLayer.header.temporalExtents
@@ -292,21 +293,30 @@ export function updateLayerLoadTemporalExtents(loadTemporalExtent) {
         loadTemporalExtent,
         temporalExtents
       )
+
       const indicesAdded = difference(
         newVisibleTemporalExtentsIndices,
         oldVisibleTemporalExtentsIndices
       )
 
-      if (indicesAdded.length) {
+      const indicesRemoved = difference(
+        oldVisibleTemporalExtentsIndices,
+        newVisibleTemporalExtentsIndices
+      )
+
+      if (indicesAdded.length || indicesRemoved.length) {
         // add new loaded indices to heatmap layer if applicable
-        indicesToAddByLayer[layerId] = indicesAdded
         dispatch({
           type: UPDATE_HEATMAP_LAYER_TEMPORAL_EXTENTS_LOADED_INDICES,
           payload: {
             layerId,
-            indicesAdded,
+            newVisibleTemporalExtentsIndices,
+            indicesRemoved,
           },
         })
+      }
+      if (indicesAdded.length) {
+        indicesToAddByLayer[layerId] = indicesAdded
       }
     })
 
