@@ -151,6 +151,8 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, prevPlayb
 
   const numPoints = data.latitude.length
 
+  const newFrames = {}
+  const timeIndexes = []
   for (let index = 0, length = numPoints; index < length; index++) {
     let point = {}
     columnsArr.forEach((c) => {
@@ -180,19 +182,26 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, prevPlayb
       point.series = point.id
     }
 
-    if (!tilePlaybackData[timeIndex]) {
+    if (!newFrames[timeIndex]) {
+      timeIndexes.push(timeIndex)
       const frame = {}
       storedColumns.forEach((column) => {
         frame[column] = [point[column]]
       })
-      tilePlaybackData[timeIndex] = frame
+      newFrames[timeIndex] = frame
       continue
     }
-    const frame = tilePlaybackData[timeIndex]
+    const frame = newFrames[timeIndex]
     storedColumns.forEach((column) => {
       frame[column].push(point[column])
     })
   }
+
+  // finally, copy new frames to the overall tilePlaybackData object
+  // frames previously existing here will be overwritten
+  timeIndexes.forEach((timeIndex) => {
+    tilePlaybackData[timeIndex] = newFrames[timeIndex]
+  })
   return tilePlaybackData
 }
 

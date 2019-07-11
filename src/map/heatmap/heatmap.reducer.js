@@ -1,4 +1,4 @@
-import uniq from 'lodash/uniq'
+import difference from 'lodash/difference'
 import {
   INIT_HEATMAP_LAYERS,
   UPDATE_HEATMAP_LAYER_TEMPORAL_EXTENTS_LOADED_INDICES,
@@ -33,10 +33,18 @@ export default function(state = initialState, action) {
 
     case UPDATE_HEATMAP_LAYER_TEMPORAL_EXTENTS_LOADED_INDICES: {
       const heatmapLayers = state.heatmapLayers
-      let indices = heatmapLayers[action.payload.layerId].visibleTemporalExtentsIndices
-      indices = uniq(indices.concat(action.payload.indicesAdded))
-      heatmapLayers[action.payload.layerId].visibleTemporalExtentsIndices = indices
-      return Object.assign({}, state, heatmapLayers)
+      heatmapLayers[action.payload.layerId].visibleTemporalExtentsIndices =
+        action.payload.newVisibleTemporalExtentsIndices
+
+      // also removing indices within each tile
+      // adding is done after tile has actually loaded
+      heatmapLayers[action.payload.layerId].tiles.forEach((tile) => {
+        tile.temporalExtentsIndicesLoaded = difference(
+          tile.temporalExtentsIndicesLoaded,
+          action.payload.indicesRemoved
+        )
+      })
+      return { ...state, heatmapLayers }
     }
 
     case ADD_HEATMAP_LAYER: {
@@ -75,7 +83,11 @@ export default function(state = initialState, action) {
       if (tileIndex === -1) {
         layerTiles.push(newTile)
       } else {
-        layerTiles = [layerTiles.slice(0, tileIndex), newTile, layerTiles.slice(tileIndex + 1)]
+        layerTiles = [
+          ...layerTiles.slice(0, tileIndex),
+          newTile,
+          ...layerTiles.slice(tileIndex + 1),
+        ]
       }
       layer.tiles = layerTiles
       const heatmapLayers = { ...state.heatmapLayers, [layerId]: layer }
