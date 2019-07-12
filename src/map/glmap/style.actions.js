@@ -341,7 +341,7 @@ const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
       // set source-layer - defaults to source id
       if (gl.source.type === 'vector') {
         const sourceLayer =
-          workspaceGLLayer['source-layer'] === undefined ? id : workspaceGLLayer['source-layer']
+          layerToAdd['source-layer'] === undefined ? id : layerToAdd['source-layer']
         glLayer['source-layer'] = sourceLayer
       }
 
