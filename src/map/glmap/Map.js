@@ -46,35 +46,10 @@ class Map extends React.Component {
     this._containerResizeObserver = new ResizeObserver(this._containerResize)
   }
 
-  _containerResize = () => {
-    window.setTimeout(() => this._resize(), 1)
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this._resize)
-    this._resize()
-
-    // useful with FOUC
-    window.setTimeout(() => this._resize(), 1)
-
-    // there is a problem with the container width computation (only with "fat scrollbar" browser/os configs),
-    // seems like the panels with scrollbars are taken into account or smth
-    window.setTimeout(() => this._resize(), 10000)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._resize)
-    this._containerResizeObserver.unobserve(this._mapContainerRef)
-  }
-
-  _resize = () => {
-    if (this._mapContainerRef === null) {
-      console.warn('Cant set viewport on a map that hasnt finished intanciating yet')
-      return
-    }
-    const mapContainerStyle = window.getComputedStyle(this._mapContainerRef)
-    const width = parseInt(mapContainerStyle.width, 10)
-    const height = parseInt(mapContainerStyle.height, 10) + 1
+  _containerResize = (entries) => {
+    const mapContainerStyle = entries[0].contentRect
+    const width = mapContainerStyle.width
+    const height = mapContainerStyle.height + 1
 
     if (width !== this.props.viewport.width || height !== this.props.viewport.height) {
       this.props.setViewport({
@@ -83,6 +58,10 @@ class Map extends React.Component {
         height,
       })
     }
+  }
+
+  componentWillUnmount() {
+    this._containerResizeObserver.disconnect()
   }
 
   onViewportChange = (viewport) => {
