@@ -43,7 +43,13 @@ class Map extends React.Component {
       mouseOver: true,
     }
     this._mapContainerRef = null
+    this._containerResizeObserver = new ResizeObserver(this._containerResize)
   }
+
+  _containerResize = () => {
+    window.setTimeout(() => this._resize(), 1)
+  }
+
   componentDidMount() {
     window.addEventListener('resize', this._resize)
     this._resize()
@@ -58,6 +64,7 @@ class Map extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize)
+    this._containerResizeObserver.unobserve(this._mapContainerRef)
   }
 
   _resize = () => {
@@ -144,6 +151,9 @@ class Map extends React.Component {
         className={styles.map}
         ref={(ref) => {
           this._mapContainerRef = ref
+          if (this._mapContainerRef !== null) {
+            this._containerResizeObserver.observe(this._mapContainerRef)
+          }
         }}
         onMouseLeave={() => {
           this.setState({ mouseOver: false })
