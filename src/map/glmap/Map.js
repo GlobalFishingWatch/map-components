@@ -65,8 +65,8 @@ class Map extends React.Component {
     this._containerResizeObserver.disconnect()
   }
 
-  onViewportChange = (viewport) => {
-    this.props.setViewport(viewport)
+  onViewportChange = (viewport, interactionState) => {
+    this.props.setViewport(viewport, interactionState)
   }
 
   onMapInteraction = (event, type) => {
