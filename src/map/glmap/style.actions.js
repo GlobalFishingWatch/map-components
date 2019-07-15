@@ -102,13 +102,15 @@ const applyLayerExpressions = (style, refLayer, currentGlLayer, glLayerIndex) =>
   ;['selected', 'highlighted'].forEach((styleType) => {
     // get selectedFeatures or highlightedFeatures
     const features = refLayer[`${styleType}Features`]
+    const refLayerStyle = features && features.style ? features.style[glType] : {}
     const hasFeatures = features !== null && features !== undefined && features.values.length > 0
     const applyStyleToAllFeatures = refLayer[styleType]
 
     const defaultStyle = defaultStyles[styleType][glType] || {}
     const layerStyle =
       (metadata && metadata['gfw:styles'] && metadata['gfw:styles'][styleType]) || {}
-    const allPaintProperties = { ...defaultStyle, ...layerStyle }
+    const allPaintProperties = { ...defaultStyle, ...layerStyle, ...refLayerStyle }
+
     if (Object.keys(allPaintProperties).length) {
       // go through each applicable gl paint property
       Object.keys(allPaintProperties).forEach((glPaintProperty) => {
@@ -207,9 +209,10 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
       break
     }
     case 'line': {
+      const color = refLayer.color || (glLayer.paint && glLayer.paint['line-color'])
       newStyle = newStyle
         .setIn(['layers', glLayerIndex, 'paint', 'line-opacity'], refLayerOpacity)
-        .setIn(['layers', glLayerIndex, 'paint', 'line-color'], refLayer.color)
+        .setIn(['layers', glLayerIndex, 'paint', 'line-color'], color)
       break
     }
     case 'symbol': {
@@ -307,33 +310,38 @@ const addCustomGLLayer = (subtype, layerId, url, data) => (dispatch, getState) =
   dispatch(setMapStyle(style))
 }
 
-const addWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
+const updateWorkspaceGLLayers = (workspaceGLLayers) => (dispatch, getState) => {
   const state = getState()
   let style = state.map.style.mapStyle
 
   workspaceGLLayers.forEach((workspaceGLLayer) => {
-    const id = workspaceGLLayer.id
-    const gl = workspaceGLLayer.gl
+    const { id, gl } = workspaceGLLayer
     const finalSource = setDefaultVectorTiles(gl.source, workspaceGLLayer.url)
     style = style.setIn(['sources', id], fromJS(finalSource))
 
-    gl.layers.forEach((workspaceGlLayer) => {
-      let layerId = workspaceGlLayer.id
-      if (layerId === undefined) {
-        layerId = gl.layers.length === 1 ? id : `${id}-${new Date().getTime()}`
-      }
-      const defaultGlLayer = setLayerStyleDefaults(workspaceGlLayer)
+    const existingLayerIds = style
+      .get('layers')
+      .toJS()
+      .map((l) => l.id)
+    const layersToAdd = gl.layers.filter((layer, index) => {
+      const layerId = layer.id || index > 0 ? `${id}-${index}` : id
+      return !existingLayerIds.includes(layerId)
+    })
+    layersToAdd.forEach((layerToAdd, index) => {
+      // doesn't add a sufix in the first elements but it will for the following ones
+      let layerToAddId = layerToAdd.id || index > 0 ? `${id}-${index}` : id
+      const defaultGlLayer = setLayerStyleDefaults(layerToAdd)
 
       const glLayer = {
         ...defaultGlLayer,
-        id: layerId,
+        id: layerToAddId,
         source: id,
       }
 
       // set source-layer - defaults to source id
       if (gl.source.type === 'vector') {
         const sourceLayer =
-          workspaceGlLayer['source-layer'] === undefined ? id : workspaceGlLayer['source-layer']
+          layerToAdd['source-layer'] === undefined ? id : layerToAdd['source-layer']
         glLayer['source-layer'] = sourceLayer
       }
 
@@ -405,7 +413,7 @@ const instanciateCartoLayers = (layers) => (dispatch, getState) => {
           })
         )
 
-        // change source in all layers that are using it (genrally polygon + labels)
+        // change source in all layers that are using it (generally polygon + labels)
         currentStyle.layers.forEach((glLayer, glLayerIndex) => {
           if (glLayer.source === cartoLayer.sourceId) {
             style = style.setIn(['layers', glLayerIndex, 'source'], newSourceId)
@@ -440,11 +448,11 @@ export const commitStyleUpdates = (staticLayers, basemapLayers) => (dispatch, ge
   const currentGLSources = getState().map.style.mapStyle.toJS().sources
 
   // collect layers declared in workspace but not in original gl style
-  const workspaceGLLayers = layers.filter(
-    (layer) => layer.gl !== undefined && currentGLSources[layer.id] === undefined
-  )
+  const workspaceGLLayers = layers.filter((layer) => layer.gl !== undefined)
+
   if (workspaceGLLayers.length) {
-    dispatch(addWorkspaceGLLayers(workspaceGLLayers))
+    // Adds the gl layers again in case the source is a dynamic geojson source
+    dispatch(updateWorkspaceGLLayers(workspaceGLLayers))
   }
 
   // instanciate custom layers if needed

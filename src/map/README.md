@@ -62,7 +62,7 @@ Boolean. Default true. Have the map zoom in to an appropriate zoom level when us
 
 ### `isCluster`
 
-Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features. 
+Function. Default `(event) => event.isCluster === true`. Allows fine-tuning determining cluster behavior or not (with `autoClusterZoom` set to true), given an event with a list of features.
 
 ## `tracks`
 
@@ -187,18 +187,20 @@ A filter to apply specific rules per polygon. Polygon filter is defined as: Obje
 
 - `field`: String. A filterable field.
 - `values`: Array. All selected values (logical OR).
-- `style`: [NOT IMPLEMENTED] Object. Defines for each GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
+- `style`: Object. Defines for each GL type, then GL paint property (`fill-color`, etc) rules for selected and non selected objects, ie:
 
 ```
 style: {
-'fill-color': [
-    SELECTED COLOR,
-    DEFAULT COLOR
-],
-'fill-opacity': [
-    SELECTED OPACITY,
-    DEFAULT OPACITY
-]
+    fill: {
+        'fill-color': [
+            SELECTED COLOR,
+            DEFAULT COLOR
+        ],
+        'fill-opacity': [
+            SELECTED OPACITY,
+            DEFAULT OPACITY
+        ]
+    }
 }
 ```
 
@@ -243,7 +245,9 @@ Object. If specified, overrides all style info with raw Mapbox GL JSON styles, f
 
 ## `basemapLayers`
 
-TODO
+Available basemap layers by id:
+
+`'satellite', 'north-star', 'labels', 'graticules', 'bathymetry'`
 
 basemapLayers: PropTypes.arrayOf(PropTypes.shape({
 id: PropTypes.string,
@@ -292,7 +296,20 @@ Function. Called when a user clicks on the close button of a click popup.
 
 ## `onViewportChange`
 
-Function. TODO
+Callback that returns the following properties:
+
+```js
+{
+    interactionState, // interaction that triggered the change see
+    // https://github.com/uber/react-map-gl/blob/master/docs/components/interactive-map.md#oninteractionstatechange-function
+    zoom: viewport.viewport.zoom,
+    center: [viewport.viewport.latitude, viewport.viewport.longitude],
+    bounds: viewport.bounds,
+    canZoomIn: viewport.canZoomIn,
+    canZoomOut: viewport.canZoomOut,
+    mouseLatLong: viewport.mouseLatLong,
+}
+```
 
 ## `onLoadStart`
 
@@ -305,6 +322,7 @@ Function. TODO
 ## `onClick`
 
 Function. Returns an event:
+
 ```
     {
         latitude,

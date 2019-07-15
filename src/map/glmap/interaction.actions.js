@@ -209,7 +209,7 @@ export const mapInteraction = (interactionType, latitude, longitude, glFeatures,
     }
 
     let cursor = event.features.length ? 'pointer' : null
-    if (event.isCluster === true && autoClusterZoom === true) {
+    if (event.isCluster === true) {
       cursor = 'zoom-in'
     }
 
