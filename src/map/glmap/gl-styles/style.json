@@ -153,6 +153,13 @@
       },
       "type": "vector"
     },
+    "cp_rfmo": {
+      "metadata": {
+        "gfw:carto-sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id, id as rfb FROM carrier_portal_rfmo_hi_res",
+        "gfw:popups": [{ "id": "rfb" }, { "id": "POLYGON_LAYERS_AREA" }]
+      },
+      "type": "vector"
+    },
     "6": {
       "metadata": {
         "gfw:carto-sql": "select * from kkp_regions",
@@ -417,6 +424,15 @@
       "type": "fill",
       "source": "rfmo",
       "source-layer": "rfmo"
+    },
+    {
+      "id": "cp_rfmo",
+      "metadata": {
+        "mapbox:group": "static"
+      },
+      "type": "fill",
+      "source": "cp_rfmo",
+      "source-layer": "cp_rfmo"
     },
     {
       "id": "rfmo-labels",
@@ -783,13 +799,8 @@
         "mapbox:group": "tools"
       },
       "paint": {
-        "line-dasharray": [2,1],
-        "line-width": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          1.5,
-          1
-        ]
+        "line-dasharray": [2, 1],
+        "line-width": ["case", ["==", ["get", "isNew"], true], 1.5, 1]
       }
     },
     {
@@ -807,12 +818,7 @@
           ["literal", ["Roboto Medium"]],
           ["literal", ["Roboto Mono Light"]]
         ],
-        "text-size": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          13,
-          12
-        ]
+        "text-size": ["case", ["==", ["get", "isNew"], true], 13, 12]
       },
       "metadata": {
         "mapbox:group": "tools"
@@ -823,12 +829,7 @@
       "source": "rulers-points",
       "type": "circle",
       "paint": {
-        "circle-radius": [
-          "case",
-          ["==", ["get", "isNew"], true],
-          6,
-          3
-        ],
+        "circle-radius": ["case", ["==", ["get", "isNew"], true], 6, 3],
         "circle-opacity": 1,
         "circle-stroke-opacity": 0
       }

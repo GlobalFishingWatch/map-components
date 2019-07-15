@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import MapGL, { Popup } from 'react-map-gl'
+import MapGL, { Popup, Marker } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
@@ -123,8 +123,10 @@ class Map extends React.Component {
       clickPopup,
       hoverPopup,
       hasHeatmapLayers,
+      markers,
       interactiveLayerIds,
     } = this.props
+
     return (
       <div
         id="map"
@@ -143,6 +145,7 @@ class Map extends React.Component {
         }}
       >
         <MapGL
+          {...viewport}
           ref={this.getRef}
           transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
@@ -150,7 +153,6 @@ class Map extends React.Component {
           onClick={this.onClick}
           getCursor={this.getCursor}
           mapStyle={mapStyle}
-          {...viewport}
           maxZoom={maxZoom}
           minZoom={minZoom}
           onViewportChange={this.onViewportChange}
@@ -177,6 +179,13 @@ class Map extends React.Component {
               {hoverPopup.content}
             </PopupWrapper>
           )}
+          {markers !== null &&
+            markers.length &&
+            markers.map((marker, i) => (
+              <Marker key={i} latitude={marker.latitude} longitude={marker.longitude}>
+                {marker.content}
+              </Marker>
+            ))}
         </MapGL>
         <div className={styles.googleLogo} />
       </div>
@@ -198,6 +207,13 @@ Map.propTypes = {
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
   hasHeatmapLayers: PropTypes.bool.isRequired,
+  markers: PropTypes.arrayOf(
+    PropTypes.shape({
+      latitude: PropTypes.number.isRequired,
+      longitude: PropTypes.number.isRequired,
+      content: PropTypes.node,
+    })
+  ),
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 }
 
@@ -209,6 +225,7 @@ Map.defaultProps = {
   onClosePopup: () => {},
   transitionEnd: () => {},
   cursor: null,
+  markers: null,
   interactiveLayerIds: null,
 }
 
