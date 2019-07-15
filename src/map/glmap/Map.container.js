@@ -31,7 +31,10 @@ const getInteractiveLayerIds = createSelector(
         layer.gl.layers.forEach((glLayer, index) => {
           // layers.length === 1 is used to ensure when parent layer is marked as interactive we have to
           // have at least one interactive sublayer, then checked eah one individually
-          if (layer.gl.layers.length === 1 || glLayer.interactive === true) {
+          if (
+            layer.gl.layers.length === 1 ||
+            (glLayer.metadata !== undefined && glLayer.metadata['gfw:interactive'] === true)
+          ) {
             const glLayerId = glLayer.id || index > 0 ? `${layer.id}-${index}` : layer.id
             acc.push(glLayerId)
           }
