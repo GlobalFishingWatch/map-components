@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
+import ResizeObserver from 'resize-observer-polyfill'
 
 const PopupWrapper = (props) => {
   const { latitude, longitude, children, closeButton, onClose } = props
