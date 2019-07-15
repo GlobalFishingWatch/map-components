@@ -2,8 +2,6 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { fromJS } from 'immutable'
 import { TRACKS_LAYER_IN_FRONT_OF_GROUP } from '../config'
-import LinearInterpolator from 'react-map-gl/dist/esm/utils/transition/linear-interpolator'
-import { easeCubicInOut } from 'd3-ease'
 import { closePopup } from '../module/module.actions.js'
 import { getTracksStyles } from '../tracks/tracks.selectors.js'
 import { mapInteraction } from './interaction.actions.js'
@@ -31,7 +29,9 @@ const getInteractiveLayerIds = createSelector(
       // We also need to check nested layers interactivity when custom gl layers are provided
       if (layer.gl !== undefined) {
         layer.gl.layers.forEach((glLayer, index) => {
-          if (index === 0 || glLayer.interactive === true) {
+          // layers.length === 1 is used to ensure when parent layer is marked as interactive we have to
+          // have at least one interactive sublayer, then checked eah one individually
+          if (layer.gl.layers.length === 1 || glLayer.interactive === true) {
             const glLayerId = glLayer.id || index > 0 ? `${layer.id}-${index}` : layer.id
             acc.push(glLayerId)
           }
