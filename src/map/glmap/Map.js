@@ -217,7 +217,13 @@ Map.propTypes = {
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
   hasHeatmapLayers: PropTypes.bool.isRequired,
-  markers: PropTypes.array,
+  markers: PropTypes.arrayOf(
+    PropTypes.shape({
+      latitude: PropTypes.number.isRequired,
+      longitude: PropTypes.number.isRequired,
+      content: PropTypes.node,
+    })
+  ),
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 }
 

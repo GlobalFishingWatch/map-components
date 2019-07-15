@@ -87,7 +87,7 @@ export interface MapModuleMarker {
 export interface MapModuleProps {
   viewport: MapModuleViewport
   token?: string
-  markers: MapModuleMarker[]
+  markers?: MapModuleMarker[]
   tracks?: MapModuleTrack[]
   heatmapLayers?: MapModuleHeatmapLayers[]
   temporalExtent?: Date[]
