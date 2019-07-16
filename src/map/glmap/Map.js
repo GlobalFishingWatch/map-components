@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
+import ResizeObserver from 'resize-observer-polyfill'
 
 const PopupWrapper = (props) => {
   const { latitude, longitude, children, closeButton, onClose } = props
@@ -43,39 +44,24 @@ class Map extends React.Component {
       mouseOver: true,
     }
     this._mapContainerRef = null
-  }
-  componentDidMount() {
-    window.addEventListener('resize', this._resize)
-    this._resize()
-
-    // useful with FOUC
-    window.setTimeout(() => this._resize(), 1)
-
-    // there is a problem with the container width computation (only with "fat scrollbar" browser/os configs),
-    // seems like the panels with scrollbars are taken into account or smth
-    window.setTimeout(() => this._resize(), 10000)
+    this._containerResizeObserver = new ResizeObserver(this._containerResize)
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._resize)
-  }
+  _containerResize = (entries) => {
+    const { width, height } = entries[0].contentRect
+    const { viewport, setViewport } = this.props
 
-  _resize = () => {
-    if (this._mapContainerRef === null) {
-      console.warn('Cant set viewport on a map that hasnt finished intanciating yet')
-      return
-    }
-    const mapContainerStyle = window.getComputedStyle(this._mapContainerRef)
-    const width = parseInt(mapContainerStyle.width, 10)
-    const height = parseInt(mapContainerStyle.height, 10) + 1
-
-    if (width !== this.props.viewport.width || height !== this.props.viewport.height) {
-      this.props.setViewport({
-        ...this.props.viewport,
+    if (width !== viewport.width || height !== viewport.height) {
+      setViewport({
+        ...viewport,
         width,
         height,
       })
     }
+  }
+
+  componentWillUnmount() {
+    this._containerResizeObserver.disconnect()
   }
 
   onViewportChange = (viewport, interactionState) => {
@@ -146,6 +132,9 @@ class Map extends React.Component {
         className={styles.map}
         ref={(ref) => {
           this._mapContainerRef = ref
+          if (this._mapContainerRef !== null) {
+            this._containerResizeObserver.observe(this._mapContainerRef)
+          }
         }}
         onMouseLeave={() => {
           this.setState({ mouseOver: false })
