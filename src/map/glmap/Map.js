@@ -48,13 +48,12 @@ class Map extends React.Component {
   }
 
   _containerResize = (entries) => {
-    const mapContainerStyle = entries[0].contentRect
-    const width = mapContainerStyle.width
-    const height = mapContainerStyle.height + 1
+    const { width, height } = entries[0].contentRect
+    const { viewport, setViewport } = this.props
 
-    if (width !== this.props.viewport.width || height !== this.props.viewport.height) {
-      this.props.setViewport({
-        ...this.props.viewport,
+    if (width !== viewport.width || height !== viewport.height) {
+      setViewport({
+        ...viewport,
         width,
         height,
       })
