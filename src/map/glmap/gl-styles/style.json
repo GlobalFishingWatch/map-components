@@ -273,10 +273,7 @@
         "mapbox:group": "basemap-background"
       },
       "type": "raster",
-      "source": "satellite",
-      "layout": {
-        "visibility": "visible"
-      }
+      "source": "satellite"
     },
     {
       "id": "north-star",
