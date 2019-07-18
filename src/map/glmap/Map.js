@@ -179,7 +179,7 @@ class Map extends React.Component {
             </PopupWrapper>
           )}
           {markers !== null &&
-            markers.length &&
+            markers.length > 0 &&
             markers.map((marker, i) => (
               <Marker key={i} latitude={marker.latitude} longitude={marker.longitude}>
                 {marker.content}
