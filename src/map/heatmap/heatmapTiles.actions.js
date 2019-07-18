@@ -136,7 +136,7 @@ export const updateHeatmapTilesFromViewport = (forceLoadingAllVisibleTiles = fal
 
   // do not allow any tile update during transitions (currently only zoom)
   // wait for the end of the transition to look at viewport and load matching tiles
-  if (mapViewport.currentTransition !== null) {
+  if (!viewport.width || !viewport.height || mapViewport.currentTransition !== null) {
     return
   }
 
