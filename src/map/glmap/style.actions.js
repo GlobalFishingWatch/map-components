@@ -20,8 +20,10 @@ const setDefaultVectorTiles = (currentSource, refLayerUrl) => {
     return currentSource
   }
   const tiles = currentSource.tiles
+  const refLayerUrls = refLayerUrl === undefined ? [] : [refLayerUrl]
+
   const newTiles =
-    tiles !== undefined && tiles.length > 0 ? uniq([refLayerUrl, ...tiles]) : [refLayerUrl]
+    tiles !== undefined && tiles.length > 0 ? uniq([...refLayerUrl, ...tiles]) : refLayerUrls
   return {
     ...currentSource,
     tiles: newTiles,
@@ -412,6 +414,8 @@ const instanciateCartoLayers = (layers) => (dispatch, getState) => {
             tiles: [tilesURL],
           })
         )
+
+        style = style.deleteIn(['sources', cartoLayer.sourceId])
 
         // change source in all layers that are using it (generally polygon + labels)
         currentStyle.layers.forEach((glLayer, glLayerIndex) => {
