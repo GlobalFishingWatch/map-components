@@ -28,4 +28,6 @@ export const targetMapVessel = (id) => {
   return track.timelineBounds
 }
 
+export { fitToBounds }
+
 export default store

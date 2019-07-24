@@ -19,9 +19,7 @@ const getFields = (glFeature, source = null) => {
   }
 
   const fieldsDefinition =
-    source === undefined ||
-    source.metadata === undefined ||
-    source.metadata['gfw:popups'] === undefined
+    !source || source.metadata === undefined || source.metadata['gfw:popups'] === undefined
       ? []
       : source.metadata['gfw:popups']
 
