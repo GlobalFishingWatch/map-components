@@ -160,6 +160,12 @@
       },
       "type": "vector"
     },
+    "bluefin_rfmo": {
+      "metadata": {
+        "gfw:carto-sql": "SELECT the_geom, the_geom_webmercator, cartodb_id FROM bluefin_rfmo"
+      },
+      "type": "vector"
+    },
     "6": {
       "metadata": {
         "gfw:carto-sql": "select * from kkp_regions",
@@ -433,6 +439,15 @@
       "type": "fill",
       "source": "cp_rfmo",
       "source-layer": "cp_rfmo"
+    },
+    {
+      "id": "bluefin_rfmo",
+      "metadata": {
+        "mapbox:group": "static"
+      },
+      "type": "fill",
+      "source": "bluefin_rfmo",
+      "source-layer": "bluefin_rfmo"
     },
     {
       "id": "rfmo-labels",
