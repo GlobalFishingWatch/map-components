@@ -1,7 +1,7 @@
 import { compose, createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
-import { fitToBounds } from '../glmap/viewport.actions'
+import { fitToBounds as fitToBoundsAction } from '../glmap/viewport.actions'
 
 let composeEnhancers = compose
 if (
@@ -23,11 +23,12 @@ const store = createStore(() => {}, {}, composeEnhancers(applyMiddleware(thunk))
 
 export const targetMapVessel = (id) => {
   const track = store.getState().map.tracks.data.find((t) => t.id === id.toString())
-  store.dispatch(fitToBounds(track.geoBounds))
+  store.dispatch(fitToBoundsAction(track.geoBounds))
 
   return track.timelineBounds
 }
-
-export { fitToBounds }
+export const fitToBounds = (bounds) => {
+  store.dispatch(fitToBoundsAction(bounds))
+}
 
 export default store
