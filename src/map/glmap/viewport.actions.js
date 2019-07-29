@@ -25,7 +25,8 @@ export const updateViewport = (viewportUpdate) => (dispatch) => {
     payload: viewportUpdate,
   })
   dispatch(updateHeatmapTilesFromViewport())
-  dispatch(onViewportChange())
+  // Not needed as call the callback with the same values
+  // dispatch(onViewportChange())
 }
 
 const transitionTo = (increment, latitude = null, longitude = null, zoom = null) => (dispatch) => {

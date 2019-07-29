@@ -11,8 +11,10 @@ import {
   SET_NATIVE_VIEWPORT,
 } from './viewport.actions'
 
+export const TRANSITION_DURATION = 500
+
 const DEFAULT_TRANSITION = {
-  transitionDuration: 500,
+  transitionDuration: TRANSITION_DURATION,
   transitionInterpolator: new FlyToInterpolator(),
   transitionEasing: easeCubic,
 }

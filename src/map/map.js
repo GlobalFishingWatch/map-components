@@ -204,7 +204,7 @@ class MapModule extends React.Component {
     // from the internally stored one
     // TODO FFS incoming lat lon should be an object, not an array
     const currentViewport = store.getState().map.viewport.viewport
-    //                                        stop propagating updates from outside when zooming in
+    // stop propagating updates from outside when zooming in
     if (
       this.props.viewport !== undefined &&
       store.getState().map.viewport.currentTransition === null

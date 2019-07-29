@@ -65,7 +65,16 @@ class Map extends React.Component {
   }
 
   onViewportChange = (viewport, interactionState) => {
-    this.props.setViewport(viewport, interactionState)
+    const propsViewport = this.props.viewport
+    if (
+      propsViewport.latitude !== viewport.latitude ||
+      propsViewport.longitude !== viewport.longitude ||
+      propsViewport.zoom !== viewport.zoom ||
+      propsViewport.bearing !== viewport.bearing ||
+      propsViewport.pitch !== viewport.pitch
+    ) {
+      this.props.setViewport(viewport, interactionState)
+    }
   }
 
   onMapInteraction = (event, type) => {

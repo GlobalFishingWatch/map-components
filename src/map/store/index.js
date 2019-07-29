@@ -1,7 +1,8 @@
 import { compose, createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
-import { fitToBounds as fitToBoundsAction } from '../glmap/viewport.actions'
+import { TRANSITION_DURATION } from '../glmap/viewport.reducer'
+import { fitToBounds as fitToBoundsAction, transitionEnd } from '../glmap/viewport.actions'
 
 let composeEnhancers = compose
 if (
@@ -29,6 +30,12 @@ export const targetMapVessel = (id) => {
 }
 export const fitToBounds = (bounds) => {
   store.dispatch(fitToBoundsAction(bounds))
+  setTimeout(() => {
+    // needed as the transition end is not being called on first fitToBounds trigger
+    if (store.getState().map.viewport.currentTransition !== null) {
+      store.dispatch(transitionEnd())
+    }
+  }, TRANSITION_DURATION + 1)
 }
 
 export default store
