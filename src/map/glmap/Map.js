@@ -5,7 +5,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { TILES_URL_NEEDING_AUTHENTICATION } from '../config'
 import ActivityLayers from '../activity/ActivityLayers.container.js'
 import styles from './map.css'
-import ResizeObserver from 'resize-observer-polyfill'
 
 const PopupWrapper = (props) => {
   const { latitude, longitude, children, closeButton, onClose } = props
@@ -44,10 +43,30 @@ class Map extends React.Component {
       mouseOver: true,
     }
     this._mapContainerRef = null
-    this._containerResizeObserver = new ResizeObserver(this._containerResize)
   }
 
-  _containerResize = (entries) => {
+  componentDidMount() {
+    if (this._mapContainerRef !== null) {
+      this.loadObserver()
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._containerResizeObserver) {
+      this._containerResizeObserver.disconnect()
+    }
+  }
+
+  loadObserver = async () => {
+    if ('ResizeObserver' in window === false) {
+      const module = await import('@juggle/resize-observer')
+      window.ResizeObserver = module.ResizeObserver
+    }
+    this._containerResizeObserver = new ResizeObserver(this.handleResizeObserver)
+    this._containerResizeObserver.observe(this._mapContainerRef)
+  }
+
+  handleResizeObserver = (entries) => {
     const { width, height } = entries[0].contentRect
     const { viewport, setViewport } = this.props
 
@@ -58,10 +77,6 @@ class Map extends React.Component {
         height,
       })
     }
-  }
-
-  componentWillUnmount() {
-    this._containerResizeObserver.disconnect()
   }
 
   onViewportChange = (viewport, interactionState) => {
@@ -141,9 +156,6 @@ class Map extends React.Component {
         className={styles.map}
         ref={(ref) => {
           this._mapContainerRef = ref
-          if (this._mapContainerRef !== null) {
-            this._containerResizeObserver.observe(this._mapContainerRef)
-          }
         }}
         onMouseLeave={() => {
           this.setState({ mouseOver: false })
