@@ -3,12 +3,18 @@ import { updateHeatmapTilesFromViewport } from '../heatmap/heatmapTiles.actions'
 import { onViewportChange } from '../module/module.actions'
 import { CLUSTER_CLICK_ZOOM_INCREMENT } from '../config' // TODO MAP MODULE
 
+export const SET_BOUNDS = 'SET_BOUNDS'
 export const SET_VIEWPORT = 'SET_VIEWPORT'
 export const UPDATE_VIEWPORT = 'UPDATE_VIEWPORT'
 export const SET_ZOOM_INCREMENT = 'SET_ZOOM_INCREMENT'
 export const SET_MOUSE_LAT_LONG = 'SET_MOUSE_LAT_LONG'
 export const TRANSITION_END = 'TRANSITION_END'
 export const SET_NATIVE_VIEWPORT = 'SET_NATIVE_VIEWPORT'
+
+export const setBounds = (bounds) => ({
+  type: SET_BOUNDS,
+  payload: bounds,
+})
 
 export const setViewport = (viewport, interactionState) => (dispatch) => {
   dispatch({

@@ -3,6 +3,7 @@ import { easeCubic } from 'd3-ease'
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL } from '../config'
 import { TRANSITION_TYPE } from '../constants'
 import {
+  SET_BOUNDS,
   SET_VIEWPORT,
   UPDATE_VIEWPORT,
   SET_ZOOM_INCREMENT,
@@ -28,6 +29,7 @@ const initialState = {
     pitch: 0,
     width: 1000,
     height: 800,
+    bounds: {},
   },
   maxZoom: MAX_ZOOM_LEVEL,
   minZoom: MIN_ZOOM_LEVEL,
@@ -44,6 +46,13 @@ export default function(state = initialState, action) {
         canZoomIn: action.payload.zoom < state.maxZoom,
         canZoomOut: action.payload.zoom > state.minZoom,
         prevZoom: state.viewport.zoom,
+      }
+    }
+
+    case SET_BOUNDS: {
+      return {
+        ...state,
+        bounds: action.payload,
       }
     }
 

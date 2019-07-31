@@ -5,7 +5,7 @@ import { TRACKS_LAYER_IN_FRONT_OF_GROUP } from '../config'
 import { closePopup } from '../module/module.actions.js'
 import { getTracksStyles } from '../tracks/tracks.selectors.js'
 import { mapInteraction } from './interaction.actions.js'
-import { setViewport, transitionEnd } from './viewport.actions.js'
+import { setBounds, setViewport, transitionEnd } from './viewport.actions.js'
 import Map from './Map'
 
 const getStaticLayers = (state) => state.map.style.staticLayers
@@ -92,6 +92,9 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch) => ({
   setViewport: (viewport, interactionState) => {
     dispatch(setViewport(viewport, interactionState))
+  },
+  setBounds: (bounds) => {
+    dispatch(setBounds(bounds))
   },
   mapInteraction: (type, lat, long, features, cluster, glGetSource) => {
     dispatch(mapInteraction(type, lat, long, features, cluster, glGetSource))

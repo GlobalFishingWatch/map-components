@@ -49,6 +49,15 @@ class Map extends React.Component {
     if (this._mapContainerRef !== null) {
       this.loadObserver()
     }
+    if (this.glMap && this.props.setBounds !== undefined) {
+      const { _ne, _sw } = this.glMap.getBounds()
+      this.props.setBounds({
+        north: _ne.lat,
+        south: _sw.lat,
+        west: _sw.lng,
+        east: _ne.lng,
+      })
+    }
   }
 
   componentWillUnmount() {
@@ -222,6 +231,7 @@ Map.propTypes = {
   maxZoom: PropTypes.number.isRequired,
   minZoom: PropTypes.number.isRequired,
   setViewport: PropTypes.func.isRequired,
+  setBounds: PropTypes.func,
   mapInteraction: PropTypes.func,
   onClosePopup: PropTypes.func,
   transitionEnd: PropTypes.func,
@@ -247,6 +257,7 @@ Map.defaultProps = {
   cursor: null,
   markers: null,
   interactiveLayerIds: null,
+  setBounds: undefined,
 }
 
 export default Map
