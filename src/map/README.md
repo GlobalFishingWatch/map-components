@@ -304,7 +304,7 @@ Callback that returns the following properties:
     // https://github.com/uber/react-map-gl/blob/master/docs/components/interactive-map.md#oninteractionstatechange-function
     zoom: viewport.viewport.zoom,
     center: [viewport.viewport.latitude, viewport.viewport.longitude],
-    bounds: viewport.bounds, // ⚠️ only when activity layers is enabled
+    bounds: viewport.bounds,
     canZoomIn: viewport.canZoomIn,
     canZoomOut: viewport.canZoomOut,
     mouseLatLong: viewport.mouseLatLong,
