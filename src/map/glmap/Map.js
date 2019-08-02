@@ -68,8 +68,8 @@ class Map extends React.Component {
 
   loadObserver = async () => {
     if ('ResizeObserver' in window === false) {
-      const module = await import('@juggle/resize-observer')
-      window.ResizeObserver = module.ResizeObserver
+      const module = await import('resize-observer-polyfill')
+      window.ResizeObserver = module.ResizeObserver || module.default
     }
     this._containerResizeObserver = new ResizeObserver(this.handleResizeObserver)
     this._containerResizeObserver.observe(this._mapContainerRef)
