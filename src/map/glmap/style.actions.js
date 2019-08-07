@@ -245,7 +245,10 @@ const updateGLLayer = (style, glLayerId, refLayer) => {
         .setIn(['layers', glLayerIndex, 'paint', 'circle-stroke-opacity'], refLayerOpacity)
 
       if (refLayer.color !== undefined) {
-        const colorPaintProperty = glLayer.metadata['gfw:mainColorPaintProperty'] || 'circle-color'
+        const colorPaintProperty =
+          glLayer && glLayer.metadata && glLayer.metadata['gfw:mainColorPaintProperty']
+            ? glLayer.metadata['gfw:mainColorPaintProperty']
+            : 'circle-color'
         newStyle = newStyle.setIn(
           ['layers', glLayerIndex, 'paint', colorPaintProperty],
           refLayer.color
