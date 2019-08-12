@@ -44,9 +44,13 @@ Generators each contain the styling information they need, which can take the fo
 
 See Generators section below.
 
+### Generator.type
+
+String. Mandatory. Defines uniquely the type of each generator, required in layer types
+
 ### Generator.getStyleProps
 
-`generator.setLayers(layers: LayerDefinition[]): { layers: GLLayer[], sources: GLSource[] }`
+`generator.getStyleProps(layers: LayerDefinition[]): { layers: GLLayer[], sources: GLSource[] }`
 
 Returns an object composed of `sources` needed by the layers as well as their visual definition in `layers`.
 
