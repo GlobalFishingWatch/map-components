@@ -60,8 +60,8 @@ Returns an object composed of `sources` needed by the layers as well as their vi
 The Layer Manager Component is a React component that takes a `ReactMapGL` component as a child:
 
 ```
-import LayerManager from '@globalfishingwatch/map-components/components/layerManager'
-import { Basemap, Context } from '@globalfishingwatch/map-components/components/layerManager/generators'
+import LayerManager from '@globalfishingwatch/map-components/components/layer-manager'
+import { Basemap, Context } from '@globalfishingwatch/map-components/components/layer-manager/generators'
 
 <LayerManager
   generators={[Basemap, Context]}

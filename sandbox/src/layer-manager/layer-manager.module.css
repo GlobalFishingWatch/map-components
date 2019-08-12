@@ -1,0 +1,9 @@
+.Container {
+  position: relative;
+}
+
+.MapWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
