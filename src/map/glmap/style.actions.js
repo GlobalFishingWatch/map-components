@@ -23,7 +23,7 @@ const setDefaultVectorTiles = (currentSource, refLayerUrl) => {
   const refLayerUrls = refLayerUrl === undefined ? [] : [refLayerUrl]
 
   const newTiles =
-    tiles !== undefined && tiles.length > 0 ? uniq([...refLayerUrl, ...tiles]) : refLayerUrls
+    tiles !== undefined && tiles.length > 0 ? uniq([...refLayerUrls, ...tiles]) : refLayerUrls
   return {
     ...currentSource,
     tiles: newTiles,
