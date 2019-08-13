@@ -22,7 +22,10 @@ class MapPage extends Component {
   }
 
 
-  layers = [{ id: 'north-star', type: 'basemap' }]
+  layers = [
+    { id: 'north-star', type: 'basemap' },
+    { id: 'cp_rfmo', type: 'carto', color: '#58CFFF' }
+  ]
 
   onViewportChange = (viewport) => {
     if (this.state.mounted) {

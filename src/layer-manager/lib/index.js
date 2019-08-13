@@ -16,7 +16,7 @@ class LayerManagerLib {
   getSources = async (layers) => {
     const styleSources = await Promise.all(
       layers.map((layer) => {
-        return this.generators[layer.type].getStyleSources()
+        return this.generators[layer.type].getStyleSources(layer)
       })
     )
     return Object.fromEntries(
@@ -32,7 +32,7 @@ class LayerManagerLib {
   getLayers = async (layers) => {
     const styleLayers = await Promise.all(
       layers.map((layer) => {
-        return this.generators[layer.type].getStyleLayers()
+        return this.generators[layer.type].getStyleLayers(layer)
       })
     )
     return styleLayers.flatMap((layers) => layers)
