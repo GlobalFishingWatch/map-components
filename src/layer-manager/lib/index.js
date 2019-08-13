@@ -1,6 +1,6 @@
 import Generators from './generators'
 import { DEFAULT_CONFIG } from './constants'
-import { hasAllRequiredParams } from '../utils'
+import { hasAllRequiredParams } from './utils'
 
 class LayerManagerLib {
   constructor(params) {

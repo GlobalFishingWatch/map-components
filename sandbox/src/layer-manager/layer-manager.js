@@ -6,6 +6,7 @@ import LayerManager from '@globalfishingwatch/map-components/src/layer-manager'
 
 class MapPage extends Component {
   state = {
+    mounted: false,
     viewport: {
       width: '100%',
       height: '100%',
@@ -15,10 +16,18 @@ class MapPage extends Component {
     }
   }
 
+  componentDidMount() {
+    // eslint-disable-next-line react/no-direct-mutation-state
+    this.state.mounted = true
+  }
+
+
   layers = [{ id: 'north-star', type: 'basemap' }]
 
   onViewportChange = (viewport) => {
-    this.setState({ viewport })
+    if (this.state.mounted) {
+      this.setState({ viewport })
+    }
   }
 
   render() {

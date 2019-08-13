@@ -6,8 +6,9 @@ import { fitToBounds as fitToBoundsAction, transitionEnd } from '../glmap/viewpo
 
 let composeEnhancers = compose
 if (
-  (process.env.MAP_REDUX_REMOTE_DEBUG || process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG) &&
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV === 'development' &&
+  (process.env.MAP_REDUX_REMOTE_DEBUG === 'true' ||
+    process.env.REACT_APP_MAP_REDUX_REMOTE_DEBUG === 'true')
 ) {
   const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools
   composeEnhancers = composeWithDevTools({
