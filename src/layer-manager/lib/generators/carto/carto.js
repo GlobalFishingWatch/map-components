@@ -1,3 +1,5 @@
+import layersDirectory from './carto-layers.json'
+
 export const CARTO_TYPE = 'carto'
 
 export const CARTO_FISHING_MAP_API = 'https://carto.globalfishingwatch.org/user/admin/api/v1/map'
@@ -5,6 +7,7 @@ export const CARTO_FISHING_MAP_API = 'https://carto.globalfishingwatch.org/user/
 const cacheUrls = {}
 
 const getCartoLayergroupId = async ({ id, sql }) => {
+  console.log(id, sql)
   const layerConfig = JSON.stringify({
     version: '1.3.0',
     stat_tag: 'API',
@@ -30,42 +33,34 @@ const getCartoLayergroupId = async ({ id, sql }) => {
   return response
 }
 
-const layersDirectory = {
-  cp_rfmo: {
-    id: 'cp_rfmo',
-    sql:
-      'SELECT the_geom, the_geom_webmercator, cartodb_id, id, id as rfb FROM carrier_portal_rfmo_hi_res',
-    popups: [{ id: 'rfb' }, { id: 'POLYGON_LAYERS_AREA' }],
-    type: 'vector',
-  },
-}
-
 const CartoGenerator = {
   type: CARTO_TYPE,
   getStyleSources: async (layer) => {
+    const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
     try {
-      const cartoLayer = await getCartoLayergroupId(layerData)
+      const cartoLayer = await getCartoLayergroupId({ id, ...layerData.source })
       const tiles = [`${CARTO_FISHING_MAP_API}/${cartoLayer.layergroupid}/{z}/{x}/{y}.mvt`]
-      return [{ ...layerData, tiles }]
+      return [{ id: layer.id, ...layerData.source, tiles }]
     } catch (e) {
       console.warn(e)
       return []
     }
   },
-  getStyleLayers: async (layer) => [
-    {
-      id: 'cp_rfmo',
-      type: 'fill',
-      source: 'cp_rfmo',
-      'source-layer': 'cp_rfmo',
-      paint: {
-        'fill-opacity': layer.opacity,
-        'fill-outline-color': layer.color,
-        'fill-color': 'rgba(0,0,0,0)',
-      },
-    },
-  ],
+  getStyleLayers: async (layer) => {
+    const layerData = layersDirectory[layer.id] || layer
+    return layerData.layers.map((l) => {
+      const paint =
+        l.type === 'fill'
+          ? {
+              'fill-opacity': layer.opacity,
+              'fill-outline-color': layer.color,
+              'fill-color': 'rgba(0,0,0,0)',
+            }
+          : {}
+      return { ...l, paint }
+    })
+  },
 }
 
 export default CartoGenerator

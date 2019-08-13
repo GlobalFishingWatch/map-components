@@ -16,7 +16,40 @@ class MapPage extends Component {
     },
     layers: [
       { id: 'north-star', type: 'basemap' },
-      { id: 'cp_rfmo', type: 'carto', color: '#58CFFF', opacity: 1 }
+      {
+        id: 'mpant',
+        type: 'carto',
+        color: '#58CFFF',
+        opacity: 1,
+      },
+      {
+        id: 'eez',
+        type: 'carto',
+        color: '#A9ACFF',
+        opacity: 1,
+      },
+      {
+        id: 'bluefin_rfmo',
+        type: 'carto',
+        color: '#B3CF9F',
+        opacity: 1,
+      },
+      {
+        id: 'cp_rfmo',
+        type: 'carto',
+        color: '#58CFFF',
+        opacity: 1,
+        selectedFeatures: {
+          field: 'rfb',
+          values: ['IATTC'],
+          color: '#58CFFF',
+          style: {
+            fill: {
+              'fill-color': ['rgba(50, 139, 169, 0.3)', 'rgba(0,0,0,0)'],
+            },
+          },
+        },
+      }
     ]
   }
 
