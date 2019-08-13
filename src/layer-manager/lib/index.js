@@ -14,6 +14,8 @@ class LayerManagerLib {
   }
 
   getSources = async (layers) => {
+    if (!layers) return {}
+
     const styleSources = await Promise.all(
       layers.map((layer) => {
         return this.generators[layer.type].getStyleSources(layer)
@@ -30,6 +32,7 @@ class LayerManagerLib {
   }
 
   getLayers = async (layers) => {
+    if (!layers) return []
     const styleLayers = await Promise.all(
       layers.map((layer) => {
         return this.generators[layer.type].getStyleLayers(layer)
@@ -39,6 +42,10 @@ class LayerManagerLib {
   }
 
   getGLStyle = async (layers) => {
+    if (!layers) {
+      console.warn('No layers passed to layer manager')
+    }
+
     const [styleSources, styleLayers] = await Promise.all([
       this.getSources(layers),
       this.getLayers(layers),

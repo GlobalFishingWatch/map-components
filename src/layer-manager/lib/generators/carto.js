@@ -60,7 +60,7 @@ const CartoGenerator = {
       source: 'cp_rfmo',
       'source-layer': 'cp_rfmo',
       paint: {
-        'fill-opacity': 1,
+        'fill-opacity': layer.opacity,
         'fill-outline-color': layer.color,
         'fill-color': 'rgba(0,0,0,0)',
       },

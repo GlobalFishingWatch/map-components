@@ -13,7 +13,11 @@ class MapPage extends Component {
       latitude: 37.7577,
       longitude: -122.4376,
       zoom: 8
-    }
+    },
+    layers: [
+      { id: 'north-star', type: 'basemap' },
+      { id: 'cp_rfmo', type: 'carto', color: '#58CFFF', opacity: 1 }
+    ]
   }
 
   componentDidMount() {
@@ -21,23 +25,21 @@ class MapPage extends Component {
     this.state.mounted = true
   }
 
-
-  layers = [
-    { id: 'north-star', type: 'basemap' },
-    { id: 'cp_rfmo', type: 'carto', color: '#58CFFF' }
-  ]
-
-  onViewportChange = (viewport) => {
-    if (this.state.mounted) {
-      this.setState({ viewport })
-    }
+  toggleLayerOpacity = () => {
+    this.setState((state) => {
+      const layers = [...state.layers]
+      layers[1].opacity = layers[1].opacity === 1 ? 0 : 1
+      layers[1].color = '#'+Math.random().toString(16).substr(-6) // generates random color
+      return { layers }
+    })
   }
 
   render() {
     return (
       <div className={styles.MapWrapper}>
+        <button className={styles.btnToggle} onClick={this.toggleLayerOpacity}>Toggle layer opacity and color</button>
         <LayerManager
-          layers={this.layers}
+          layers={this.state.layers}
         >
           {({ mapStyle }) => {
             return (
