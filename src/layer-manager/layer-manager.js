@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import LayerManagerLib from './lib'
 
-export function useLayerManager(config, layers) {
+export function useLayerManager(layers, config) {
   const [mapStyle, setMapStyle] = useState(null)
 
   const LayerManagerRef = useRef(new LayerManagerLib({ ...config }))
@@ -24,8 +24,8 @@ export function useLayerManager(config, layers) {
 }
 
 function LayerManager(props) {
-  const { config, layers } = props
-  const [mapStyle] = useLayerManager(config, layers)
+  const { layers, config } = props
+  const [mapStyle] = useLayerManager(layers, config)
   console.log('TCL: mapStyle', mapStyle)
   return props.children({ mapStyle })
 }

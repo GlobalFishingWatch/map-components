@@ -17,9 +17,15 @@ class LayerManagerLib {
     if (!layers) return {}
 
     const styleSources = await Promise.all(
-      layers.map((layer) => {
-        return this.generators[layer.type].getStyleSources(layer)
-      })
+      layers
+        .map((layer) => {
+          if (!this.generators[layer.type]) {
+            console.warn('There is no styleSource generator loaded for the layer:', layer)
+            return null
+          }
+          return this.generators[layer.type].getStyleSources(layer)
+        })
+        .filter((l) => l !== null)
     )
     return Object.fromEntries(
       styleSources.flatMap((sourceGroup) => {
@@ -33,10 +39,17 @@ class LayerManagerLib {
 
   getLayers = async (layers) => {
     if (!layers) return []
+
     const styleLayers = await Promise.all(
-      layers.map((layer) => {
-        return this.generators[layer.type].getStyleLayers(layer)
-      })
+      layers
+        .map((layer) => {
+          if (!this.generators[layer.type]) {
+            console.warn('There is no styleLayer generator loaded for the layer:', layer)
+            return null
+          }
+          return this.generators[layer.type].getStyleLayers(layer)
+        })
+        .filter((l) => l !== null)
     )
     return styleLayers.flatMap((layers) => layers)
   }
