@@ -6,8 +6,6 @@
   margin-bottom: 0.5rem;
   transition: var(--timebar-hover-transition);
   user-select: none;
-
-  /* z-index: -2; */
 }
 
 .Bookmark._immediate {

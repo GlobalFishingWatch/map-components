@@ -1,4 +1,6 @@
 :root {
+  --timebar-compact-breakpoint: 720px;
+
   /* COLORS */
   --timebar-main-background-color: #021236;
   --timebar-main-border-color: #1e365a;
@@ -20,6 +22,10 @@
   --timebar-font-size: 1.3rem;
   --timebar-font-weight: 500;
   --timebar-small-font-size: 1.2rem;
+
+  /* Z */
+  --timebar-z-timeline-bookmark: 98;
+  --timebar-z-date-selector: 99;
 
   /* OTHER */
   --timebar-hover-transition: all 150ms linear;

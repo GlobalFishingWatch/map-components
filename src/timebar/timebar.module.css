@@ -47,7 +47,7 @@
   width: var(--timebar-size);
   display: flex;
   flex-wrap: wrap;
-  z-index: 1;
+  z-index: var(--timebar-z-date-selector);
 }
 
 .timeRange {
@@ -67,7 +67,7 @@
   position: relative;
 }
 
-@media only screen and (max-width: 72rem) {
+@media only screen and (max-width: var(--timebar-compact-breakpoint)) {
   :root {
     --timebar-size: 6rem;
   }
