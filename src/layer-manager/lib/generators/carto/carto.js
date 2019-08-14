@@ -7,7 +7,6 @@ export const CARTO_FISHING_MAP_API = 'https://carto.globalfishingwatch.org/user/
 const cacheUrls = {}
 
 const getCartoLayergroupId = async ({ id, sql }) => {
-  console.log(id, sql)
   const layerConfig = JSON.stringify({
     version: '1.3.0',
     stat_tag: 'API',

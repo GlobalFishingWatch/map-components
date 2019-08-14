@@ -26,7 +26,6 @@ export function useLayerManager(layers, config) {
 function LayerManager(props) {
   const { layers, config } = props
   const [mapStyle] = useLayerManager(layers, config)
-  console.log('TCL: mapStyle', mapStyle)
   return props.children({ mapStyle })
 }
 

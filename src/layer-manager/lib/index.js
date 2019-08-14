@@ -7,6 +7,7 @@ class LayerManagerLib {
     if (hasAllRequiredParams(params)) {
       this.version = params.version || DEFAULT_CONFIG.version
       this.glyphs = params.glyphs || DEFAULT_CONFIG.glyphs
+      this.sprites = params.sprites || DEFAULT_CONFIG.sprites
       this.generators = params.generators || Generators
     } else {
       throw new Error('Required params missing')
@@ -66,6 +67,7 @@ class LayerManagerLib {
     return {
       version: this.version,
       glyphs: this.glyphs,
+      sprites: this.sprites,
       sources: styleSources,
       layers: styleLayers,
     }
