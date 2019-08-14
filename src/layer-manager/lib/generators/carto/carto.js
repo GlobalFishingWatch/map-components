@@ -50,15 +50,18 @@ const CartoGenerator = {
   getStyleLayers: async (layer) => {
     const layerData = layersDirectory[layer.id] || layer
     return layerData.layers.map((l) => {
+      const layout = {
+        visibility: layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible',
+      }
       const paint =
         l.type === 'fill'
           ? {
-              'fill-opacity': layer.opacity,
+              'fill-opacity': layer.opacity || 1,
               'fill-outline-color': layer.color,
               'fill-color': 'rgba(0,0,0,0)',
             }
           : {}
-      return { ...l, paint }
+      return { ...l, layout, paint }
     })
   },
 }
