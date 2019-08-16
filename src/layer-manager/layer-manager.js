@@ -26,7 +26,8 @@ export function useLayerManager(layers, config) {
 function LayerManager(props) {
   const { layers, config } = props
   const [mapStyle] = useLayerManager(layers, config)
-  return props.children({ mapStyle })
+
+  return props.children ? props.children({ mapStyle }) : null
 }
 
 export default LayerManager

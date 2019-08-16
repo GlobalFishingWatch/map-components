@@ -5,10 +5,10 @@ import { hasAllRequiredParams } from './utils'
 class LayerManagerLib {
   constructor(params) {
     if (hasAllRequiredParams(params)) {
-      this.version = params.version || DEFAULT_CONFIG.version
-      this.glyphs = params.glyphs || DEFAULT_CONFIG.glyphs
-      this.sprites = params.sprites || DEFAULT_CONFIG.sprites
-      this.generators = params.generators || Generators
+      this.version = params ? params.version : DEFAULT_CONFIG.version
+      this.glyphs = params ? params.glyphs : DEFAULT_CONFIG.glyphs
+      this.sprites = params ? params.sprites : DEFAULT_CONFIG.sprites
+      this.generators = params ? params.generators : Generators
     } else {
       throw new Error('Required params missing')
     }

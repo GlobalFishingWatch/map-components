@@ -11,6 +11,7 @@ export interface LayerManagerOptions {
   generators: { [key: string]: LayerManagerGenerator }
   version: string
   glyphs: string
+  sprites: string
 }
 
 export interface LayerManagerLayer {
