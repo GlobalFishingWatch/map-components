@@ -15,17 +15,6 @@ import './timebar.css'
 
 const HOVER_DELTA = 10
 
-// --- TODO This should be inside Activity.jsx - let's have charts deal with data formats
-const maxActivity = activityMock.reduce((acc, current) => Math.max(acc, current.value), 0)
-// const activity = {};
-// activityMock.forEach((d) => { activity[dayjs(d.date).format('YYYY-MM-DD')] = d.value / maxActivity; });
-const activity = activityMock.map((d) => ({
-  date: d.date,
-  id: dayjs(d.date).format('YYYY-MM-DD'),
-  value: d.value / maxActivity,
-}))
-// ---
-
 const getTime = (dateISO) => new Date(dateISO).getTime()
 const getDeltaMs = (start, end) => getTime(end) - getTime(start)
 const getDeltaDays = (start, end) => getDeltaMs(start, end) / 1000 / 60 / 60 / 24
@@ -53,7 +42,7 @@ class TimebarContainer extends Component {
     end: initialEnd,
     bookmarkStart: null,
     bookmarkEnd: null,
-    currentChart: 'vesselEvents',
+    currentChart: 'activity',
     highlightedEventIDs: null,
   }
 
@@ -172,7 +161,7 @@ class TimebarContainer extends Component {
                 />
               )
             }
-            return <TimebarActivity key="activity" {...props} activity={activity} />
+            return <TimebarActivity key="activity" {...props} activity={activityMock} />
           }}
         </Timebar>
       </div>

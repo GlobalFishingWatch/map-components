@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React, { useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { area, curveStepAfter } from 'd3-shape'
-import { animated, Spring } from 'react-spring/renderprops'
 import { getTime } from '../utils'
 import ImmediateContext from '../immediateContext'
 import styles from './activity.module.css'
@@ -9,34 +8,56 @@ import styles from './activity.module.css'
 const TOP_MARGIN = 5
 const BOTTOM_MARGIN = 20
 
-class Activity extends Component {
-  static contextType = ImmediateContext
-  render() {
-    const { activity, absoluteEnd, outerScale, outerWidth, graphHeight } = this.props
-    const { immediate } = this.context
+const getPath = (graphHeight, activity, absoluteEnd, overallScale) => {
+  const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
+  const middle = TOP_MARGIN + finalHeight / 2
 
-    // because data stops at last day midnight, add an extra day with the same data
-    // to allow the curve to go to the end of the day
-    const lastDay = activity[activity.length - 1]
-    const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
+  const areaGenerator = area()
+    .x((d) => overallScale(d.date))
+    .y0((d) => middle - (finalHeight * d.value) / 2)
+    .y1((d) => middle + (finalHeight * d.value) / 2)
+    .curve(curveStepAfter)
 
-    const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
-    const middle = TOP_MARGIN + finalHeight / 2
+  // because data stops at last day midnight, add an extra day with the same data
+  // to allow the curve to go to the end of the day
+  const lastDay = activity[activity.length - 1]
+  const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
 
-    const areaGenerator = area()
-      .x((d) => outerScale(d.date))
-      .y0((d) => middle - (finalHeight * d.value) / 2)
-      .y1((d) => middle + (finalHeight * d.value) / 2)
-      .curve(curveStepAfter)
+  const path = areaGenerator([...activity, addedLastDay])
 
-    return (
-      <svg width={outerWidth} height={graphHeight} className={styles.Activity}>
-        <Spring native immediate={immediate} to={{ d: areaGenerator([...activity, addedLastDay]) }}>
-          {(style) => <animated.path d={style.d} fill="pink" fillOpacity={0.9} />}
-        </Spring>
-      </svg>
-    )
-  }
+  return path
+}
+
+const Activity = ({
+  activity,
+  absoluteEnd,
+  innerWidth,
+  graphHeight,
+  cssTransform,
+  overallScale,
+}) => {
+  const { immediate } = useContext(ImmediateContext)
+
+  const path = useMemo(() => getPath(graphHeight, activity, absoluteEnd, overallScale), [
+    graphHeight,
+    activity,
+    absoluteEnd,
+    overallScale,
+  ])
+
+  return (
+    <svg
+      width={innerWidth}
+      height={graphHeight}
+      className={styles.Activity}
+      style={{
+        transform: cssTransform,
+        transition: immediate ? 'none' : 'all .5s ease',
+      }}
+    >
+      <path d={path} fill="pink" fillOpacity={0.9} />
+    </svg>
+  )
 }
 
 Activity.propTypes = {
@@ -49,8 +70,10 @@ Activity.propTypes = {
   ).isRequired,
   absoluteEnd: PropTypes.string.isRequired,
   outerScale: PropTypes.func.isRequired,
-  outerWidth: PropTypes.number.isRequired,
+  innerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
+  cssTransform: PropTypes.string.isRequired,
+  overallScale: PropTypes.func.isRequired,
 }
 
 export default Activity
