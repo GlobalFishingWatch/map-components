@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { area, curveStepAfter } from 'd3-shape'
 import { getTime } from '../utils'
 import ImmediateContext from '../immediateContext'
+import { DEFAULT_CSS_TRANSITION } from '../constants'
 import styles from './activity.module.css'
 
 const TOP_MARGIN = 5
@@ -52,7 +53,7 @@ const Activity = ({
       className={styles.Activity}
       style={{
         transform: cssTransform,
-        transition: immediate ? 'none' : 'all .5s ease',
+        transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
       }}
     >
       <path d={path} fill="pink" fillOpacity={0.9} />
