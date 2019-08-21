@@ -136,6 +136,10 @@ class TimebarContainer extends Component {
           onChange={this.update}
           onMouseMove={this.onMouseMove}
           onBookmarkChange={this.updateBookmark}
+          minimumRange={1}
+          minimumRangeUnit="day"
+          maximumRange={6}
+          maximumRangeUnit="month"
         >
           {// props => [
           //   // <Tracks key="tracks" {...props}  tracks={tracks} />,

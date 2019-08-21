@@ -53,7 +53,7 @@ const Activity = ({
       className={styles.Activity}
       style={{
         transform: cssTransform,
-        transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
+        // transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
       }}
     >
       <path d={path} fill="pink" fillOpacity={0.9} />

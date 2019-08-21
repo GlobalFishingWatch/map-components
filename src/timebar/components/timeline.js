@@ -161,7 +161,7 @@ class Timeline extends PureComponent {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped)
+      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
     }
 
     this.requestAnimationFrame = window.requestAnimationFrame(this.onEnterFrame)
@@ -214,7 +214,7 @@ class Timeline extends PureComponent {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped)
+      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
     } else if (this.isHandlerZoomInValid(x).isValid === true) {
       this.setState({
         handlerMouseX: x,
