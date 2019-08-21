@@ -5,13 +5,14 @@ import { validate as mapboxStyleValidator } from '@mapbox/mapbox-gl-style-spec'
 test('instanciates with the default config', async () => {
   const layerManager = new LayerManagerLib()
   const objectToMatch = { ...DEFAULT_CONFIG }
-  expect(await layerManager.getGLStyle()).toMatchObject(objectToMatch)
+  const [mapStyle] = layerManager.getGLStyle()
+  expect(mapStyle).toMatchObject(objectToMatch)
   // expect(layerManager.getGLStyle(glyphPath)).toMatchSnapshot()
 })
 
 test('check valid style.json format', async () => {
   const LayerManager = new LayerManagerLib()
-  const style = await LayerManager.getGLStyle()
+  const [style] = LayerManager.getGLStyle()
   const errors = mapboxStyleValidator(style)
   if (errors.length) {
     console.log('Errors found in style validation:', errors)

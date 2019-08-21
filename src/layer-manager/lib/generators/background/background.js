@@ -1,9 +1,11 @@
-export const BACKGROUND_TYPE = 'background'
+export const BACKGROUND_TYPE = 'BACKGROUND'
 
-const BasemapGenerator = {
-  type: BACKGROUND_TYPE,
-  getStyleSources: async () => [],
-  getStyleLayers: async (layer) => [
+class BasemapGenerator {
+  constructor() {
+    this.type = BACKGROUND_TYPE
+  }
+  getStyleSources = () => []
+  getStyleLayers = (layer) => [
     {
       id: 'background',
       type: 'background',
@@ -14,7 +16,7 @@ const BasemapGenerator = {
         'background-color': layer.color || '#001436',
       },
     },
-  ],
+  ]
 }
 
 export default BasemapGenerator

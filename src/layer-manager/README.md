@@ -6,7 +6,16 @@ The LayerManager orchestrates various **Layer Generators** in order to generate 
 
 ### LayerManager.constructor
 
-`new LayerManager(generators: Generator[], glyphsPath: string)`
+`new LayerManager(config?)`
+
+### LayerManager.config
+```
+{
+    generators: Generator[],
+    glyphs: string,
+    sprites: string
+}
+```
 
 Instanciates a new Layer Manager that will use the provided Layer Generators to identify LayerDefinitions provided via `LayerManager.setLayers`
 
@@ -24,7 +33,9 @@ Converts a native Mapbox GL event into a GFW event to be used in clients (takes 
 
 Converts provided LayerDefinitions, using Generators, to a usable Mapbox GL JSON style object.
 
-`layerManager.getGLStyle(layers: LayerDefinition[]): GLStyle`
+`layerManager.getGLStyle(layers: LayerDefinition[]): { GLStyle, [promises] }`
+
+Returns the sync glStyle and an array of promises when async layers are loaded which will pass the updated GLStyle when layer is ready
 
 ### LayerDefinition.type
 
@@ -36,7 +47,7 @@ String. Must be specified if several layers from the same generator are to be us
 
 ### Generator.constructor
 
-`new Generator(): void`
+`new Generator(config?): void`
 
 Generators define, for a varying set of any inputs, a way to generate both GL source(s) and layer(s) for a given type of layer. By type, we mean a **domain** type, not a technical type. ie ~HeatmapLayer~ -> FishingActivityLayer
 
@@ -48,11 +59,17 @@ See Generators section below.
 
 String. Mandatory. Defines uniquely the type of each generator, required in layer types
 
-### Generator.getStyleProps
+### Generator.getStyleSources
 
-`generator.getStyleProps(layers: LayerDefinition[]): { layers: GLLayer[], sources: GLSource[] }`
+`generator.getStyleSources(layers: LayerDefinition[]): { sources: GLSource[] }`
 
-Returns an object composed of `sources` needed by the layers as well as their visual definition in `layers`.
+Returns an array of `sources` needed by the layers.
+
+### Generator.getStyleLayers
+
+`generator.getStyleLayers(layers: LayerDefinition[]): { layers: GLLayer[] }`
+
+Returns an array of `layers` with the visual definition of `sources`.
 
 
 ## React Component
@@ -60,33 +77,36 @@ Returns an object composed of `sources` needed by the layers as well as their vi
 The Layer Manager Component is a React component that takes a `ReactMapGL` component as a child:
 
 ```
-import LayerManager from '@globalfishingwatch/map-components/components/layer-manager'
-import { Basemap, Context } from '@globalfishingwatch/map-components/components/layer-manager/generators'
+import LayerManager, { TYPES } from '@globalfishingwatch/map-components/components/layer-manager'
+import defaultGenerators from '@globalfishingwatch/map-components/components/layer-manager/generators'
+
+// optional step as common generators will be used by default
+const generators = { ...defaultGenerators, { custom: new CustomGenerator()} }
 
 <LayerManager
-  generators={[Basemap, Context]}
+  config={{
+      generators
+  }}
   layers={[
     {
-      type: Basemap.type,
-      basemap: 'satellite',
-      addons: ['labels', 'bathymetry']
+      type: TYPES.BACKGROUND,
+      color: '#00265c',
     },
     {
-      type: Context.type,
+      type: TYPES.BASEMAP,
+      id: 'satellite',
+    },
+    {
+      type: TYPES.CARTO_POLYGONS,
       id: 'RFMO',
-      color: '#ff00ff'
+      color: '#ff00ff',
     },
-    {
-      type: Context.type,
-      id: 'MPA',
-      color: '#ffaa00'
-    }
   ]}
   onClick={(event) => {
     setState...
   }}
 >
-{(mapStyle, onClick, onHover, cursor) => {
+{(mapStyle, loading, onClick, onHover, cursor) => {
     return <ReactMapGL
       mapStyle={mapStyle}
       onClick={onClick}
@@ -100,18 +120,31 @@ import { Basemap, Context } from '@globalfishingwatch/map-components/components/
 
 ```
 
+## React Hooks
+
+This library also exposes a React hook to get the mapStyles definition:
+
+```
+import { useLayerManager} } from '@globalfishingwatch/map-components/components/layer-manager'
+
+const [mapStyles, loading] = useLayerManager(layers, config)
+```
+
+
 ## Generators
+
+### Background
 
 ### Basemap
 
-### Context
+### CartoPolygons
+
+### WMS
 
 ### FishingActivity
 
 ### VesselTracks
 
 ### Events
-
-### WMS
 
 ### Ruler

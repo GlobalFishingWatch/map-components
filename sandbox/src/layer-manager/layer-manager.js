@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactMapGL from 'react-map-gl'
 import styles from './layer-manager.module.css'
 
-import LayerManager from '@globalfishingwatch/map-components/src/layer-manager'
+import LayerManager, { TYPES } from '@globalfishingwatch/map-components/src/layer-manager'
 
 class MapPage extends Component {
   state = {
@@ -15,30 +15,14 @@ class MapPage extends Component {
       zoom: 8
     },
     layers: [
-      { id: 'north-star', type: 'basemap' },
-      {
-        id: 'mpant',
-        type: 'carto',
-        color: '#58CFFF',
-        opacity: 1,
-      },
-      {
-        id: 'eez',
-        type: 'carto',
-        color: '#A9ACFF',
-        opacity: 1,
-      },
-      {
-        id: 'bluefin_rfmo',
-        type: 'carto',
-        color: '#B3CF9F',
-        opacity: 1,
-      },
+      { id: 'background', type: TYPES.BACKGROUND, color: '#00275c' },
+      { id: 'north-star', type: TYPES.BASEMAP },
       {
         id: 'cp_rfmo',
-        type: 'carto',
+        type: TYPES.CARTO_POLYGONS,
         color: '#58CFFF',
         opacity: 1,
+        visible: true,
         selectedFeatures: {
           field: 'rfb',
           values: ['IATTC'],
@@ -49,7 +33,25 @@ class MapPage extends Component {
             },
           },
         },
-      }
+      },
+      {
+        id: 'mpant',
+        type: TYPES.CARTO_POLYGONS,
+        color: '#58CFFF',
+        opacity: 0,
+      },
+      // {
+      //   id: 'eez',
+      //   type: TYPES.CARTO_POLYGONS,
+      //   color: '#A9ACFF',
+      //   opacity: 1,
+      // },
+      // {
+      //   id: 'bluefin_rfmo',
+      //   type: TYPES.CARTO_POLYGONS,
+      //   color: '#B3CF9F',
+      //   opacity: 1,
+      // },
     ]
   }
 
@@ -60,9 +62,14 @@ class MapPage extends Component {
 
   toggleLayerOpacity = () => {
     this.setState((state) => {
-      const layers = [...state.layers]
-      layers[1].opacity = layers[1].opacity === 1 ? 0 : 1
-      layers[1].color = '#'+Math.random().toString(16).substr(-6) // generates random color
+      const layers = state.layers.map(layer => {
+        if (layer.id !== 'cp_rfmo' && layer.id !== 'mpant') return layer
+        return ({
+          ...layer,
+          opacity: layer.opacity === 1 ? 0 : 1,
+          color: '#'+Math.random().toString(16).substr(-6) // generates random color
+        })
+      })
       return { layers }
     })
   }
@@ -74,7 +81,8 @@ class MapPage extends Component {
         <LayerManager
           layers={this.state.layers}
         >
-          {({ mapStyle }) => {
+          {({ mapStyle, loading }) => {
+            console.log('TCL: MapPage -> render -> mapStyle', loading, mapStyle)
             return (
               <ReactMapGL
                 {...this.state.viewport}

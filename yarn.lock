@@ -1756,11 +1756,6 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
   integrity sha512-wE2v81i4C4Ol09RtsWFAqg3BUitWbHSpSlIo+bNdsCJijO9sjme+zm+73ZMCa/qMC8UEERxzGbvmr1cffo2SiQ==
 
-"@types/gl-matrix@*":
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/@types/gl-matrix/-/gl-matrix-2.4.5.tgz#80630d88fb74ff8897a2a2855a8a700e6ee19d3e"
-  integrity sha512-0L8Mq1+oaIW0oVzGUDbSW+HnTjCNb4CmoIQE5BkoHt/A7x20z0MJ1PnwfH3atty/vbWLGgvJwVu2Mz3SKFiEFw==
-
 "@types/glob@^7.1.1":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.1.tgz#aa59a1c6e3fbc421e07ccd31a944c30eba521575"
@@ -1795,7 +1790,7 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.3.tgz#bdfd69d61e464dcc81b25159c270d75a73c1a636"
   integrity sha512-Il2DtDVRGDcqjDtE+rF8iqg1CArehSK84HZJCT7AMITlyXRBpuPhqGLDQMowraqqu1coEaimg4ZOqggt6L6L+A==
 
-"@types/mapbox-gl@*", "@types/mapbox-gl@^0.54.1":
+"@types/mapbox-gl@^0.54.1":
   version "0.54.1"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-0.54.1.tgz#9718e0a6aafd490f6bd3b08e0fcc90b544fb6e2c"
   integrity sha512-qRsv6e0KYxJPAjqaxOWFSFm+U5tPBk2EmIxg0wgr1ffoB0sJ5hfnWnljO/XXQjHZrZzXfbf2P1jsDK2zrrq9dA==
@@ -1822,17 +1817,7 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
-"@types/react-map-gl@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-map-gl/-/react-map-gl-5.0.0.tgz#fc1c14966dd62ebf879b0727fb409a90163314a2"
-  integrity sha512-iy/fdGQy6l6A6lE/h+rUAeIus8GSopIpgXoeVNv/uYIosfpaytHCxU1VLwRj4GvLOzBmgsgJfHiirbROdljOuQ==
-  dependencies:
-    "@types/geojson" "*"
-    "@types/mapbox-gl" "*"
-    "@types/react" "*"
-    "@types/viewport-mercator-project" "*"
-
-"@types/react@*", "@types/react@^16.9.1":
+"@types/react@^16.9.1":
   version "16.9.1"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.1.tgz#862c83b4c9d5cd116e42fd9a4f3694843cd2c051"
   integrity sha512-jGM2x8F7m7/r+81N/BOaUKVwbC5Cdw6ExlWEUpr77XPwVeNvAppnPEnMMLMfxRDYL8FPEX8MHjwtD2NQMJ0yyQ==
@@ -1873,13 +1858,6 @@
     "@types/node" "*"
     "@types/unist" "*"
     "@types/vfile-message" "*"
-
-"@types/viewport-mercator-project@*":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@types/viewport-mercator-project/-/viewport-mercator-project-6.1.0.tgz#df6964a08daa18e24761e38320d34429f09898cf"
-  integrity sha512-wbdVb9Uvb9dX/EAtugpD3tMqsBVFQqVFYNdK5B7wUhZHK8G2gMWd+wq14JEn2h96Yq4trDQrpWVna8S8FTLM8A==
-  dependencies:
-    "@types/gl-matrix" "*"
 
 "@types/yargs@^12.0.2", "@types/yargs@^12.0.9":
   version "12.0.12"
@@ -12730,7 +12708,7 @@ react-imported-component@^5.2.4:
     prop-types "15.6.2"
     scan-directory "^1.0.0"
 
-react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
+react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6, react-is@^16.9.0:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.9.0.tgz#21ca9561399aad0ff1a7701c01683e8ca981edcb"
   integrity sha512-tJBzzzIgnnRfEm046qRcURvwQnZVXmuCbscxUO5RWrGTXpon2d4c8mI0D8WE6ydVIm29JiLB6+RslkIvym9Rjw==
@@ -12839,6 +12817,17 @@ react-spring@^8.0.19:
   dependencies:
     "@babel/runtime" "^7.3.1"
     prop-types "^15.5.8"
+
+"react-test-renderer @^16.9.0":
+  name react-test-renderer
+  version "16.9.0"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.9.0.tgz#7ed657a374af47af88f66f33a3ef99c9610c8ae9"
+  integrity sha512-R62stB73qZyhrJo7wmCW9jgl/07ai+YzvouvCXIJLBkRlRqLx4j9RqcLEAfNfU3OxTGucqR2Whmn3/Aad6L3hQ==
+  dependencies:
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    react-is "^16.9.0"
+    scheduler "^0.15.0"
 
 react-virtualized-auto-sizer@^1.0.2:
   version "1.0.2"

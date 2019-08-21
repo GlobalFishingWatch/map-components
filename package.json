@@ -105,6 +105,7 @@
     "react-dom": "^16.9.0",
     "react-map-gl": "^4.1.12",
     "react-redux": "^7.1.0",
+    "react-test-renderer ": "^16.9.0",
     "redux": "^4.0.1",
     "remote-redux-devtools": "^0.5.16",
     "remotedev-server": "^0.3.1",
@@ -127,7 +128,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && yarn test"
+      "pre-commit": "yarn test && lint-staged"
     }
   },
   "files": [
