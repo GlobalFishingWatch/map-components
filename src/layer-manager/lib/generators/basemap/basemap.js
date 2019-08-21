@@ -15,6 +15,14 @@ class BasemapGenerator {
     const layerData = layersDirectory[layer.id]
     return layerData !== undefined ? layerData.layers : []
   }
+
+  getStyle = (layer) => {
+    return {
+      id: layer.id,
+      sources: this.getStyleSources(layer),
+      layers: this.getStyleLayers(layer),
+    }
+  }
 }
 
 export default BasemapGenerator

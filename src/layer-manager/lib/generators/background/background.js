@@ -17,6 +17,13 @@ class BasemapGenerator {
       },
     },
   ]
+  getStyle = (layer) => {
+    return {
+      id: layer.id,
+      sources: this.getStyleSources(layer),
+      layers: this.getStyleLayers(layer),
+    }
+  }
 }
 
 export default BasemapGenerator

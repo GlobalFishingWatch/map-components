@@ -12,7 +12,7 @@
           {
             "targets": {
               "chrome": 61,
-              "node": 8
+              "node": 12
             }
           }
         ]

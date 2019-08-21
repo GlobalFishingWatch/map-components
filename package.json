@@ -8,8 +8,8 @@
   "main": "components/index.js",
   "types": "types/index.d.ts",
   "engines": {
-    "node": ">=8",
-    "npm": ">=5"
+    "node": ">=12",
+    "npm": ">=6"
   },
   "browserslist": [
     ">0.2%",

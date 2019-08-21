@@ -1,5 +1,6 @@
 import Generators from './generators'
 import { DEFAULT_CONFIG } from './constants'
+import { flatObjectArrays, flatObjectToArray } from './utils'
 
 class LayerManagerLib {
   constructor(params) {
@@ -7,101 +8,88 @@ class LayerManagerLib {
     this.glyphs = params ? params.glyphs : DEFAULT_CONFIG.glyphs
     this.sprites = params ? params.sprites : DEFAULT_CONFIG.sprites
     this.generators = params ? params.generators : Generators
+
+    // Used to cache results and always return the latest style in promises
+    this.latestGenerated = {}
   }
 
-  getSources = (layers) => {
-    if (!layers) return { sourcesStyle: {}, sourcesPromises: [] }
-
-    const sourcesPromises = []
-    const sourcesStyle = Object.fromEntries(
-      layers.flatMap((layer) => {
-        if (!this.generators[layer.type]) {
-          console.warn('There is no styleSource generator loaded for the layer:', layer)
-          return []
-        }
-        const sourceGroup = this.generators[layer.type].getStyleSources(layer)
-        return sourceGroup
-          .map((source) => {
-            const { id, promise, ...rest } = source
-            if (promise) {
-              sourcesPromises.push(promise)
-            }
-            return id ? [id, rest] : null
-          })
-          .filter((source) => !!source)
-      })
+  // Sources dictionary for id and array of sources per layer
+  _getGeneratedLayerSource = (layers) => {
+    return Object.fromEntries(
+      layers
+        .filter((layer) => layer.sources && layer.sources.length)
+        .map((layer) => [layer.id, layer.sources])
     )
-    return { sourcesStyle, sourcesPromises }
   }
 
-  getLayers = (layers) => {
-    if (!layers) return { layersStyle: [], layersPromises: [] }
-
-    const layersPromises = []
-    const layersStyle = layers.flatMap((layer) => {
-      if (!this.generators[layer.type]) {
-        console.warn('There is no styleLayer generator loaded for the layer:', layer)
-        return []
-      }
-      const layers = this.generators[layer.type].getStyleLayers(layer).map((layer) => {
-        if (layer.promise) {
-          layersPromises.push(layer.promise)
-        }
-        return layer.id ? layer : []
-      })
-      return layers
-    })
-
-    return { layersStyle, layersPromises }
+  // Same here for layers
+  _getGeneratedLayerLayers = (layers) => {
+    return Object.fromEntries(
+      layers
+        .filter((layer) => layer.layers && layer.layers.length)
+        .map((layer) => [layer.id, layer.layers])
+    )
   }
 
-  getStyleJson(sources, layers) {
+  // Uses generators to return the layer with sources and layers
+  _getGeneratedLayer = (layer) => {
+    if (!this.generators[layer.type]) {
+      console.warn('There is no styleLayer generator loaded for the layer:', layer)
+      return []
+    }
+    return this.generators[layer.type].getStyle(layer)
+  }
+
+  // Latest step in the workflow which compose the output needed for mapbox-gl
+  _getStyleJson(sources = {}, layers = {}) {
     return {
       version: this.version,
       glyphs: this.glyphs,
       sprites: this.sprites,
-      sources,
-      layers,
+      sources: flatObjectArrays(sources),
+      layers: flatObjectToArray(layers),
     }
   }
 
+  // Main mathod of the library which uses the privates one to compose the style
   getGLStyle = (layers) => {
     if (!layers) {
       console.warn('No layers passed to layer manager')
+      return this._getStyleJson()
     }
 
-    const { sourcesStyle, sourcesPromises } = this.getSources(layers)
-    const { layersStyle, layersPromises } = this.getLayers(layers)
+    const layersPromises = []
+    const layersGenerated = layers.map((layer) => {
+      const { promise, ...rest } = this._getGeneratedLayer(layer)
+      if (promise) {
+        layersPromises.push(promise)
+      }
+      return rest
+    })
 
-    const promises = sourcesPromises
-      .map((promise) => {
-        return promise().then((source) => {
-          const { id, ...rest } = source
-          const { sourcesStyle } = this.getSources(layers)
-          const { layersStyle } = this.getLayers(layers)
-          const sources = {
-            ...sourcesStyle,
-            [id]: rest,
-          }
-          return this.getStyleJson(sources, layersStyle)
-        })
+    const sourcesStyle = this._getGeneratedLayerSource(layersGenerated)
+    const layersStyle = this._getGeneratedLayerLayers(layersGenerated)
+
+    this.latestGenerated = { sourcesStyle, layersStyle }
+
+    const promises = layersPromises.map((promise) => {
+      return promise.then((layer) => {
+        const { id, sources, layers } = layer
+        const { sourcesStyle, layersStyle } = this.latestGenerated
+        const mergedSources = {
+          ...sourcesStyle,
+          [id]: sources,
+        }
+        const mergedLayers = {
+          ...layersStyle,
+          [id]: layers,
+        }
+        this.latestGenerated = { sourcesStyle: mergedSources, layersStyle: mergedLayers }
+        return { style: this._getStyleJson(mergedSources, mergedLayers), layer }
       })
-      .concat(
-        layersPromises.map((promise) => {
-          return promise().then((layer) => {
-            const { sourcesStyle } = this.getSources(layers)
-            const { layersStyle } = this.getLayers(layers)
-            const layersResolved = layersStyle.map((layerStyle) => {
-              if (layerStyle.id !== layer.id) return layerStyle
-              return layer
-            })
-            return this.getStyleJson(sourcesStyle, layersResolved)
-          })
-        })
-      )
+    })
 
-    const style = this.getStyleJson(sourcesStyle, layersStyle)
-    return [style, promises]
+    return { style: this._getStyleJson(sourcesStyle, layersStyle), promises }
   }
 }
 

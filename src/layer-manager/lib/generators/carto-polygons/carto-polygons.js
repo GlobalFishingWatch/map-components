@@ -32,12 +32,16 @@ class CartoPolygonsGenerator {
     const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
     const visible = layer.visible === undefined || layer.visible === true
-    if (!visible) return []
+    const response = {
+      sources: [],
+    }
+    if (!visible) return response
 
     try {
       if (this.tilesCacheByid[id] !== undefined) {
         const tiles = this.tilesCacheByid[id]
-        return [{ id: layer.id, ...layerData.source, tiles }]
+        response.sources = [{ id: layer.id, ...layerData.source, tiles }]
+        return response
       }
 
       const promise = async () => {
@@ -48,20 +52,20 @@ class CartoPolygonsGenerator {
         })
         const tiles = [`${CARTO_FISHING_MAP_API}/${layergroupid}/{z}/{x}/{y}.mvt`]
         this.tilesCacheByid[id] = tiles
-        return { id: layer.id, ...layerData.source, tiles }
+        return this.getStyle(layer)
       }
-      return [{ promise }]
+      return { ...response, promise: promise() }
     } catch (e) {
       console.warn(e)
-      return []
+      return response
     }
   }
 
   getStyleLayers = (layer) => {
-    const layerData = layersDirectory[layer.id] || layer
     const isSourceReady = this.tilesCacheByid[layer.id] !== undefined
     if (!isSourceReady) return []
 
+    const layerData = layersDirectory[layer.id] || layer
     return layerData.layers.map((l) => {
       const layout = {
         visibility: layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible',
@@ -76,6 +80,16 @@ class CartoPolygonsGenerator {
           : {}
       return { ...l, layout, paint }
     })
+  }
+
+  getStyle = (layer) => {
+    const { sources, promise } = this.getStyleSources(layer)
+    return {
+      id: layer.id,
+      promise,
+      sources: sources,
+      layers: this.getStyleLayers(layer),
+    }
   }
 }
 

@@ -9,23 +9,14 @@ export function useLayerManager(layers, config) {
 
   useEffect(() => {
     const getGlStyles = async () => {
-      // Initial option
-      // let mapStyle = await LayerManagerRef.current.getGLStyle(layers)
-      // if (!ignore) {
-      //   setMapStyle(mapStyle)
-      // }
-
-      // Callback option
-      // const mapStyle = LayerManagerRef.current.getGLStyle(layers, setMapStyle, setLoading(false))
-
-      const [mapStyle, promises] = LayerManagerRef.current.getGLStyle(layers)
-      setMapStyle(mapStyle)
-      if (promises.length) {
+      const { style, promises } = LayerManagerRef.current.getGLStyle(layers)
+      setMapStyle(style)
+      if (promises && promises.length) {
         setLoading(true)
         await Promise.all(
           promises.map((p) => {
-            return p.then((asyncMapStyle) => {
-              setMapStyle(asyncMapStyle)
+            return p.then(({ style }) => {
+              setMapStyle(style)
             })
           })
         )
