@@ -9,22 +9,12 @@ import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
+  getHumanizedDates
 } from '@globalfishingwatch/map-components/src/timebar'
 
 import './timebar.css'
 
 const HOVER_DELTA = 10
-
-const getTime = (dateISO) => new Date(dateISO).getTime()
-const getDeltaMs = (start, end) => getTime(end) - getTime(start)
-const getDeltaDays = (start, end) => getDeltaMs(start, end) / 1000 / 60 / 60 / 24
-const isMoreThanADay = (start, end) => getDeltaDays(start, end) >= 1
-const getHumanizedDates = (start, end) => {
-  const format = isMoreThanADay(start, end) ? 'MMM D YYYY' : 'MMM D YYYY HH[h]'
-  const humanizedStart = dayjs(start).format(format)
-  const humanizedEnd = dayjs(end).format(format)
-  return { humanizedStart, humanizedEnd }
-}
 
 // const groupedVesselEvents = groupVesselEvents(vesselEventsMock)
 // console.log(groupedVesselEvents)
@@ -47,12 +37,13 @@ class TimebarContainer extends Component {
   }
 
   update = (start, end) => {
-    const { humanizedStart, humanizedEnd } = getHumanizedDates(start, end)
+    const { humanizedStart, humanizedEnd, interval } = getHumanizedDates(start, end)
     this.setState({
       start,
       end,
       humanizedStart,
       humanizedEnd,
+      interval,
     })
   }
 
@@ -86,6 +77,7 @@ class TimebarContainer extends Component {
       bookmarkEnd,
       humanizedStart,
       humanizedEnd,
+      interval,
       currentChart,
       highlightedEventIDs,
       hoverStart,
@@ -120,7 +112,7 @@ class TimebarContainer extends Component {
             add 10 days
           </button>
 
-          <div className="dates">{`${humanizedStart} - ${humanizedEnd}`}</div>
+          <div className="dates">{`${humanizedStart} - ${humanizedEnd} (${interval} days)`}</div>
           <div className="dates">hover start: {hoverStart && hoverStart.toString()}</div>
           <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
         </div>
