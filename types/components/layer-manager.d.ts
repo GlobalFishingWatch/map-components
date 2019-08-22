@@ -1,10 +1,15 @@
 import React from 'react'
-import { AnySourceImpl, Layer } from '@types/mapbox-gl'
+import { AnySourceImpl, Layer } from 'mapbox-gl'
 
 export interface LayerManagerGenerator {
   type: string
-  getStyleSources: (layer: LayerManagerLayer) => AnySourceImpl
-  getStyleLayers: (layer: LayerManagerLayer) => Layer
+  getStyle: (
+    layer: LayerManagerLayer
+  ) => {
+    id: string
+    sources: [AnySourceImpl]
+    layers: [Layer]
+  }
 }
 
 export interface LayerManagerOptions {
@@ -16,7 +21,8 @@ export interface LayerManagerOptions {
 
 export interface LayerManagerLayer {
   id: string
-  type: 'background' | 'basemap' | 'carto'
+  type: 'BACKGROUND' | 'BASEMAP' | 'CARTO_POLYGONS' | string
+  data?: any
   visible?: boolean
   opacity?: number
   color?: string

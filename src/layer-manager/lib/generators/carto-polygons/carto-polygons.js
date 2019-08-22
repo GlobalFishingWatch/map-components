@@ -28,7 +28,7 @@ class CartoPolygonsGenerator {
     this.tilesCacheByid = {}
   }
 
-  getStyleSources = (layer) => {
+  _getStyleSources = (layer) => {
     const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
     const visible = layer.visible === undefined || layer.visible === true
@@ -61,7 +61,7 @@ class CartoPolygonsGenerator {
     }
   }
 
-  getStyleLayers = (layer) => {
+  _getStyleLayers = (layer) => {
     const isSourceReady = this.tilesCacheByid[layer.id] !== undefined
     if (!isSourceReady) return []
 
@@ -97,12 +97,12 @@ class CartoPolygonsGenerator {
   }
 
   getStyle = (layer) => {
-    const { sources, promise } = this.getStyleSources(layer)
+    const { sources, promise } = this._getStyleSources(layer)
     return {
       id: layer.id,
       promise,
       sources: sources,
-      layers: this.getStyleLayers(layer),
+      layers: this._getStyleLayers(layer),
     }
   }
 }

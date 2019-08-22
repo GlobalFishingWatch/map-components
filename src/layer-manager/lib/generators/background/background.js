@@ -4,8 +4,8 @@ class BasemapGenerator {
   constructor() {
     this.type = BACKGROUND_TYPE
   }
-  getStyleSources = () => []
-  getStyleLayers = (layer) => [
+
+  _getStyleLayers = (layer) => [
     {
       id: 'background',
       type: 'background',
@@ -20,8 +20,8 @@ class BasemapGenerator {
   getStyle = (layer) => {
     return {
       id: layer.id,
-      sources: this.getStyleSources(layer),
-      layers: this.getStyleLayers(layer),
+      sources: [],
+      layers: this._getStyleLayers(layer),
     }
   }
 }

@@ -6,12 +6,12 @@ class BasemapGenerator {
   constructor() {
     this.type = BASEMAP_TYPE
   }
-  getStyleSources = (layer) => {
+  _getStyleSources = (layer) => {
     const { id } = layer
     const sourceData = layersDirectory[id] || layer
     return [{ id, ...sourceData.source }] || []
   }
-  getStyleLayers = (layer) => {
+  _getStyleLayers = (layer) => {
     const layerData = layersDirectory[layer.id]
     return layerData !== undefined ? layerData.layers : []
   }
@@ -19,8 +19,8 @@ class BasemapGenerator {
   getStyle = (layer) => {
     return {
       id: layer.id,
-      sources: this.getStyleSources(layer),
-      layers: this.getStyleLayers(layer),
+      sources: this._getStyleSources(layer),
+      layers: this._getStyleLayers(layer),
     }
   }
 }
