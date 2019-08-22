@@ -40,7 +40,7 @@ class TimelineUnits extends Component {
               width: d.width,
               transition: immediate
                 ? 'none'
-                : `width ${DEFAULT_CSS_TRANSITION}, left  ${DEFAULT_CSS_TRANSITION}`,
+                : `width ${DEFAULT_CSS_TRANSITION}, left ${DEFAULT_CSS_TRANSITION}`,
             }}
             className={styles.unit}
           >

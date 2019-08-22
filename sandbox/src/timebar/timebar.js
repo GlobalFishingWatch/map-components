@@ -23,8 +23,8 @@ const HOVER_DELTA = 10
 const initialStart = '2018-04-01T00:00:00.000Z'
 const initialEnd = '2019-03-31T00:00:00.000Z'
 
-const absoluteStart = '2017-01-01T00:00:00.000Z'
-const absoluteEnd = initialEnd
+const absoluteStart = new Date(activityMock[0].date).toISOString()
+const absoluteEnd = new Date(activityMock[activityMock.length-1].date).toISOString()
 
 class TimebarContainer extends Component {
   state = {
@@ -128,10 +128,10 @@ class TimebarContainer extends Component {
           onChange={this.update}
           onMouseMove={this.onMouseMove}
           onBookmarkChange={this.updateBookmark}
-          minimumRange={1}
-          minimumRangeUnit="day"
-          maximumRange={6}
-          maximumRangeUnit="month"
+          // minimumRange={1}
+          // minimumRangeUnit="day"
+          // maximumRange={6}
+          // maximumRangeUnit="month"
         >
           {// props => [
           //   // <Tracks key="tracks" {...props}  tracks={tracks} />,

@@ -38,13 +38,13 @@ class Timeline extends PureComponent {
       .range([0, innerWidth])
   )
 
-  getCssTransform = memoize((overallScale, start, end, innerWidth, innerStartPx) => {
+  getSvgTransform = memoize((overallScale, start, end, innerWidth, innerStartPx) => {
     const startX = overallScale(new Date(start))
     const endX = overallScale(new Date(end))
     const deltaX = endX - startX
     const scaleX = innerWidth / deltaX
 
-    const t = `translate3d(${innerStartPx}px, 0, 0) scale3d(${scaleX}, 1, 1) translate3d(${-startX}px, 0, 0)`
+    const t = `translate(${innerStartPx}, 0) scale(${scaleX}, 1) translate(${-startX}, 0)`
     return t
   })
 
@@ -299,7 +299,7 @@ class Timeline extends PureComponent {
 
     this.outerScale = this.getOuterScale(outerStart, outerEnd, this.state.outerWidth)
     const overallScale = this.getOverallScale(absoluteStart, absoluteEnd, innerWidth)
-    const cssTransform = this.getCssTransform(overallScale, start, end, innerWidth, innerStartPx)
+    const svgTransform = this.getSvgTransform(overallScale, start, end, innerWidth, innerStartPx)
 
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
 
@@ -352,7 +352,7 @@ class Timeline extends PureComponent {
                 graphHeight: outerHeight,
                 innerWidth,
                 overallScale,
-                cssTransform,
+                svgTransform,
                 tooltipContainer: this.tooltipContainer,
                 ...this.props,
               })}

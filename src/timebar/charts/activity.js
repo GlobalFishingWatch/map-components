@@ -32,9 +32,9 @@ const getPath = (graphHeight, activity, absoluteEnd, overallScale) => {
 const Activity = ({
   activity,
   absoluteEnd,
-  innerWidth,
+  outerWidth,
   graphHeight,
-  cssTransform,
+  svgTransform,
   overallScale,
 }) => {
   const { immediate } = useContext(ImmediateContext)
@@ -47,16 +47,16 @@ const Activity = ({
   ])
 
   return (
-    <svg
-      width={innerWidth}
-      height={graphHeight}
-      className={styles.Activity}
-      style={{
-        transform: cssTransform,
-        // transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
-      }}
-    >
-      <path d={path} fill="pink" fillOpacity={0.9} />
+    <svg width={outerWidth} height={graphHeight} className={styles.Activity}>
+      <g
+        className={styles.transformGroup}
+        transform={svgTransform}
+        style={{
+          transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
+        }}
+      >
+        <path d={path} fill="pink" fillOpacity={0.9} />
+      </g>
     </svg>
   )
 }
@@ -71,9 +71,9 @@ Activity.propTypes = {
   ).isRequired,
   absoluteEnd: PropTypes.string.isRequired,
   outerScale: PropTypes.func.isRequired,
-  innerWidth: PropTypes.number.isRequired,
+  outerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
-  cssTransform: PropTypes.string.isRequired,
+  svgTransform: PropTypes.string.isRequired,
   overallScale: PropTypes.func.isRequired,
 }
 

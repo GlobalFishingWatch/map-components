@@ -1,12 +1,3 @@
-.Activity {
-  transform-origin: top left;
-  transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
 .Activity path {
   fill: var(--timebar-light-blue);
 }
