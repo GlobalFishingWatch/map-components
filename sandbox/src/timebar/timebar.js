@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import dayjs from 'dayjs'
 import activityMock from './mocks/activity'
+import trackMock from './mocks/trackWithSpeedAndCourse'
 import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
 // import groupVesselEvents from './mocks/groupVesselEvents'
@@ -20,6 +21,19 @@ const HOVER_DELTA = 10
 // console.log(groupedVesselEvents)
 // console.log(groupedVesselEvents.map(e => e.type))
 
+console.log(activityMock)
+console.log(trackMock)
+const trackActivityMock = []
+trackMock.features.forEach(feature => {
+  const coordProps = feature.properties.coordinateProperties
+  coordProps.times.forEach((time, i) => {
+    trackActivityMock.push({
+      date: time,
+      value: coordProps.courses[i] / 360
+    })
+  })
+})
+
 const initialStart = '2018-04-01T00:00:00.000Z'
 const initialEnd = '2019-03-31T00:00:00.000Z'
 
@@ -32,7 +46,7 @@ class TimebarContainer extends Component {
     end: initialEnd,
     bookmarkStart: null,
     bookmarkEnd: null,
-    currentChart: 'activity',
+    currentChart: 'track',
     highlightedEventIDs: null,
   }
 
@@ -96,6 +110,7 @@ class TimebarContainer extends Component {
               <option value="activity">Activity</option>
               <option value="events">Events</option>
               <option value="vesselEvents">Vessel events</option>
+              <option value="track">Track</option>
             </select>
           </div>
           <button
@@ -156,6 +171,12 @@ class TimebarContainer extends Component {
                   }
                 />
               )
+            }
+            if (currentChart === 'track') {
+              return <>
+                <TimebarActivity key="trackActivity" {...props} activity={trackActivityMock} />
+                {/* <TimebarTrack key="track" {...props} track={trackMock} /> */}
+              </>
             }
             return <TimebarActivity key="activity" {...props} activity={activityMock} />
           }}
