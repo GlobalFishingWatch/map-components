@@ -82,16 +82,10 @@ class LayerManagerLib {
       return promise.then((layer) => {
         const { id, sources, layers } = layer
         const { sourcesStyle, layersStyle } = this.latestGenerated
-        const mergedSources = {
-          ...sourcesStyle,
-          [id]: sources,
-        }
-        const mergedLayers = {
-          ...layersStyle,
-          [id]: layers,
-        }
-        this.latestGenerated = { sourcesStyle: mergedSources, layersStyle: mergedLayers }
-        return { style: this._getStyleJson(mergedSources, mergedLayers), layer }
+        // Mutating the reference to keep the layers order
+        sourcesStyle[id] = sources
+        layersStyle[id] = layers
+        return { style: this._getStyleJson(sourcesStyle, layersStyle), layer }
       })
     })
 
