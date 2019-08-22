@@ -1,5 +1,5 @@
 import LayerManagerLib from '../lib/index'
-import { DEFAULT_CONFIG } from '../lib/constants'
+import { DEFAULT_CONFIG } from '../lib'
 import { validate as mapboxStyleValidator } from '@mapbox/mapbox-gl-style-spec'
 
 test('instanciates with the default config', async () => {

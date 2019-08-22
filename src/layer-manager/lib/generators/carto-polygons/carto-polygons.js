@@ -31,11 +31,9 @@ class CartoPolygonsGenerator {
   _getStyleSources = (layer) => {
     const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
-    const visible = layer.visible === undefined || layer.visible === true
     const response = {
       sources: [],
     }
-    if (!visible) return response
 
     try {
       if (this.tilesCacheByid[id] !== undefined) {
