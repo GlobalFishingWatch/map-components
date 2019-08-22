@@ -24,13 +24,9 @@ class MapPage extends Component {
         opacity: 1,
         visible: true,
         selectedFeatures: {
-          field: 'rfb',
           values: ['IATTC'],
-          color: '#58CFFF',
-          style: {
-            fill: {
-              'fill-color': ['rgba(50, 139, 169, 0.3)', 'rgba(0,0,0,0)'],
-            },
+          fill: {
+            color: 'rgba(50, 139, 169, 0.3)',
           },
         },
       },

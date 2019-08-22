@@ -2,7 +2,7 @@
   "cp_rfmo": {
      "id": "cp_rfmo",
      "source": {
-        "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id, id as rfb FROM carrier_portal_rfmo_hi_res",
+        "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id FROM carrier_portal_rfmo_hi_res",
         "type": "vector"
      },
      "layers": [

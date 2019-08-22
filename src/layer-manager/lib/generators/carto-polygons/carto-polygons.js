@@ -66,19 +66,33 @@ class CartoPolygonsGenerator {
     if (!isSourceReady) return []
 
     const layerData = layersDirectory[layer.id] || layer
-    return layerData.layers.map((l) => {
+    return layerData.layers.map((glLayer) => {
       const layout = {
         visibility: layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible',
       }
-      const paint =
-        l.type === 'fill'
-          ? {
-              'fill-opacity': layer.opacity !== undefined ? layer.opacity : 1,
-              'fill-outline-color': layer.color,
-              'fill-color': 'rgba(0,0,0,0)',
-            }
-          : {}
-      return { ...l, layout, paint }
+      let paint = {}
+      if (glLayer.type === 'fill') {
+        paint['fill-opacity'] = layer.opacity !== undefined ? layer.opacity : 1
+        const fillColor = layer.fillColor || 'rgba(0,0,0,0)'
+        const hasSelectedFeatures =
+          layer.selectedFeatures !== undefined &&
+          layer.selectedFeatures.values &&
+          layer.selectedFeatures.values.length
+
+        if (hasSelectedFeatures) {
+          const { field = 'id', values, fill = {} } = layer.selectedFeatures
+          const { color = fillColor, fillOutlineColor = layer.color } = fill
+
+          const matchFilter = ['match', ['get', field], values]
+          paint[`fill-color`] = [...matchFilter, color, fillColor]
+          paint[`fill-outline-color`] = [...matchFilter, fillOutlineColor, layer.color]
+        } else {
+          paint[`fill-color`] = fillColor
+          paint[`fill-outline-color`] = layer.color
+        }
+      }
+
+      return { ...glLayer, layout, paint }
     })
   }
 
