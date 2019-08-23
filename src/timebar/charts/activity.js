@@ -1,21 +1,37 @@
 import React, { useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import maxBy from 'lodash/maxBy'
-import { area, curveStepAfter } from 'd3-shape'
+import {
+  area,
+  curveStepAfter,
+  curveStepBefore,
+  curveLinear,
+  curveBasis,
+  curveCatmullRom,
+  curveCardinal,
+} from 'd3-shape'
 import { getTime } from '../utils'
 import ImmediateContext from '../immediateContext'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
-import styles from './activity.module.css'
 
 const TOP_MARGIN = 5
 const BOTTOM_MARGIN = 20
+
+const CURVES = {
+  curveStepAfter,
+  curveStepBefore,
+  curveLinear,
+  curveBasis, // smoothes out, line does not pass through points
+  curveCatmullRom, // smoothes out while insuring line passes through points but produces artefacts
+  curveCardinal, // smoothes out while insuring line passes through points but produces artefacts
+}
 
 const getMaxValue = (activity) => {
   const maxValueItem = maxBy(activity, (item) => item.value)
   return maxValueItem.value
 }
 
-const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue) => {
+const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue, curve) => {
   const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
   const middle = TOP_MARGIN + finalHeight / 2
 
@@ -23,7 +39,7 @@ const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue) => 
     .x((d) => overallScale(d.date))
     .y0((d) => middle - (finalHeight * d.value) / maxValue / 2)
     .y1((d) => middle + (finalHeight * d.value) / maxValue / 2)
-    .curve(curveStepAfter)
+    .curve(CURVES[curve])
 
   // because data stops at last day midnight, add an extra day with the same data
   // to allow the curve to go to the end of the day
@@ -37,6 +53,9 @@ const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue) => 
 
 const Activity = ({
   activity,
+  color,
+  opacity,
+  curve,
   absoluteEnd,
   outerWidth,
   graphHeight,
@@ -47,24 +66,20 @@ const Activity = ({
 
   const maxValue = useMemo(() => getMaxValue(activity), [activity])
 
-  const path = useMemo(() => getPath(graphHeight, activity, absoluteEnd, overallScale, maxValue), [
-    graphHeight,
-    activity,
-    absoluteEnd,
-    overallScale,
-    maxValue,
-  ])
+  const path = useMemo(
+    () => getPath(graphHeight, activity, absoluteEnd, overallScale, maxValue, curve),
+    [graphHeight, activity, absoluteEnd, overallScale, maxValue, curve]
+  )
 
   return (
-    <svg width={outerWidth} height={graphHeight} className={styles.Activity}>
+    <svg width={outerWidth} height={graphHeight}>
       <g
-        className={styles.transformGroup}
         transform={svgTransform}
         style={{
           transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
         }}
       >
-        <path d={path} fill="pink" fillOpacity={0.9} />
+        <path d={path} fill={color} fillOpacity={opacity} />
       </g>
     </svg>
   )
@@ -78,12 +93,21 @@ Activity.propTypes = {
       value: PropTypes.number,
     })
   ).isRequired,
+  color: PropTypes.string,
+  opacity: PropTypes.number,
+  curve: PropTypes.string,
   absoluteEnd: PropTypes.string.isRequired,
   outerScale: PropTypes.func.isRequired,
   outerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
   svgTransform: PropTypes.string.isRequired,
   overallScale: PropTypes.func.isRequired,
+}
+
+Activity.defaultProps = {
+  color: 'var(--timebar-light-blue)',
+  opacity: 0.9,
+  curve: 'curveStepAfter',
 }
 
 export default Activity

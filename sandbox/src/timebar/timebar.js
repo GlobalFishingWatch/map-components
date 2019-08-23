@@ -187,7 +187,14 @@ class TimebarContainer extends Component {
             }
             if (currentChart === 'track') {
               return <>
-                <TimebarActivity key="trackActivity" {...props} activity={activityMockForSubchart} />
+                <TimebarActivity
+                  {...props}  
+                  key="trackActivity"
+                  color="#fe81eb"
+                  opacity={1}
+                  curve="curveBasis"
+                  activity={activityMockForSubchart}
+                />
                 {/* <TimebarTrack key="track" {...props} track={trackMock} /> */}
               </>
             }
