@@ -5,14 +5,14 @@ export const DEFAULT_CONFIG = {
   version: 8,
   glyphs:
     'https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-glyphs/master/_output/{fontstack}/{range}.pbf?raw=true',
-  sprites: 'https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-sprites/master/out/sprites',
+  sprite: 'https://raw.githubusercontent.com/GlobalFishingWatch/map-gl-sprites/master/out/sprites',
 }
 
 class LayerManagerLib {
   constructor(params) {
     this.version = DEFAULT_CONFIG.version
     this.glyphs = params && params.glyphs ? params.glyphs : DEFAULT_CONFIG.glyphs
-    this.sprites = params && params.sprites ? params.sprites : DEFAULT_CONFIG.sprites
+    this.sprite = params && params.sprite ? params.sprite : DEFAULT_CONFIG.sprite
     this.generators = params && params.generators ? params.generators : Generators
 
     // Used to cache results and always return the latest style in promises
@@ -51,7 +51,7 @@ class LayerManagerLib {
     return {
       version: this.version,
       glyphs: this.glyphs,
-      sprites: this.sprites,
+      sprite: this.sprite,
       sources: flatObjectArrays(sources),
       layers: flatObjectToArray(layers),
     }
