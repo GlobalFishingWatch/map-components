@@ -1,0 +1,18 @@
+{
+  "north-star": {
+     "source": {
+        "tiles": [
+           "https://gtiles-dot-world-fishing-827.appspot.com/v1/tileset/ns/tile?x={x}&y={y}&z={z}"
+        ],
+        "type": "raster",
+        "tileSize": 256
+     },
+     "layers": [
+        {
+           "id": "north-star",
+           "type": "raster",
+           "source": "north-star"
+        }
+     ]
+  }
+}
