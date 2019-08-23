@@ -29,7 +29,7 @@ trackMock.features.forEach(feature => {
   coordProps.times.forEach((time, i) => {
     trackActivityMock.push({
       date: time,
-      value: coordProps.courses[i] / 360
+      value: coordProps.courses[i]
     })
   })
 })
