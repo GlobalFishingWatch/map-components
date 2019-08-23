@@ -47,7 +47,10 @@ export const stickToClosestUnit = (date, unit) => {
 
 export const getHumanizedDates = (start, end) => {
   const format = isMoreThanADay(start, end) ? 'MMM D YYYY' : 'MMM D YYYY HH[h]'
-  const humanizedStart = dayjs(start).format(format)
-  const humanizedEnd = dayjs(end).format(format)
-  return { humanizedStart, humanizedEnd }
+  const mStart = dayjs(start)
+  const mEnd = dayjs(end)
+  const humanizedStart = mStart.format(format)
+  const humanizedEnd = mEnd.format(format)
+  const interval = mEnd.diff(mStart, 'day')
+  return { humanizedStart, humanizedEnd, interval }
 }

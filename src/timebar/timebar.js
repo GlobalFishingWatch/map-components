@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
 import dayjs from 'dayjs'
+import memoize from 'memoize-one'
 import ImmediateContext from './immediateContext'
 import {
   getTime,
@@ -25,6 +26,32 @@ dayjs.extend(relativeTime)
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
 
+const getRangeMs = (range, unit) => {
+  const start = dayjs(new Date())
+  const end = start.add(range, unit)
+  return end.diff(start)
+}
+
+const clampToMinAndMax = (start, end, minMs, maxMs, clampToEnd) => {
+  const delta = new Date(end).getTime() - new Date(start).getTime()
+  let clampedEnd = end
+  let clampedStart = start
+  if (delta > maxMs) {
+    if (clampToEnd === true) {
+      clampedEnd = new Date(new Date(start).getTime() + maxMs).toISOString()
+    } else {
+      clampedStart = new Date(new Date(end).getTime() - maxMs).toISOString()
+    }
+  } else if (delta < minMs) {
+    if (clampToEnd === true) {
+      clampedEnd = new Date(new Date(start).getTime() + minMs).toISOString()
+    } else {
+      clampedStart = new Date(new Date(end).getTime() - minMs).toISOString()
+    }
+  }
+  return { clampedStart, clampedEnd }
+}
+
 class Timebar extends Component {
   constructor() {
     super()
@@ -40,6 +67,20 @@ class Timebar extends Component {
       absoluteEnd: null,
     }
   }
+
+  getMaximumRangeMs = memoize((maximumRange, maximumRangeUnit) => {
+    if (maximumRange === null) {
+      return Number.POSITIVE_INFINITY
+    }
+    return getRangeMs(maximumRange, maximumRangeUnit)
+  })
+
+  getMinimumRangeMs = memoize((minimumRange, minimumRangeUnit) => {
+    if (minimumRange === null) {
+      return Number.NEGATIVE_INFINITY
+    }
+    return getRangeMs(minimumRange, minimumRangeUnit)
+  })
 
   componentDidMount() {
     const { start, end } = this.props
@@ -135,10 +176,17 @@ class Timebar extends Component {
     this.notifyChange(newStartClamped, newEndClamped)
   }
 
-  notifyChange = (start, end) => {
+  notifyChange = (start, end, clampToEnd = false) => {
+    const { clampedStart, clampedEnd } = clampToMinAndMax(
+      start,
+      end,
+      this.minimumRangeMs,
+      this.maximumRangeMs,
+      clampToEnd
+    )
     const { onChange } = this.props
-    const { humanizedStart, humanizedEnd } = getHumanizedDates(start, end)
-    onChange(start, end, humanizedStart, humanizedEnd)
+    const { humanizedStart, humanizedEnd } = getHumanizedDates(clampedStart, clampedEnd)
+    onChange(clampedStart, clampedEnd, humanizedStart, humanizedEnd)
   }
 
   onPlaybackTick = (newStart, newEnd) => {
@@ -146,11 +194,25 @@ class Timebar extends Component {
   }
 
   render() {
-    const { start, end, absoluteStart, bookmarkStart, bookmarkEnd, enablePlayback } = this.props
+    const {
+      start,
+      end,
+      absoluteStart,
+      bookmarkStart,
+      bookmarkEnd,
+      enablePlayback,
+      minimumRange,
+      minimumRangeUnit,
+      maximumRange,
+      maximumRangeUnit,
+    } = this.props
     const { immediate } = this.state
 
     // state.absoluteEnd overrides the value set in props.absoluteEnd - see getDerivedStateFromProps
     const { showTimeRangeSelector, absoluteEnd } = this.state
+
+    this.maximumRangeMs = this.getMaximumRangeMs(maximumRange, maximumRangeUnit)
+    this.minimumRangeMs = this.getMinimumRangeMs(minimumRange, minimumRangeUnit)
 
     const canZoomIn = isMoreThanADay(start, end)
     const deltaDays = getDeltaDays(start, end)
@@ -251,6 +313,10 @@ Timebar.propTypes = {
   absoluteStart: PropTypes.string.isRequired,
   absoluteEnd: PropTypes.string.isRequired,
   enablePlayback: PropTypes.bool,
+  minimumRange: PropTypes.number,
+  minimumRangeUnit: PropTypes.string,
+  maximumRange: PropTypes.number,
+  maximumRangeUnit: PropTypes.string,
 }
 
 Timebar.defaultProps = {
@@ -258,6 +324,10 @@ Timebar.defaultProps = {
   bookmarkEnd: null,
   enablePlayback: false,
   onBookmarkChange: () => {},
+  minimumRange: null,
+  minimumRangeUnit: 'day',
+  maximumRange: null,
+  maximumRangeUnit: 'month',
 }
 
 export default Timebar

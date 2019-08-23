@@ -1,5 +1,6 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import memoize from 'memoize-one'
 import cx from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
@@ -22,8 +23,31 @@ const DRAG_INNER = 'DRAG_INNER'
 const DRAG_START = 'DRAG_START'
 const DRAG_END = 'DRAG_END'
 
-class Timeline extends Component {
+class Timeline extends PureComponent {
   static contextType = ImmediateContext
+
+  getOuterScale = memoize((outerStart, outerEnd, outerWidth) =>
+    scaleTime()
+      .domain([new Date(outerStart), new Date(outerEnd)])
+      .range([0, outerWidth])
+  )
+
+  getOverallScale = memoize((absoluteStart, absoluteEnd, innerWidth) =>
+    scaleTime()
+      .domain([new Date(absoluteStart), new Date(absoluteEnd)])
+      .range([0, innerWidth])
+  )
+
+  getSvgTransform = memoize((overallScale, start, end, innerWidth, innerStartPx) => {
+    const startX = overallScale(new Date(start))
+    const endX = overallScale(new Date(end))
+    const deltaX = endX - startX
+    const scaleX = innerWidth / deltaX
+
+    const t = `translate(${innerStartPx}, 0) scale(${scaleX}, 1) translate(${-startX}, 0)`
+    return t
+  })
+
   constructor() {
     super()
     this.state = {
@@ -137,7 +161,7 @@ class Timeline extends Component {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped)
+      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
     }
 
     this.requestAnimationFrame = window.requestAnimationFrame(this.onEnterFrame)
@@ -190,7 +214,7 @@ class Timeline extends Component {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped)
+      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
     } else if (this.isHandlerZoomInValid(x).isValid === true) {
       this.setState({
         handlerMouseX: x,
@@ -248,6 +272,7 @@ class Timeline extends Component {
     const {
       start,
       end,
+      absoluteStart,
       absoluteEnd,
       bookmarkStart,
       bookmarkEnd,
@@ -272,9 +297,9 @@ class Timeline extends Component {
     const outerStart = this.innerScale.invert(-innerStartPx).toISOString()
     const outerEnd = this.innerScale.invert(outerWidth - innerStartPx).toISOString()
 
-    this.outerScale = scaleTime()
-      .domain([new Date(outerStart), new Date(outerEnd)])
-      .range([0, this.state.outerWidth])
+    this.outerScale = this.getOuterScale(outerStart, outerEnd, this.state.outerWidth)
+    const overallScale = this.getOverallScale(absoluteStart, absoluteEnd, innerWidth)
+    const svgTransform = this.getSvgTransform(overallScale, start, end, innerWidth, innerStartPx)
 
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
 
@@ -325,6 +350,9 @@ class Timeline extends Component {
                 outerWidth,
                 outerHeight,
                 graphHeight: outerHeight,
+                innerWidth,
+                overallScale,
+                svgTransform,
                 tooltipContainer: this.tooltipContainer,
                 ...this.props,
               })}
