@@ -1,20 +1,52 @@
 import React, { Component } from 'react'
 import memoize from 'memoize-one'
 import dayjs from 'dayjs'
+
+// mocks
 import activityMock from './mocks/activity'
-import trackMock from './mocks/trackWithSpeedAndCourse'
+import trackMock from './mocks/trackWithFishingSpeedAndCourse'
 import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
 // import groupVesselEvents from './mocks/groupVesselEvents'
 
+// timebar
 import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
-  getHumanizedDates
+  TimebarTracks,
+  getHumanizedDates,
 } from '@globalfishingwatch/map-components/src/timebar'
 
 import './timebar.css'
+
+const geoJSONTracksToTimebarTracks = (geoJSONTracks) => {
+  const tracks = geoJSONTracks.map(geoJSONTrack => {
+    const segments = geoJSONTrack.features
+      .filter(feature => feature.properties.type === 'track')
+      .map(feature => {
+        const times = feature.properties.coordinateProperties.times
+        return {
+          start: times[0],
+          end: times[times.length - 1],
+        }
+      })
+    let points = []
+    geoJSONTrack.features
+      .filter(feature => feature.properties.type === 'fishing')
+      .forEach(feature => {
+        const times = feature.properties.coordinateProperties.times
+        points = [...points, ...times]
+      })
+
+    return {
+      segments,
+      points,
+    }
+  })
+  return tracks
+}
+
 
 const HOVER_DELTA = 10
 
@@ -24,16 +56,18 @@ const HOVER_DELTA = 10
 
 
 const trackActivityMock = []
-trackMock.features.forEach(feature => {
-  const coordProps = feature.properties.coordinateProperties
-  coordProps.times.forEach((time, i) => {
-    trackActivityMock.push({
-      date: time,
-      courses: coordProps.courses[i],
-      speeds: coordProps.speeds[i]
+trackMock.features
+  .filter(feature => feature.properties.type === 'track')
+  .forEach(feature => {
+    const coordProps = feature.properties.coordinateProperties
+    coordProps.times.forEach((time, i) => {
+      trackActivityMock.push({
+        date: time,
+        courses: coordProps.courses[i],
+        speeds: coordProps.speeds[i]
+      })
     })
   })
-})
 
 const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
   activity.map(item => ({
@@ -41,6 +75,8 @@ const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
     value: item[currentSubChart]
   }))
 )
+
+const getTrackMockForSubChart = memoize((trackMock) => geoJSONTracksToTimebarTracks([trackMock]))
 
 
 const initialStart = new Date(trackActivityMock[0].date).toISOString()
@@ -109,6 +145,7 @@ class TimebarContainer extends Component {
     } = this.state
 
     const activityMockForSubchart = getTrackActivityMockForSubChart(trackActivityMock, currentSubChart)
+    const trackMockForSubchart = getTrackMockForSubChart(trackMock)
 
     return (
       <div className="mainContainer">
@@ -167,6 +204,7 @@ class TimebarContainer extends Component {
           //   <Events key="events" {...props} events={eventsMock} />
           // ]
           (props) => {
+            const { outerScale, graphHeight } = props
             if (currentChart === 'events') {
               return (
                 <TimebarEvents key="events" {...props} events={eventsMock} showFishing={false} />
@@ -188,14 +226,19 @@ class TimebarContainer extends Component {
             if (currentChart === 'track') {
               return <>
                 <TimebarActivity
-                  {...props}  
+                  {...props}
                   key="trackActivity"
                   color="#fe81eb"
-                  opacity={1}
+                  opacity={.4}
                   curve="curveBasis"
                   activity={activityMockForSubchart}
                 />
-                {/* <TimebarTrack key="track" {...props} track={trackMock} /> */}
+                <TimebarTracks
+                  key="tracks"
+                  tracks={trackMockForSubchart}
+                  outerScale={outerScale}
+                  graphHeight={graphHeight}
+                />
               </>
             }
             return <TimebarActivity key="activity" {...props} activity={activityMock} />

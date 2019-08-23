@@ -1,0 +1,13 @@
+.segment,
+.point {
+  position: absolute;
+}
+
+.segment {
+  height: 1px;
+}
+
+.point {
+  border-radius: 99px;
+  background-color: #f0f;
+}
