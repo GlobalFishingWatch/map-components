@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import memoize from 'memoize-one'
 import dayjs from 'dayjs'
 import activityMock from './mocks/activity'
 import trackMock from './mocks/trackWithSpeedAndCourse'
@@ -21,24 +22,31 @@ const HOVER_DELTA = 10
 // console.log(groupedVesselEvents)
 // console.log(groupedVesselEvents.map(e => e.type))
 
-console.log(activityMock)
-console.log(trackMock)
+
 const trackActivityMock = []
 trackMock.features.forEach(feature => {
   const coordProps = feature.properties.coordinateProperties
   coordProps.times.forEach((time, i) => {
     trackActivityMock.push({
       date: time,
-      value: coordProps.courses[i]
+      courses: coordProps.courses[i],
+      speeds: coordProps.speeds[i]
     })
   })
 })
 
-const initialStart = '2018-04-01T00:00:00.000Z'
-const initialEnd = '2019-03-31T00:00:00.000Z'
+const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
+  activity.map(item => ({
+    ...item,
+    value: item[currentSubChart]
+  }))
+)
 
-const absoluteStart = new Date(activityMock[0].date).toISOString()
-const absoluteEnd = new Date(activityMock[activityMock.length-1].date).toISOString()
+
+const initialStart = new Date(trackActivityMock[0].date).toISOString()
+const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1].date).toISOString()
+const absoluteStart = '2015-04-01T00:00:00.000Z'
+const absoluteEnd = '2019-08-31T00:00:00.000Z'
 
 class TimebarContainer extends Component {
   state = {
@@ -47,6 +55,7 @@ class TimebarContainer extends Component {
     bookmarkStart: null,
     bookmarkEnd: null,
     currentChart: 'track',
+    currentSubChart: 'courses',
     highlightedEventIDs: null,
   }
 
@@ -93,10 +102,14 @@ class TimebarContainer extends Component {
       humanizedEnd,
       interval,
       currentChart,
+      currentSubChart,
       highlightedEventIDs,
       hoverStart,
       hoverEnd,
     } = this.state
+
+    const activityMockForSubchart = getTrackActivityMockForSubChart(trackActivityMock, currentSubChart)
+
     return (
       <div className="mainContainer">
         <div className="tools">
@@ -174,13 +187,24 @@ class TimebarContainer extends Component {
             }
             if (currentChart === 'track') {
               return <>
-                <TimebarActivity key="trackActivity" {...props} activity={trackActivityMock} />
+                <TimebarActivity key="trackActivity" {...props} activity={activityMockForSubchart} />
                 {/* <TimebarTrack key="track" {...props} track={trackMock} /> */}
               </>
             }
             return <TimebarActivity key="activity" {...props} activity={activityMock} />
           }}
         </Timebar>
+        {(currentChart === 'track') && (
+          <select className="subChartSelector"
+            onChange={(event) => {
+              this.setState({ currentSubChart: event.target.value })
+            }}
+            value={currentSubChart}
+          >
+            <option value="courses">Course</option>
+            <option value="speeds">Speed</option>
+          </select>
+        )}
       </div>
     )
   }
