@@ -12818,8 +12818,7 @@ react-spring@^8.0.19:
     "@babel/runtime" "^7.3.1"
     prop-types "^15.5.8"
 
-"react-test-renderer @^16.9.0":
-  name react-test-renderer
+react-test-renderer@^16.9.0:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.9.0.tgz#7ed657a374af47af88f66f33a3ef99c9610c8ae9"
   integrity sha512-R62stB73qZyhrJo7wmCW9jgl/07ai+YzvouvCXIJLBkRlRqLx4j9RqcLEAfNfU3OxTGucqR2Whmn3/Aad6L3hQ==
