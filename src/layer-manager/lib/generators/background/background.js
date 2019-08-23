@@ -1,9 +1,7 @@
 export const BACKGROUND_TYPE = 'BACKGROUND'
 
 class BasemapGenerator {
-  constructor() {
-    this.type = BACKGROUND_TYPE
-  }
+  type = BACKGROUND_TYPE
 
   _getStyleLayers = (layer) => [
     {
@@ -17,6 +15,7 @@ class BasemapGenerator {
       },
     },
   ]
+
   getStyle = (layer) => {
     return {
       id: layer.id,

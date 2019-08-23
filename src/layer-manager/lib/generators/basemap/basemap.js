@@ -3,9 +3,8 @@ import layersDirectory from './basemap-layers.json'
 export const BASEMAP_TYPE = 'BASEMAP'
 
 class BasemapGenerator {
-  constructor() {
-    this.type = BASEMAP_TYPE
-  }
+  type = BASEMAP_TYPE
+
   _getStyleSources = (layer) => {
     const { id } = layer
     const sourceData = layersDirectory[id] || layer

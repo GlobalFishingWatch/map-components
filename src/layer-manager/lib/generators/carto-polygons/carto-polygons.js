@@ -22,10 +22,11 @@ const getCartoLayergroupId = async ({ id, sql, baseUrl }) => {
 }
 
 class CartoPolygonsGenerator {
+  type = CARTO_POLYGONS_TYPE
+  tilesCacheByid = {}
+
   constructor({ baseUrl = CARTO_FISHING_MAP_API }) {
-    this.type = CARTO_POLYGONS_TYPE
     this.baseUrl = baseUrl
-    this.tilesCacheByid = {}
   }
 
   _getStyleSources = (layer) => {

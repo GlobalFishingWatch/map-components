@@ -1,6 +1,5 @@
 {
   "cp_rfmo": {
-     "id": "cp_rfmo",
      "source": {
         "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id FROM carrier_portal_rfmo_hi_res",
         "type": "vector"
@@ -15,7 +14,6 @@
      ]
   },
   "mpant": {
-     "id": "mpant",
      "source": {
         "sql": "select * FROM wdpa_no_take_mpas",
         "type": "vector"
@@ -43,7 +41,6 @@
      ]
   },
   "eez": {
-     "id": "eez",
      "source": {
         "sql": "SELECT cartodb_id, the_geom, the_geom_webmercator, geoname as name, 'eez:' || mrgid as region_id, geoname as reporting_name, 'eez:' || mrgid as reporting_id FROM eez",
         "type": "vector",
@@ -72,7 +69,6 @@
      ]
   },
   "bluefin_rfmo": {
-     "id": "bluefin_rfmo",
      "source": {
         "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id FROM bluefin_rfmo",
         "type": "vector"
