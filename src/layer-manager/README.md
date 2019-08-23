@@ -1,4 +1,4 @@
-# LayerManager
+# LayerManager initial proposal
 
 The LayerManager orchestrates various **Layer Generators** in order to generate an entire <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/">Mapbox GL Style document</a> that can be used with Mapbox GL and/or react-map-gl.
 
@@ -17,17 +17,18 @@ The LayerManager orchestrates various **Layer Generators** in order to generate 
 }
 ```
 
-Instanciates a new Layer Manager that will use the provided Layer Generators to identify LayerDefinitions provided via `LayerManager.setLayers`
+Instanciates a new Layer Manager that will use the provided Layer Generators.
 
-### LayerManager.getEvent
+### LayerManager.getEvent (to be implemented)
 
+> Draft
+```
 `layerManager.getEvent(event: GLEvent): GFWEvent`.
 
 Converts a native Mapbox GL event into a GFW event to be used in clients (takes into account popup info, variable formatting, priority, etc).
+```
 
-### LayerManager.setZIndices
-
-`layerManager.setZIndices()`
+### LayerManager.setZIndices (To be implemented)
 
 ### LayerManager.getGLStyle
 
@@ -35,11 +36,15 @@ Converts provided LayerDefinitions, using Generators, to a usable Mapbox GL JSON
 
 `layerManager.getGLStyle(layers: LayerDefinition[]): { GLStyle, [promises] }`
 
-Returns the sync glStyle and an array of promises when async layers are loaded which will pass the updated GLStyle when layer is ready
+Returns the sync glStyle and an array of promises when async layers are loaded which will pass the updated GLStyle and the layer as params when layer is ready
 
 ### LayerDefinition.type
 
-String. Mandatory. Use constants stored in the generator, not strings: ~'context'~ -> Context.type
+String. Mandatory. Use constants stored in the generator.
+
+```
+import { TYPES } from '@globalfishingwatch/map-components/components/layer-manager'
+```
 
 ### LayerDefinition.id
 
@@ -49,7 +54,7 @@ String. Must be specified if several layers from the same generator are to be us
 
 `new Generator(config?): void`
 
-Generators define, for a varying set of any inputs, a way to generate both GL source(s) and layer(s) for a given type of layer. By type, we mean a **domain** type, not a technical type. ie ~HeatmapLayer~ -> FishingActivityLayer
+Generators define, for a varying set of any inputs, a way to generate both GL source(s) and layer(s) for a given type of layer.
 
 Generators each contain the styling information they need, which can take the form of a customizable bit of GL style json, or something entirely dynamic.
 
@@ -59,22 +64,20 @@ See Generators section below.
 
 String. Mandatory. Defines uniquely the type of each generator, required in layer types
 
-### Generator.getStyleSources
+### Generator.getStyle
 
-`generator.getStyleSources(layers: LayerDefinition[]): { sources: GLSource[] }`
+`generator.getStyle(layer: LayerDefinition): { id: string, layers: GLLayer[], sources: GLSource[] }`
 
-Returns an array of `sources` needed by the layers.
-
-### Generator.getStyleLayers
-
-`generator.getStyleLayers(layers: LayerDefinition[]): { layers: GLLayer[] }`
-
-Returns an array of `layers` with the visual definition of `sources`.
+Returns an object with the unique identifier and an array of `sources` and `layers` needed by the layers.
 
 
 ## React Component
 
-The Layer Manager Component is a React component that takes a `ReactMapGL` component as a child:
+The Layer Manager Component is a React component that takes a `ReactMapGL` component as a child and pass its props using the render props pattern.
+
+Parameters availables:
+- mapStyle
+- loading
 
 ```
 import LayerManager, { TYPES } from '@globalfishingwatch/map-components/components/layer-manager'
@@ -132,6 +135,8 @@ const [mapStyles, loading] = useLayerManager(layers, config)
 
 
 ## Generators
+
+To be defined
 
 ### Background
 
