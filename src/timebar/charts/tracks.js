@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
 import ImmediateContext from '../immediateContext'
 import styles from './tracks.module.css'
+import { DEFAULT_CSS_TRANSITION } from '../constants'
 
 const SegmentType = PropTypes.shape({
   start: PropTypes.number,
@@ -13,21 +14,23 @@ const TrackType = PropTypes.shape({
   points: PropTypes.arrayOf(PropTypes.number),
 })
 
-const Segments = ({ segments, color, outerScale, y }) => {
+const Segments = ({ segments, color, outerScale, immediate, y }) => {
   return segments.map((segment, i) => (
     <div
       key={i}
       className={styles.segment}
       style={{
         backgroundColor: color,
-        left: outerScale(segment.start),
         top: y,
+        left: outerScale(segment.start),
         width: outerScale(segment.end) - outerScale(segment.start),
+        transition: immediate
+          ? 'none'
+          : `left ${DEFAULT_CSS_TRANSITION}, width ${DEFAULT_CSS_TRANSITION}`,
       }}
     />
   ))
 }
-
 Segments.propTypes = {
   segments: PropTypes.arrayOf(SegmentType).isRequired,
   color: PropTypes.string,
@@ -39,7 +42,7 @@ Segments.defaultProps = {
 }
 
 const POINT_SIZE = 5
-const Points = ({ points, color, outerScale, y }) => {
+const Points = ({ points, color, outerScale, immediate, y }) => {
   return points.map((point, i) => (
     <div
       key={i}
@@ -50,11 +53,11 @@ const Points = ({ points, color, outerScale, y }) => {
         top: y - POINT_SIZE / 2,
         width: POINT_SIZE,
         height: POINT_SIZE,
+        transition: immediate ? 'none' : `left ${DEFAULT_CSS_TRANSITION}`,
       }}
     />
   ))
 }
-
 Points.propTypes = {
   points: PropTypes.arrayOf(PropTypes.number).isRequired,
   color: PropTypes.string,
@@ -74,12 +77,14 @@ const Tracks = ({ tracks, outerScale, graphHeight }) => {
         segments={track.segments}
         color={track.color}
         outerScale={outerScale}
+        immediate={immediate}
         y={-10 + graphHeight / 2}
       />
       <Points
         points={track.points}
         color={track.color}
         outerScale={outerScale}
+        immediate={immediate}
         y={-10 + graphHeight / 2}
       />
     </div>
