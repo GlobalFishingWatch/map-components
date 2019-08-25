@@ -77,9 +77,9 @@ const getTrackMockForSubChart = memoize((trackMock) => {
   const timebarTrack = geoJSONTracksToTimebarTrack(trackMock)
   return [
     timebarTrack,
-    { ...timebarTrack, color: '#00ff00' },
-    { ...timebarTrack, color: '#00ffff' },
-    { ...timebarTrack, color: '#ffff00' }
+    // { ...timebarTrack, color: '#00ff00' },
+    // { ...timebarTrack, color: '#00ffff' },
+    // { ...timebarTrack, color: '#ffff00' }
   ]
 })
 

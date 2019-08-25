@@ -9,4 +9,5 @@
 
 .point {
   border-radius: 99px;
+  box-shadow: 0 0 0 1px var(--timebar-main-background-color);
 }
