@@ -53,20 +53,24 @@ trackMock.features
   .filter(feature => feature.properties.type === 'track')
   .forEach(feature => {
     const coordProps = feature.properties.coordinateProperties
+    const segment = []
     coordProps.times.forEach((time, i) => {
-      trackActivityMock.push({
+      segment.push({
         date: time,
         courses: coordProps.courses[i],
         speeds: coordProps.speeds[i]
       })
     })
+    trackActivityMock.push(segment)
   })
 
 const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
-  activity.map(item => ({
-    ...item,
-    value: item[currentSubChart]
-  }))
+  activity.map(segment =>
+    segment.map(item => ({
+      ...item,
+      value: item[currentSubChart]
+    })
+  ))
 )
 
 const getTrackMockForSubChart = memoize((trackMock) => {
@@ -80,9 +84,9 @@ const getTrackMockForSubChart = memoize((trackMock) => {
 })
 
 
-const initialStart = new Date(trackActivityMock[0].date).toISOString()
-const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1].date).toISOString()
-const absoluteStart = '2015-04-01T00:00:00.000Z'
+const initialStart = new Date(trackActivityMock[0][0].date).toISOString()
+const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1][0].date).toISOString()
+const absoluteStart = '2012-01-01T00:00:00.000Z'
 const absoluteEnd = '2019-08-31T00:00:00.000Z'
 
 class TimebarContainer extends Component {
@@ -242,7 +246,7 @@ class TimebarContainer extends Component {
                 />
               </>
             }
-            return <TimebarActivity key="activity" {...props} activity={activityMock} />
+            return <TimebarActivity key="activity" {...props} activity={[activityMock]} />
           }}
         </Timebar>
         {(currentChart === 'track') && (

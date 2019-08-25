@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import maxBy from 'lodash/maxBy'
+import max from 'lodash/max'
 import {
   area,
   curveStepAfter,
@@ -27,11 +28,14 @@ const CURVES = {
 }
 
 const getMaxValue = (activity) => {
-  const maxValueItem = maxBy(activity, (item) => item.value)
-  return maxValueItem.value
+  const maxValues = activity.map((segment) => {
+    return maxBy(segment, (item) => item.value).value
+  })
+  const maxValue = max(maxValues)
+  return maxValue
 }
 
-const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue, curve) => {
+const getPaths = (graphHeight, activity, absoluteEnd, overallScale, maxValue, curve) => {
   const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
   const middle = TOP_MARGIN + finalHeight / 2
 
@@ -41,14 +45,18 @@ const getPath = (graphHeight, activity, absoluteEnd, overallScale, maxValue, cur
     .y1((d) => middle + (finalHeight * d.value) / maxValue / 2)
     .curve(CURVES[curve])
 
-  // because data stops at last day midnight, add an extra day with the same data
-  // to allow the curve to go to the end of the day
-  const lastDay = activity[activity.length - 1]
-  const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
+  const paths = activity.map((segment, i) => {
+    // if (i === activity.length - 1) {
+    //   // because data stops at last day midnight, add an extra day with the same data
+    //   // to allow the curve to go to the end of the day
+    //   const lastDay = activity[activity.length - 1]
+    //   const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
+    //   return areaGenerator([...segment, addedLastDay])
+    // }
+    return areaGenerator(segment)
+  })
 
-  const path = areaGenerator([...activity, addedLastDay])
-
-  return path
+  return paths
 }
 
 const Activity = ({
@@ -66,8 +74,8 @@ const Activity = ({
 
   const maxValue = useMemo(() => getMaxValue(activity), [activity])
 
-  const path = useMemo(
-    () => getPath(graphHeight, activity, absoluteEnd, overallScale, maxValue, curve),
+  const paths = useMemo(
+    () => getPaths(graphHeight, activity, absoluteEnd, overallScale, maxValue, curve),
     [graphHeight, activity, absoluteEnd, overallScale, maxValue, curve]
   )
 
@@ -79,7 +87,9 @@ const Activity = ({
           transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
         }}
       >
-        <path d={path} fill={color} fillOpacity={opacity} />
+        {paths.map((path, i) => (
+          <path key={i} d={path} fill={color} fillOpacity={opacity} />
+        ))}
       </g>
     </svg>
   )
@@ -87,11 +97,13 @@ const Activity = ({
 
 Activity.propTypes = {
   activity: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      date: PropTypes.number,
-      value: PropTypes.number,
-    })
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        date: PropTypes.number,
+        value: PropTypes.number,
+      })
+    )
   ).isRequired,
   color: PropTypes.string,
   opacity: PropTypes.number,
