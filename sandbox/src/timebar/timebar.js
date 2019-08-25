@@ -20,39 +20,32 @@ import Timebar, {
 
 import './timebar.css'
 
-const geoJSONTracksToTimebarTracks = (geoJSONTracks) => {
-  const tracks = geoJSONTracks.map(geoJSONTrack => {
-    const segments = geoJSONTrack.features
-      .filter(feature => feature.properties.type === 'track')
-      .map(feature => {
-        const times = feature.properties.coordinateProperties.times
-        return {
-          start: times[0],
-          end: times[times.length - 1],
-        }
-      })
-    let points = []
-    geoJSONTrack.features
-      .filter(feature => feature.properties.type === 'fishing')
-      .forEach(feature => {
-        const times = feature.properties.coordinateProperties.times
-        points = [...points, ...times]
-      })
+const geoJSONTracksToTimebarTrack = (geoJSONTrack) => {
+  const segments = geoJSONTrack.features
+    .filter(feature => feature.properties.type === 'track')
+    .map(feature => {
+      const times = feature.properties.coordinateProperties.times
+      return {
+        start: times[0],
+        end: times[times.length - 1],
+      }
+    })
+  let points = []
+  geoJSONTrack.features
+    .filter(feature => feature.properties.type === 'fishing')
+    .forEach(feature => {
+      const times = feature.properties.coordinateProperties.times
+      points = [...points, ...times]
+    })
 
-    return {
-      segments,
-      points,
-    }
-  })
-  return tracks
+  return {
+    segments,
+    points,
+  }
 }
 
 
 const HOVER_DELTA = 10
-
-// const groupedVesselEvents = groupVesselEvents(vesselEventsMock)
-// console.log(groupedVesselEvents)
-// console.log(groupedVesselEvents.map(e => e.type))
 
 
 const trackActivityMock = []
@@ -76,7 +69,15 @@ const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
   }))
 )
 
-const getTrackMockForSubChart = memoize((trackMock) => geoJSONTracksToTimebarTracks([trackMock]))
+const getTrackMockForSubChart = memoize((trackMock) => {
+  const timebarTrack = geoJSONTracksToTimebarTrack(trackMock)
+  return [
+    timebarTrack,
+    { ...timebarTrack, color: '#00ff00' },
+    { ...timebarTrack, color: '#00ffff' },
+    { ...timebarTrack, color: '#ffff00' }
+  ]
+})
 
 
 const initialStart = new Date(trackActivityMock[0].date).toISOString()

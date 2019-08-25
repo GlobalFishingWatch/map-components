@@ -68,27 +68,35 @@ Points.defaultProps = {
   color: 'var(--timebar-track-default)',
 }
 
+const Y_TRACK_SPACE = 14
 const Tracks = ({ tracks, outerScale, graphHeight }) => {
   const { immediate } = useContext(ImmediateContext)
   if (tracks === null || tracks === undefined) return null
-  return tracks.map((track, i) => (
-    <div key={i}>
-      <Segments
-        segments={track.segments}
-        color={track.color}
-        outerScale={outerScale}
-        immediate={immediate}
-        y={-10 + graphHeight / 2}
-      />
-      <Points
-        points={track.points}
-        color={track.color}
-        outerScale={outerScale}
-        immediate={immediate}
-        y={-10 + graphHeight / 2}
-      />
-    </div>
-  ))
+
+  const totalHeightOffset = ((tracks.length - 1) * Y_TRACK_SPACE) / 2
+  const startY = -8 + graphHeight / 2
+
+  return tracks.map((track, i) => {
+    const y = startY + i * Y_TRACK_SPACE - totalHeightOffset
+    return (
+      <div key={i}>
+        <Segments
+          segments={track.segments}
+          color={track.color}
+          outerScale={outerScale}
+          immediate={immediate}
+          y={y}
+        />
+        <Points
+          points={track.points}
+          color={track.color}
+          outerScale={outerScale}
+          immediate={immediate}
+          y={y}
+        />
+      </div>
+    )
+  })
 }
 
 Tracks.propTypes = {
