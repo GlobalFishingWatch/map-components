@@ -1,0 +1,7 @@
+.highlighter {
+  position: absolute;
+  background-color: white;
+
+  /* opacity: 1; */
+  mix-blend-mode: difference;
+}

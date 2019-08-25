@@ -15,6 +15,7 @@ import Timebar, {
   TimebarEvents,
   TimebarVesselEvents,
   TimebarTracks,
+  TimebarHighlighter,
   getHumanizedDates,
 } from '@globalfishingwatch/map-components/src/timebar'
 
@@ -45,7 +46,7 @@ const geoJSONTracksToTimebarTrack = (geoJSONTrack) => {
 }
 
 
-const HOVER_DELTA = 10
+const HOVER_DELTA = 8
 
 
 const trackActivityMock = []
@@ -112,9 +113,11 @@ class TimebarContainer extends Component {
   }
 
   onMouseMove = (clientX, scale) => {
+    const hoverMiddle = scale(clientX)
     const hoverStart = scale(clientX - HOVER_DELTA)
     const hoverEnd = scale(clientX + HOVER_DELTA)
     this.setState({
+      hoverMiddle,
       hoverStart,
       hoverEnd,
     })
@@ -146,6 +149,7 @@ class TimebarContainer extends Component {
       currentSubChart,
       highlightedEventIDs,
       hoverStart,
+      hoverMiddle,
       hoverEnd,
     } = this.state
 
@@ -243,6 +247,12 @@ class TimebarContainer extends Component {
                   tracks={trackMockForSubchart}
                   outerScale={outerScale}
                   graphHeight={graphHeight}
+                />
+                <TimebarHighlighter
+                  graphHeight={graphHeight}
+                  outerScale={outerScale}
+                  hoverStart={hoverStart}
+                  hoverEnd={hoverEnd}
                 />
               </>
             }
