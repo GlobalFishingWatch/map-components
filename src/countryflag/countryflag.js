@@ -35,7 +35,7 @@ CountryFlag.propTypes = {
   size: PropTypes.string,
   margin: PropTypes.shape({
     left: PropTypes.string,
-    righ: PropTypes.string,
+    right: PropTypes.string,
   }),
 }
 
