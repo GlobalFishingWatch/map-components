@@ -78,9 +78,9 @@ const getTrackMockForSubChart = memoize((trackMock) => {
   const timebarTrack = geoJSONTracksToTimebarTrack(trackMock)
   return [
     timebarTrack,
-    // { ...timebarTrack, color: '#00ff00' },
-    // { ...timebarTrack, color: '#00ffff' },
-    // { ...timebarTrack, color: '#ffff00' }
+    { ...timebarTrack, color: '#00ff00' },
+    { ...timebarTrack, color: '#00ffff' },
+    { ...timebarTrack, color: '#ffff00' }
   ]
 })
 
@@ -113,11 +113,9 @@ class TimebarContainer extends Component {
   }
 
   onMouseMove = (clientX, scale) => {
-    const hoverMiddle = scale(clientX)
-    const hoverStart = scale(clientX - HOVER_DELTA)
-    const hoverEnd = scale(clientX + HOVER_DELTA)
+    const hoverStart = scale(clientX - HOVER_DELTA).toISOString()
+    const hoverEnd = scale(clientX + HOVER_DELTA).toISOString()
     this.setState({
-      hoverMiddle,
       hoverStart,
       hoverEnd,
     })
@@ -149,7 +147,6 @@ class TimebarContainer extends Component {
       currentSubChart,
       highlightedEventIDs,
       hoverStart,
-      hoverMiddle,
       hoverEnd,
     } = this.state
 
@@ -170,6 +167,7 @@ class TimebarContainer extends Component {
               <option value="events">Events</option>
               <option value="vesselEvents">Vessel events</option>
               <option value="track">Track</option>
+              <option value="tracks">Tracks</option>
             </select>
           </div>
           <button
@@ -187,8 +185,8 @@ class TimebarContainer extends Component {
           </button>
 
           <div className="dates">{`${humanizedStart} - ${humanizedEnd} (${interval} days)`}</div>
-          <div className="dates">hover start: {hoverStart && hoverStart.toString()}</div>
-          <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
+          <div className="dates">hover start: {new Date(hoverStart).toString()}</div>
+          <div className="dates">hover end: {new Date(hoverEnd).toString()}</div>
         </div>
         <Timebar
           enablePlayback
@@ -214,6 +212,7 @@ class TimebarContainer extends Component {
           // ]
           (props) => {
             const { outerScale, graphHeight } = props
+
             if (currentChart === 'events') {
               return (
                 <TimebarEvents key="events" {...props} events={eventsMock} showFishing={false} />
@@ -244,17 +243,27 @@ class TimebarContainer extends Component {
                 />
                 <TimebarTracks
                   key="tracks"
-                  tracks={trackMockForSubchart}
+                  tracks={[trackMockForSubchart[0]]}
                   outerScale={outerScale}
                   graphHeight={graphHeight}
                 />
                 <TimebarHighlighter
-                  graphHeight={graphHeight}
-                  outerScale={outerScale}
+                  graphHeight={props.graphHeight}
+                  outerScale={props.outerScale}
+                  tooltipContainer={props.tooltipContainer}
                   hoverStart={hoverStart}
                   hoverEnd={hoverEnd}
+                  activity={activityMockForSubchart}
                 />
               </>
+            }
+            if (currentChart === 'tracks') {
+              return <TimebarTracks
+                key="tracks"
+                tracks={trackMockForSubchart}
+                outerScale={props.outerScale}
+                graphHeight={graphHeight}
+            />
             }
             return <TimebarActivity key="activity" {...props} activity={[activityMock]} />
           }}

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { DEFAULT_DATE_FORMAT, DEFAULT_FULL_DATE_FORMAT } from './constants'
 
 export const getTime = (dateISO) => new Date(dateISO).getTime()
 
@@ -46,7 +47,7 @@ export const stickToClosestUnit = (date, unit) => {
 }
 
 export const getHumanizedDates = (start, end) => {
-  const format = isMoreThanADay(start, end) ? 'MMM D YYYY' : 'MMM D YYYY HH[h]'
+  const format = isMoreThanADay(start, end) ? DEFAULT_DATE_FORMAT : DEFAULT_FULL_DATE_FORMAT
   const mStart = dayjs(start)
   const mEnd = dayjs(end)
   const humanizedStart = mStart.format(format)
