@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
-import { DEFAULT_FULL_DATE_FORMAT } from '../constants'
+import { getDefaultFormat } from '../utils'
 import styles from './highlighter.module.css'
 
 const getCoords = (hoverStart, hoverEnd, outerScale) => {
@@ -10,27 +10,65 @@ const getCoords = (hoverStart, hoverEnd, outerScale) => {
   const hoverEndDate = new Date(hoverEnd)
   const left = outerScale(hoverStartDate)
   const width = outerScale(hoverEndDate) - left
-  const middleDate = new Date(
+  const centerDate = new Date(
     Math.round(hoverStartDate.getTime() + (hoverEndDate.getTime() - hoverStartDate.getTime()) / 2)
   )
-  const dateLabel = dayjs(middleDate).format(DEFAULT_FULL_DATE_FORMAT)
-  const center = outerScale(middleDate)
+  const format = getDefaultFormat(hoverStart, hoverEnd)
+  const centerDateLabel = dayjs(centerDate).format(format)
+  const center = outerScale(centerDate)
   return {
     left,
     center,
     width,
-    dateLabel,
+    centerDate,
+    centerDateLabel,
   }
 }
 
-const Highlighter = ({ outerScale, graphHeight, hoverStart, hoverEnd, tooltipContainer }) => {
-  const { width, left, center, dateLabel } = useMemo(
+const getValueAtCenter = (activity, centerDate) => {
+  const centerTime = centerDate.getTime()
+  for (let s = 0; s < activity.length; s++) {
+    const segment = activity[s]
+    const segmentLength = segment.length
+    const segmentStart = segment[0].date
+    const segmentEnd = segment[segmentLength - 1].date
+    if (centerDate > segmentStart && centerDate < segmentEnd) {
+      for (let i = 0; i < segmentLength; i++) {
+        const point = segment[i]
+        const nextPoint = segment[i + 1]
+        const time = point.date
+        const nextTime = nextPoint ? nextPoint.date : Number.POSITIVE_INFINITY
+        if (centerTime > time && centerTime <= nextTime) {
+          return point.value
+        }
+      }
+    }
+  }
+  return null
+}
+
+const Highlighter = ({
+  hoverStart,
+  hoverEnd,
+  activity,
+  unit,
+  outerScale,
+  graphHeight,
+  tooltipContainer,
+}) => {
+  const { width, left, center, centerDate, centerDateLabel } = useMemo(
     () => getCoords(hoverStart, hoverEnd, outerScale),
     [hoverStart, hoverEnd, outerScale]
   )
+  const valueAtCenter = useMemo(() => getValueAtCenter(activity, centerDate), [
+    activity,
+    centerDate,
+  ])
   if (hoverStart === null || hoverEnd === null) {
     return null
   }
+
+  const valueLabel = valueAtCenter !== null ? `${valueAtCenter} ${unit}` : null
 
   return (
     <>
@@ -51,8 +89,8 @@ const Highlighter = ({ outerScale, graphHeight, hoverStart, hoverEnd, tooltipCon
             }}
           >
             <div className={styles.tooltip}>
-              <span className={styles.tooltipDate}>{dateLabel}</span>
-              <span className={styles.tooltipValue}>42 knots</span>
+              <span className={styles.tooltipDate}>{centerDateLabel}</span>
+              <span className={styles.tooltipValue}>{valueLabel}</span>
             </div>
           </div>,
           tooltipContainer
@@ -74,6 +112,7 @@ Highlighter.propTypes = {
       })
     )
   ).isRequired,
+  unit: PropTypes.string,
   tooltipContainer: PropTypes.instanceOf(Element),
 }
 
@@ -81,6 +120,7 @@ Highlighter.defaultProps = {
   hoverStart: null,
   hoverEnd: null,
   tooltipContainer: null,
+  unit: '',
 }
 
 export default Highlighter

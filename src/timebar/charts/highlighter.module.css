@@ -1,6 +1,7 @@
 .highlighter,
 .tooltipContainer {
   position: absolute;
+  pointer-events: none;
 }
 
 .highlighter {

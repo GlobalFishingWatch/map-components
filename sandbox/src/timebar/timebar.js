@@ -113,6 +113,13 @@ class TimebarContainer extends Component {
   }
 
   onMouseMove = (clientX, scale) => {
+    if (clientX === null) {
+      this.setState({
+        hoverStart: null,
+        hoverEnd: null,
+      })
+      return
+    }
     const hoverStart = scale(clientX - HOVER_DELTA).toISOString()
     const hoverEnd = scale(clientX + HOVER_DELTA).toISOString()
     this.setState({
@@ -254,6 +261,7 @@ class TimebarContainer extends Component {
                   hoverStart={hoverStart}
                   hoverEnd={hoverEnd}
                   activity={activityMockForSubchart}
+                  unit={(currentSubChart === 'courses' ? 'degrees' : 'knots')}
                 />
               </>
             }

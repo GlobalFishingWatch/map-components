@@ -183,6 +183,10 @@ class Timeline extends PureComponent {
     this.props.onMouseMove(clientX, scale, isDay)
   }, 16)
 
+  notifyMouseLeave = () => {
+    this.throttledMouseMove(null, null, null)
+  }
+
   onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange, onMouseLeave } = this.props
     const { dragging, outerX, innerStartPx, innerEndPx } = this.state
@@ -199,6 +203,7 @@ class Timeline extends PureComponent {
     } else if (this.isMovingInside === true) {
       this.isMovingInside = false
       onMouseLeave()
+      this.notifyMouseLeave()
     }
     if (dragging === DRAG_INNER) {
       const currentDeltaMs = getDeltaMs(start, end)
