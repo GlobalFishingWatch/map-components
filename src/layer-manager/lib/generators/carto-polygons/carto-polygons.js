@@ -44,14 +44,19 @@ class CartoPolygonsGenerator {
       }
 
       const promise = async () => {
-        const { layergroupid } = await getCartoLayergroupId({
-          id,
-          baseUrl: layer.baseUrl || this.baseUrl,
-          ...layerData.source,
-        })
-        const tiles = [`${CARTO_FISHING_MAP_API}/${layergroupid}/{z}/{x}/{y}.mvt`]
-        this.tilesCacheByid[id] = tiles
-        return this.getStyle(layer)
+        try {
+          const { layergroupid } = await getCartoLayergroupId({
+            id,
+            baseUrl: layer.baseUrl || this.baseUrl,
+            ...layerData.source,
+          })
+          const tiles = [`${CARTO_FISHING_MAP_API}/${layergroupid}/{z}/{x}/{y}.mvt`]
+          this.tilesCacheByid[id] = tiles
+          return this.getStyle(layer)
+        } catch (e) {
+          console.warn(e)
+          return response
+        }
       }
       return { ...response, promise: promise() }
     } catch (e) {
@@ -70,13 +75,14 @@ class CartoPolygonsGenerator {
         visibility: layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible',
       }
       let paint = {}
+      const hasSelectedFeatures =
+        layer.selectedFeatures !== undefined &&
+        layer.selectedFeatures.values &&
+        layer.selectedFeatures.values.length
+      // TODO: make this dynamic
       if (glLayer.type === 'fill') {
         paint['fill-opacity'] = layer.opacity !== undefined ? layer.opacity : 1
         const fillColor = layer.fillColor || 'rgba(0,0,0,0)'
-        const hasSelectedFeatures =
-          layer.selectedFeatures !== undefined &&
-          layer.selectedFeatures.values &&
-          layer.selectedFeatures.values.length
 
         if (hasSelectedFeatures) {
           const { field = 'id', values, fill = {} } = layer.selectedFeatures
@@ -88,6 +94,29 @@ class CartoPolygonsGenerator {
         } else {
           paint[`fill-color`] = fillColor
           paint[`fill-outline-color`] = layer.color
+        }
+      } else if (glLayer.type === 'circle') {
+        const circleColor = layer.color || '#99eeff'
+        const circleStrokeColor = layer.strokeColor || 'hsla(190, 100%, 45%, 0.5)'
+        const circleStrokeWidth = layer.strokeWidth || 2
+        const circleRadius = layer.radius || 5
+        paint['circle-color'] = circleColor
+        paint['circle-stroke-width'] = circleStrokeWidth
+        paint['circle-radius'] = circleRadius
+        paint['circle-stroke-color'] = circleStrokeColor
+        if (hasSelectedFeatures) {
+          const { field = 'id', values, fallback = {} } = layer.selectedFeatures
+          const {
+            color = 'rgba(50, 139, 169, 0.3)',
+            radius = 4,
+            strokeColor = 'rgba(0,0,0,0)',
+            strokeWidth = 0,
+          } = fallback
+          const matchFilter = ['match', ['get', field], values]
+          paint[`circle-color`] = [...matchFilter, circleColor, color]
+          paint['circle-radius'] = [...matchFilter, circleRadius, radius]
+          paint['circle-stroke-color'] = [...matchFilter, circleStrokeColor, strokeColor]
+          paint['circle-stroke-width'] = [...matchFilter, circleStrokeWidth, strokeWidth]
         }
       }
 

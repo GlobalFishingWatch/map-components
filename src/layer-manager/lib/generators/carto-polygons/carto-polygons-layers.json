@@ -13,6 +13,20 @@
         }
      ]
   },
+  "cp_ports": {
+     "source": {
+        "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id, rfmos FROM carrier_portal_ports_tuna_rfmos",
+        "type": "vector"
+     },
+     "layers": [
+        {
+           "id": "cp_ports",
+           "type": "circle",
+           "source": "cp_ports",
+           "source-layer": "cp_ports"
+        }
+     ]
+  },
   "mpant": {
      "source": {
         "sql": "select * FROM wdpa_no_take_mpas",
