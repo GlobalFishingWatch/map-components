@@ -145,6 +145,8 @@ class Playback extends Component {
 
   render() {
     const { playing, loop, speedStep } = this.state
+    const { end, absoluteEnd } = this.props
+    const stoppedAtEnd = end === absoluteEnd && loop !== true
 
     return (
       <div
@@ -174,6 +176,7 @@ class Playback extends Component {
           type="button"
           title={`${playing === true ? 'Pause' : 'Play'} animation`}
           onClick={this.onPlayToggleClick}
+          disabled={stoppedAtEnd}
           className={cx(uiStyles.uiButton, styles.buttonBigger, styles.play)}
         >
           {playing === true ? <IconPause /> : <IconPlay />}
