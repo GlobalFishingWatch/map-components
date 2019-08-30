@@ -100,12 +100,13 @@ class Playback extends Component {
 
     const playingNext = force === undefined ? !playing : force
 
+    this.lastUpdateMs = null
+
     if (playingNext) {
       this.context.toggleImmediate(true)
       this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
     } else {
       this.context.toggleImmediate(false)
-      this.lastUpdateMs = null
       window.cancelAnimationFrame(this.requestAnimationFrame)
     }
 
