@@ -85,7 +85,8 @@ const getTrackMockForSubChart = memoize((trackMock) => {
 })
 
 
-const initialStart = new Date(trackActivityMock[0][0].date).toISOString()
+// const initialStart = new Date(trackActivityMock[0][0].date).toISOString()
+const initialStart = '2012-01-01T00:00:00.000Z'
 const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1][0].date).toISOString()
 const absoluteStart = '2012-01-01T00:00:00.000Z'
 const absoluteEnd = '2019-08-31T00:00:00.000Z'
