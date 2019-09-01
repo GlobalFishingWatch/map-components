@@ -18,32 +18,9 @@ import Timebar, {
   TimebarHighlighter,
   getHumanizedDates,
 } from '@globalfishingwatch/map-components/src/timebar'
+import { geoJSONTrackToTimebarTrack } from '@globalfishingwatch/map-components/src/timebar/utils'
 
 import './timebar.css'
-
-const geoJSONTracksToTimebarTrack = (geoJSONTrack) => {
-  const segments = geoJSONTrack.features
-    .filter(feature => feature.properties.type === 'track')
-    .map(feature => {
-      const times = feature.properties.coordinateProperties.times
-      return {
-        start: times[0],
-        end: times[times.length - 1],
-      }
-    })
-  let points = []
-  geoJSONTrack.features
-    .filter(feature => feature.properties.type === 'fishing')
-    .forEach(feature => {
-      const times = feature.properties.coordinateProperties.times
-      points = [...points, ...times]
-    })
-
-  return {
-    segments,
-    points,
-  }
-}
 
 
 const HOVER_DELTA = 8
@@ -75,7 +52,7 @@ const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
 )
 
 const getTrackMockForSubChart = memoize((trackMock) => {
-  const timebarTrack = geoJSONTracksToTimebarTrack(trackMock)
+  const timebarTrack = geoJSONTrackToTimebarTrack(trackMock)
   return [
     timebarTrack,
     { ...timebarTrack, color: '#00ff00' },

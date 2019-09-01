@@ -57,3 +57,27 @@ export const getHumanizedDates = (start, end) => {
   const interval = mEnd.diff(mStart, 'day')
   return { humanizedStart, humanizedEnd, interval }
 }
+
+export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
+  const segments = geoJSONTrack.features
+    .filter((feature) => feature.properties.type === 'track')
+    .map((feature) => {
+      const times = feature.properties.coordinateProperties.times
+      return {
+        start: times[0],
+        end: times[times.length - 1],
+      }
+    })
+  let points = []
+  geoJSONTrack.features
+    .filter((feature) => feature.properties.type === 'fishing')
+    .forEach((feature) => {
+      const times = feature.properties.coordinateProperties.times
+      points = [...points, ...times]
+    })
+
+  return {
+    segments,
+    points,
+  }
+}
