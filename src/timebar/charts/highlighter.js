@@ -26,6 +26,7 @@ const getCoords = (hoverStart, hoverEnd, outerScale) => {
 }
 
 const getValueAtCenter = (activity, centerDate) => {
+  if (activity === null) return null
   const centerTime = centerDate.getTime()
   for (let s = 0; s < activity.length; s++) {
     const segment = activity[s]
@@ -111,7 +112,7 @@ Highlighter.propTypes = {
         value: PropTypes.number,
       })
     )
-  ).isRequired,
+  ),
   unit: PropTypes.string,
   tooltipContainer: PropTypes.instanceOf(Element),
 }
@@ -119,6 +120,7 @@ Highlighter.propTypes = {
 Highlighter.defaultProps = {
   hoverStart: null,
   hoverEnd: null,
+  activity: null,
   tooltipContainer: null,
   unit: '',
 }
