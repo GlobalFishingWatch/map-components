@@ -1,6 +1,6 @@
 export const BACKGROUND_TYPE = 'BACKGROUND'
 
-class BasemapGenerator {
+class BackgroundGenerator {
   type = BACKGROUND_TYPE
 
   _getStyleLayers = (layer) => [
@@ -25,4 +25,4 @@ class BasemapGenerator {
   }
 }
 
-export default BasemapGenerator
+export default BackgroundGenerator
