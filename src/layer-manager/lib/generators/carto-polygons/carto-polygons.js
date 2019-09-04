@@ -97,6 +97,7 @@ class CartoPolygonsGenerator {
         }
       } else if (glLayer.type === 'circle') {
         const circleColor = layer.color || '#99eeff'
+        const circleOpacity = layer.opacity || 1
         const circleStrokeColor = layer.strokeColor || 'hsla(190, 100%, 45%, 0.5)'
         const circleStrokeWidth = layer.strokeWidth || 2
         const circleRadius = layer.radius || 5
@@ -108,13 +109,13 @@ class CartoPolygonsGenerator {
           const { field = 'id', values, fallback = {} } = layer.selectedFeatures
           const {
             color = 'rgba(50, 139, 169, 0.3)',
-            radius = 4,
+            opacity = 1,
             strokeColor = 'rgba(0,0,0,0)',
             strokeWidth = 0,
           } = fallback
           const matchFilter = ['match', ['get', field], values]
           paint[`circle-color`] = [...matchFilter, circleColor, color]
-          paint['circle-radius'] = [...matchFilter, circleRadius, radius]
+          paint['circle-opacity'] = [...matchFilter, circleOpacity, opacity]
           paint['circle-stroke-color'] = [...matchFilter, circleStrokeColor, strokeColor]
           paint['circle-stroke-width'] = [...matchFilter, circleStrokeWidth, strokeWidth]
         }
