@@ -18,7 +18,7 @@ import Timebar, {
   TimebarHighlighter,
   getHumanizedDates,
 } from '@globalfishingwatch/map-components/src/timebar'
-import { geoJSONTrackToTimebarTrack } from '@globalfishingwatch/map-components/src/timebar/utils'
+import { geoJSONTrackToTimebarTrack, geoJSONTrackToTimebarFeatureSegments } from '@globalfishingwatch/map-components/src/timebar/utils'
 
 import './timebar.css'
 
@@ -26,21 +26,7 @@ import './timebar.css'
 const HOVER_DELTA = 8
 
 
-const trackActivityMock = []
-trackMock.features
-  .filter(feature => feature.properties.type === 'track')
-  .forEach(feature => {
-    const coordProps = feature.properties.coordinateProperties
-    const segment = []
-    coordProps.times.forEach((time, i) => {
-      segment.push({
-        date: time,
-        courses: coordProps.courses[i],
-        speeds: coordProps.speeds[i]
-      })
-    })
-    trackActivityMock.push(segment)
-  })
+const trackActivityMock = geoJSONTrackToTimebarFeatureSegments(trackMock)
 
 const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
   activity.map(segment =>
