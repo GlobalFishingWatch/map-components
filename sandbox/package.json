@@ -30,6 +30,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "react-router-dom": "^5.0.1"
   }
 }
