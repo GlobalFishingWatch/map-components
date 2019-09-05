@@ -67,12 +67,13 @@ class CartoPolygonsGenerator {
 
   _getStyleLayers = (layer) => {
     const isSourceReady = this.tilesCacheByid[layer.id] !== undefined
-    if (!isSourceReady) return []
 
     const layerData = layersDirectory[layer.id] || layer
     return layerData.layers.map((glLayer) => {
+      const visibility =
+        layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible'
       const layout = {
-        visibility: layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible',
+        visibility: isSourceReady ? visibility : 'none',
       }
       let paint = {}
       const hasSelectedFeatures =
