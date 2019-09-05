@@ -15,7 +15,7 @@
   },
   "cp_ports": {
      "source": {
-        "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id, id, rfmos FROM carrier_portal_ports_tuna_rfmos",
+        "sql": "SELECT the_geom, the_geom_webmercator, port_id, id, iso, label, rfmos FROM carrier_portal_ports_tuna_rfmos",
         "type": "vector"
      },
      "layers": [
