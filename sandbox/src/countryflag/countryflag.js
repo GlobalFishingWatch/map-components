@@ -6,7 +6,7 @@ class CountryFlagPage extends Component {
   render() {
     return (
       <div>
-        <CountryFlag iso="es" />
+        <CountryFlag iso="null" />
         <CountryFlag iso="fr" />
         <CountryFlag iso="ki" />
         <CountryFlag iso="es" svg />

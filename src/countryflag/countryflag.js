@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import countryflag from 'countryflag'
 
 class CountryFlag extends PureComponent {
+  componentDidCatch(error, info) {
+    console.error(error, info)
+  }
+
   render() {
     // iso2 is deprecated, ignoring prop-types
     // eslint-disable-next-line react/prop-types
@@ -14,7 +18,14 @@ class CountryFlag extends PureComponent {
     if (iso2) {
       console.warn('iso2 parameter is deprecated, use iso instead')
     }
-    const flag = countryflag(iso || iso2)
+    let flag = null
+    try {
+      flag = countryflag(iso || iso2)
+    } catch (e) {
+      console.warn('Country flag error, incorrect iso code for:', iso || iso2)
+    }
+    if (!flag) return null
+
     return svg === true || flag.emoji === null ? (
       <img
         style={{ height: size, marginRight: margin.right, marginLeft: margin.left }}
