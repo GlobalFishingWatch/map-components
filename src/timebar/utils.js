@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { DEFAULT_DATE_FORMAT, DEFAULT_FULL_DATE_FORMAT } from './constants'
 
 export const getTime = (dateISO) => new Date(dateISO).getTime()
 
@@ -34,6 +35,8 @@ export const clampToAbsoluteBoundaries = (
 export const getDeltaMs = (start, end) => getTime(end) - getTime(start)
 export const getDeltaDays = (start, end) => getDeltaMs(start, end) / 1000 / 60 / 60 / 24
 export const isMoreThanADay = (start, end) => getDeltaDays(start, end) >= 1
+export const getDefaultFormat = (start, end) =>
+  isMoreThanADay(start, end) ? DEFAULT_DATE_FORMAT : DEFAULT_FULL_DATE_FORMAT
 
 export const stickToClosestUnit = (date, unit) => {
   const mDate = dayjs(date)
@@ -46,11 +49,57 @@ export const stickToClosestUnit = (date, unit) => {
 }
 
 export const getHumanizedDates = (start, end) => {
-  const format = isMoreThanADay(start, end) ? 'MMM D YYYY' : 'MMM D YYYY HH[h]'
+  const format = getDefaultFormat(start, end)
   const mStart = dayjs(start)
   const mEnd = dayjs(end)
   const humanizedStart = mStart.format(format)
   const humanizedEnd = mEnd.format(format)
   const interval = mEnd.diff(mStart, 'day')
   return { humanizedStart, humanizedEnd, interval }
+}
+
+export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
+  const segments = geoJSONTrack.features
+    .filter((feature) => feature.properties.type === 'track')
+    .map((feature) => {
+      const times = feature.properties.coordinateProperties.times
+      return {
+        start: times[0],
+        end: times[times.length - 1],
+      }
+    })
+  let points = []
+  geoJSONTrack.features
+    .filter((feature) => feature.properties.type === 'fishing')
+    .forEach((feature) => {
+      const times = feature.properties.coordinateProperties.times
+      points = [...points, ...times]
+    })
+
+  return {
+    segments,
+    points,
+  }
+}
+
+export const geoJSONTrackToTimebarFeatureSegments = (geoJSONTrack) => {
+  const graph = []
+  geoJSONTrack.features
+    .filter((feature) => feature.properties.type === 'track')
+    .forEach((feature) => {
+      const coordProps = feature.properties.coordinateProperties
+      const featureKeys = Object.keys(coordProps)
+      const segment = []
+      coordProps.times.forEach((time, i) => {
+        const point = {
+          date: time,
+        }
+        featureKeys.forEach((key) => {
+          point[key] = coordProps[key][i]
+        })
+        segment.push(point)
+      })
+      graph.push(segment)
+    })
+  return graph
 }

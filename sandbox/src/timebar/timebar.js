@@ -1,30 +1,57 @@
 import React, { Component } from 'react'
+import memoize from 'memoize-one'
 import dayjs from 'dayjs'
+
+// mocks
 import activityMock from './mocks/activity'
+import trackMock from './mocks/trackWithFishingSpeedAndCourse'
 import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
-// import groupVesselEvents from './mocks/groupVesselEvents'
 
+// timebar
 import Timebar, {
   TimebarActivity,
   TimebarEvents,
   TimebarVesselEvents,
-  getHumanizedDates
+  TimebarTracks,
+  TimebarHighlighter,
+  getHumanizedDates,
 } from '@globalfishingwatch/map-components/src/timebar'
+import { geoJSONTrackToTimebarTrack, geoJSONTrackToTimebarFeatureSegments } from '@globalfishingwatch/map-components/src/timebar/utils'
 
 import './timebar.css'
 
-const HOVER_DELTA = 10
 
-// const groupedVesselEvents = groupVesselEvents(vesselEventsMock)
-// console.log(groupedVesselEvents)
-// console.log(groupedVesselEvents.map(e => e.type))
+const HOVER_DELTA = 8
 
-const initialStart = '2018-04-01T00:00:00.000Z'
-const initialEnd = '2019-03-31T00:00:00.000Z'
 
-const absoluteStart = new Date(activityMock[0].date).toISOString()
-const absoluteEnd = new Date(activityMock[activityMock.length-1].date).toISOString()
+const trackActivityMock = geoJSONTrackToTimebarFeatureSegments(trackMock)
+
+const getTrackActivityMockForSubChart = memoize((activity, currentSubChart) =>
+  activity.map(segment =>
+    segment.map(item => ({
+      ...item,
+      value: item[currentSubChart]
+    })
+  ))
+)
+
+const getTrackMockForSubChart = memoize((trackMock) => {
+  const timebarTrack = geoJSONTrackToTimebarTrack(trackMock)
+  return [
+    timebarTrack,
+    { ...timebarTrack, color: '#00ff00' },
+    { ...timebarTrack, color: '#00ffff' },
+    { ...timebarTrack, color: '#ffff00' }
+  ]
+})
+
+// uncomment to use with dataset start date
+// const initialStart = new Date(trackActivityMock[0][0].date).toISOString()
+const initialStart = '2012-01-01T00:00:00.000Z'
+const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1][0].date).toISOString()
+const absoluteStart = '2012-01-01T00:00:00.000Z'
+const absoluteEnd = '2019-08-31T00:00:00.000Z'
 
 class TimebarContainer extends Component {
   state = {
@@ -32,7 +59,8 @@ class TimebarContainer extends Component {
     end: initialEnd,
     bookmarkStart: null,
     bookmarkEnd: null,
-    currentChart: 'activity',
+    currentChart: 'track',
+    currentSubChart: 'courses',
     highlightedEventIDs: null,
   }
 
@@ -48,8 +76,15 @@ class TimebarContainer extends Component {
   }
 
   onMouseMove = (clientX, scale) => {
-    const hoverStart = scale(clientX - HOVER_DELTA)
-    const hoverEnd = scale(clientX + HOVER_DELTA)
+    if (clientX === null) {
+      this.setState({
+        hoverStart: null,
+        hoverEnd: null,
+      })
+      return
+    }
+    const hoverStart = scale(clientX - HOVER_DELTA).toISOString()
+    const hoverEnd = scale(clientX + HOVER_DELTA).toISOString()
     this.setState({
       hoverStart,
       hoverEnd,
@@ -79,10 +114,15 @@ class TimebarContainer extends Component {
       humanizedEnd,
       interval,
       currentChart,
+      currentSubChart,
       highlightedEventIDs,
       hoverStart,
       hoverEnd,
     } = this.state
+
+    const activityMockForSubchart = getTrackActivityMockForSubChart(trackActivityMock, currentSubChart)
+    const trackMockForSubchart = getTrackMockForSubChart(trackMock)
+
     return (
       <div className="mainContainer">
         <div className="tools">
@@ -96,6 +136,8 @@ class TimebarContainer extends Component {
               <option value="activity">Activity</option>
               <option value="events">Events</option>
               <option value="vesselEvents">Vessel events</option>
+              <option value="track">Track</option>
+              <option value="tracks">Tracks</option>
             </select>
           </div>
           <button
@@ -113,8 +155,8 @@ class TimebarContainer extends Component {
           </button>
 
           <div className="dates">{`${humanizedStart} - ${humanizedEnd} (${interval} days)`}</div>
-          <div className="dates">hover start: {hoverStart && hoverStart.toString()}</div>
-          <div className="dates">hover end: {hoverStart && hoverEnd.toString()}</div>
+          <div className="dates">hover start: {new Date(hoverStart).toString()}</div>
+          <div className="dates">hover end: {new Date(hoverEnd).toString()}</div>
         </div>
         <Timebar
           enablePlayback
@@ -124,21 +166,19 @@ class TimebarContainer extends Component {
           absoluteEnd={absoluteEnd}
           bookmarkStart={bookmarkStart}
           bookmarkEnd={bookmarkEnd}
-          // enablePlayback
           onChange={this.update}
           onMouseMove={this.onMouseMove}
           onBookmarkChange={this.updateBookmark}
+          // uncomment to enable extra options
+          // enablePlayback
           // minimumRange={1}
           // minimumRangeUnit="day"
           // maximumRange={6}
           // maximumRangeUnit="month"
         >
-          {// props => [
-          //   // <Tracks key="tracks" {...props}  tracks={tracks} />,
-          //   // <Activity key="activity" {...props} activity={activity} />,
-          //   <Events key="events" {...props} events={eventsMock} />
-          // ]
-          (props) => {
+          {(props) => {
+            const { outerScale, graphHeight } = props
+
             if (currentChart === 'events') {
               return (
                 <TimebarEvents key="events" {...props} events={eventsMock} showFishing={false} />
@@ -157,9 +197,55 @@ class TimebarContainer extends Component {
                 />
               )
             }
-            return <TimebarActivity key="activity" {...props} activity={activityMock} />
+            if (currentChart === 'track') {
+              return <>
+                <TimebarActivity
+                  {...props}
+                  key="trackActivity"
+                  color="#fe81eb"
+                  opacity={.4}
+                  curve="curveBasis"
+                  activity={activityMockForSubchart}
+                />
+                <TimebarTracks
+                  key="tracks"
+                  tracks={[trackMockForSubchart[0]]}
+                  outerScale={outerScale}
+                  graphHeight={graphHeight}
+                />
+                <TimebarHighlighter
+                  graphHeight={props.graphHeight}
+                  outerScale={props.outerScale}
+                  tooltipContainer={props.tooltipContainer}
+                  hoverStart={hoverStart}
+                  hoverEnd={hoverEnd}
+                  activity={activityMockForSubchart}
+                  unit={(currentSubChart === 'courses' ? 'degrees' : 'knots')}
+                />
+              </>
+            }
+            if (currentChart === 'tracks') {
+              return <TimebarTracks
+                key="tracks"
+                tracks={trackMockForSubchart}
+                outerScale={props.outerScale}
+                graphHeight={graphHeight}
+            />
+            }
+            return <TimebarActivity key="activity" {...props} activity={[activityMock]} />
           }}
         </Timebar>
+        {(currentChart === 'track') && (
+          <select className="subChartSelector"
+            onChange={(event) => {
+              this.setState({ currentSubChart: event.target.value })
+            }}
+            value={currentSubChart}
+          >
+            <option value="courses">Course</option>
+            <option value="speeds">Speed</option>
+          </select>
+        )}
       </div>
     )
   }

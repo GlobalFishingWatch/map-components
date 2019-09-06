@@ -5,11 +5,20 @@ import ImmediateContext from '../immediateContext'
 import styles from './timeline-units.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
 import { getUnitsPositions } from '../layouts'
+import { clampToAbsoluteBoundaries, getDeltaMs } from '../utils'
 
 class TimelineUnits extends Component {
   static contextType = ImmediateContext
   zoomToUnit({ start, end }) {
-    this.props.onChange(start, end)
+    const { absoluteStart, absoluteEnd } = this.props
+    const { newStartClamped, newEndClamped } = clampToAbsoluteBoundaries(
+      start,
+      end,
+      getDeltaMs(start, end),
+      absoluteStart,
+      absoluteEnd
+    )
+    this.props.onChange(newStartClamped, newEndClamped)
   }
 
   render() {

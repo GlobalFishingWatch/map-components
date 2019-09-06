@@ -24,5 +24,3 @@ export const getTimebarRangeByWorkspace = (timeline) => {
     ? getTimebarRangeAuto(timeline.auto)
     : getTimebarRangeDefault(timeline)
 }
-
-export { getHumanizedDates } from '../utils'

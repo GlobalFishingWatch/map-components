@@ -1,5 +1,5 @@
-import tbbox from '@turf/bbox'
 import { targetMapVessel } from '../store'
+import { getTrackBounds, getTrackTimeBounds } from '..'
 
 import {
   getTilePromises,
@@ -13,42 +13,6 @@ import { startLoader, completeLoader } from '../module/module.actions'
 export const ADD_TRACK = 'ADD_TRACK'
 export const UPDATE_TRACK = 'UPDATE_TRACK'
 export const REMOVE_TRACK = 'REMOVE_TRACK'
-
-const getTrackDataParsed = (geojson) => {
-  const time = { start: Infinity, end: 0 }
-  if (geojson && geojson.features) {
-    geojson.features.forEach((feature) => {
-      const hasTimes =
-        feature.properties &&
-        feature.properties.coordinateProperties &&
-        feature.properties.coordinateProperties.times &&
-        feature.properties.coordinateProperties.times.length > 0
-      if (hasTimes) {
-        feature.properties.coordinateProperties.times.forEach((datetime) => {
-          if (datetime < time.start) {
-            time.start = datetime
-          } else if (datetime > time.end) {
-            time.end = datetime
-          }
-        })
-      }
-    })
-  }
-  return {
-    geojson,
-    timelineBounds: [time.start, time.end],
-  }
-}
-
-const getTrackBounds = (geojson) => {
-  const bounds = tbbox(geojson)
-  return {
-    minLat: bounds[3],
-    minLng: bounds[0],
-    maxLat: bounds[1],
-    maxLng: bounds[2],
-  }
-}
 
 // Deprecated tracks format parsing
 const getOldTrackBoundsFormat = (data, addOffset = false) => {
@@ -171,13 +135,13 @@ function loadTrack(track) {
           return res.json()
         })
         .then((data) => {
-          const { geojson, timelineBounds } = getTrackDataParsed(data)
+          const timelineBounds = getTrackTimeBounds(data)
           const geoBounds = getTrackBounds(data)
           dispatch({
             type: UPDATE_TRACK,
             payload: {
               id,
-              data: geojson,
+              data,
               geoBounds,
               timelineBounds,
             },

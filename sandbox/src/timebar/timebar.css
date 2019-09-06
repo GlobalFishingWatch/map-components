@@ -14,3 +14,10 @@
 .tools {
   margin-bottom: 100px;
 }
+
+.subChartSelector {
+  position: absolute;
+  bottom: 24px;
+  right: 60px;
+  z-index: 99;
+}
