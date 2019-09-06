@@ -5,11 +5,11 @@
   "dependencies": {
     "@globalfishingwatch/map-components": "link:..",
     "classnames": "^2.2.6",
-    "customize-cra": "^0.2.12",
-    "react-app-rewired": "^2.1.1",
-    "react-scripts": "2.1.3",
+    "customize-cra": "^0.5.0",
     "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "react-app-rewired": "^2.1.3",
+    "react-dom": "^16.9.0",
+    "react-scripts": "3.1.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -17,7 +17,8 @@
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject",
     "serve": "http-server ./build -p 8081",
-    "serve-workspace": "http-server ./ -p 3333 --cors"
+    "serve-workspace": "http-server ./ -p 3333 --cors",
+    "postinstall": "npm link ../node_modules/react"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -29,6 +30,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "react-router-dom": "^5.0.1"
   }
 }

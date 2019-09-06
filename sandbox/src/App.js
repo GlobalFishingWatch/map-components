@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, NavLink } from 'react-router-do
 import './App.css'
 
 import MapPage from './map/map'
+import LayerManagerPage from './layer-manager/layer-manager'
 import MapWorkspace from './map-workspace/map-workspace'
 import Miniglobe from './miniglobe/miniglobe'
 import Timebar from './timebar/timebar'
@@ -17,6 +18,7 @@ class App extends Component {
         <Fragment>
           <nav className="nav">
             <NavLink to="/miniglobe">Miniglobe</NavLink>
+            <NavLink to="/layer-manager">Layer Manager</NavLink>
             <NavLink to="/map">Map</NavLink>
             <NavLink to="/map-workspace">Map+workspace</NavLink>
             <NavLink to="/timebar">Timebar</NavLink>
@@ -25,6 +27,7 @@ class App extends Component {
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
+              <Route path="/layer-manager" component={LayerManagerPage} />
               <Route path="/map" component={MapPage} />
               <Route path="/map-workspace" component={MapWorkspace} />
               <Route path="/miniglobe" component={Miniglobe} />

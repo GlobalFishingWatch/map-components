@@ -45,6 +45,12 @@ export default {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
-    isProduction && terser(),
+    isProduction &&
+      terser({
+        // TODO: improve this as layer manager generators are crashing with:
+        // "Cannot call a class as a function" but can't find the reason why
+        // so this increases a 30kb the bundle sizes but at least it works
+        keep_fnames: true,
+      }),
   ],
 }
