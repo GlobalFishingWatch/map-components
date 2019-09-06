@@ -7,7 +7,6 @@ import activityMock from './mocks/activity'
 import trackMock from './mocks/trackWithFishingSpeedAndCourse'
 import eventsMock from './mocks/events'
 import vesselEventsMock from './mocks/vesselEvents'
-// import groupVesselEvents from './mocks/groupVesselEvents'
 
 // timebar
 import Timebar, {
@@ -47,7 +46,7 @@ const getTrackMockForSubChart = memoize((trackMock) => {
   ]
 })
 
-
+// uncomment to use with dataset start date
 // const initialStart = new Date(trackActivityMock[0][0].date).toISOString()
 const initialStart = '2012-01-01T00:00:00.000Z'
 const initialEnd = new Date(trackActivityMock[trackActivityMock.length-1][0].date).toISOString()
@@ -167,21 +166,17 @@ class TimebarContainer extends Component {
           absoluteEnd={absoluteEnd}
           bookmarkStart={bookmarkStart}
           bookmarkEnd={bookmarkEnd}
-          // enablePlayback
           onChange={this.update}
           onMouseMove={this.onMouseMove}
           onBookmarkChange={this.updateBookmark}
+          // uncomment to enable extra options
+          // enablePlayback
           // minimumRange={1}
           // minimumRangeUnit="day"
           // maximumRange={6}
           // maximumRangeUnit="month"
         >
-          {// props => [
-          //   // <Tracks key="tracks" {...props}  tracks={tracks} />,
-          //   // <Activity key="activity" {...props} activity={activity} />,
-          //   <Events key="events" {...props} events={eventsMock} />
-          // ]
-          (props) => {
+          {(props) => {
             const { outerScale, graphHeight } = props
 
             if (currentChart === 'events') {

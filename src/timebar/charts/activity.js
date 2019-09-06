@@ -11,7 +11,6 @@ import {
   curveCatmullRom,
   curveCardinal,
 } from 'd3-shape'
-import { getTime } from '../utils'
 import ImmediateContext from '../immediateContext'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
 
@@ -46,13 +45,6 @@ const getPaths = (graphHeight, activity, absoluteEnd, overallScale, maxValue, cu
     .curve(CURVES[curve])
 
   const paths = activity.map((segment, i) => {
-    // if (i === activity.length - 1) {
-    //   // because data stops at last day midnight, add an extra day with the same data
-    //   // to allow the curve to go to the end of the day
-    //   const lastDay = activity[activity.length - 1]
-    //   const addedLastDay = { date: getTime(absoluteEnd), value: lastDay.value }
-    //   return areaGenerator([...segment, addedLastDay])
-    // }
     return areaGenerator(segment)
   })
 

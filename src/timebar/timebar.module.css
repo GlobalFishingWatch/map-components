@@ -67,7 +67,7 @@
   position: relative;
 }
 
-@media only screen and (max-width: var(--timebar-compact-breakpoint)) {
+@media only screen and (max-width: 720px) {
   :root {
     --timebar-size: 6rem;
   }
