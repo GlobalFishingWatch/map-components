@@ -33,13 +33,12 @@ class CartoPolygonsGenerator {
     const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
     const response = {
-      sources: [{ id: layer.id, ...layerData.source }],
+      sources: [{ id: layer.id, ...layerData.source, tiles: [''] }],
     }
 
     try {
       if (this.tilesCacheByid[id] !== undefined) {
-        const tiles = this.tilesCacheByid[id]
-        response.sources = [{ id: layer.id, ...layerData.source, tiles }]
+        response.sources[0].tiles = this.tilesCacheByid[id]
         return response
       }
 
@@ -70,11 +69,11 @@ class CartoPolygonsGenerator {
 
     const layerData = layersDirectory[layer.id] || layer
     return layerData.layers.map((glLayer) => {
+      if (!isSourceReady) return glLayer
+
       const visibility =
         layer.visible !== undefined ? (layer.visible ? 'visible' : 'none') : 'visible'
-      const layout = {
-        visibility: isSourceReady ? visibility : 'none',
-      }
+      const layout = { visibility }
       let paint = {}
       const hasSelectedFeatures =
         layer.selectedFeatures !== undefined &&
