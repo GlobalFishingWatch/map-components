@@ -33,7 +33,7 @@ class CartoPolygonsGenerator {
     const { id } = layer
     const layerData = layersDirectory[layer.id] || layer
     const response = {
-      sources: [],
+      sources: [{ id: layer.id, ...layerData.source }],
     }
 
     try {
