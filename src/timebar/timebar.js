@@ -9,8 +9,8 @@ import {
   clampToAbsoluteBoundaries,
   getDeltaDays,
   isMoreThanADay,
-  getHumanizedDates,
-} from './utils'
+} from './utils/internal-utils'
+import { getHumanizedDates } from './utils'
 import './timebar-settings.module.css'
 import styles from './timebar.module.css'
 import TimeRangeSelector from './components/timerange-selector'

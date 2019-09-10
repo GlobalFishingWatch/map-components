@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { getDeltaDays } from '../utils'
 import ImmediateContext from '../immediateContext'
 import styles from './timeline-units.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
 import { getUnitsPositions } from '../layouts'
-import { clampToAbsoluteBoundaries, getDeltaMs } from '../utils'
+import { clampToAbsoluteBoundaries, getDeltaMs, getDeltaDays } from '../utils/internal-utils'
 
 class TimelineUnits extends Component {
   static contextType = ImmediateContext

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
-import { getDefaultFormat } from '../utils'
+import { getDefaultFormat } from '../utils/internal-utils'
 import styles from './highlighter.module.css'
 
 const getCoords = (hoverStart, hoverEnd, outerScale) => {

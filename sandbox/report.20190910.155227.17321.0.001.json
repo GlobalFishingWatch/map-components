@@ -1,0 +1,466 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20190910.155227.17321.0.001.json",
+    "dumpEventTime": "2019-09-10T15:52:27Z",
+    "dumpEventTimeStamp": "1568123547111",
+    "processId": 17321,
+    "cwd": "/Users/nerik/Work/gfw/map-components/sandbox",
+    "commandLine": [
+      "/Users/nerik/.nvm/versions/node/v12.9.0/bin/node",
+      "/Users/nerik/Work/gfw/map-components/sandbox/node_modules/react-app-rewired/scripts/start.js"
+    ],
+    "nodejsVersion": "v12.9.0",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "darwin",
+    "componentVersions": {
+      "node": "12.9.0",
+      "v8": "7.6.303.29-node.15",
+      "uv": "1.31.0",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.39.2",
+      "napi": "4",
+      "llhttp": "1.1.4",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1c",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019a",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v12.9.0/node-v12.9.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.9.0/node-v12.9.0.tar.gz"
+    },
+    "osName": "Darwin",
+    "osRelease": "18.7.0",
+    "osVersion": "Darwin Kernel Version 18.7.0: Tue Aug 20 16:57:14 PDT 2019; root:xnu-4903.271.2~2/RELEASE_X86_64",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i5-5287U CPU @ 2.90GHz",
+        "speed": 2900,
+        "user": 18079540,
+        "nice": 0,
+        "sys": 10796340,
+        "idle": 75667430,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5287U CPU @ 2.90GHz",
+        "speed": 2900,
+        "user": 5995560,
+        "nice": 0,
+        "sys": 3454370,
+        "idle": 95086560,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5287U CPU @ 2.90GHz",
+        "speed": 2900,
+        "user": 17499270,
+        "nice": 0,
+        "sys": 8636750,
+        "idle": 78400490,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5287U CPU @ 2.90GHz",
+        "speed": 2900,
+        "user": 5603640,
+        "nice": 0,
+        "sys": 3193370,
+        "idle": 95739480,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "fe80::1",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 1
+      },
+      {
+        "name": "en0",
+        "internal": false,
+        "mac": "ac:bc:32:8c:99:a1",
+        "address": "fe80::4cf:c407:fa39:1b2f",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 5
+      },
+      {
+        "name": "en0",
+        "internal": false,
+        "mac": "ac:bc:32:8c:99:a1",
+        "address": "192.168.1.155",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "awdl0",
+        "internal": false,
+        "mac": "d2:b4:95:41:72:99",
+        "address": "fe80::d0b4:95ff:fe41:7299",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 7
+      },
+      {
+        "name": "utun0",
+        "internal": false,
+        "mac": "00:00:00:00:00:00",
+        "address": "fe80::9a04:bda1:4f53:f807",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 11
+      }
+    ],
+    "host": "neriks-MacBook-Pro.local"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000100145bcc",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, v8::Local<v8::String>) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100078d1f",
+      "symbol": "node::OnFatalError(char const*, char const*) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x000000010016e297",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x000000010016e233",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f18a5",
+      "symbol": "v8::internal::Heap::FatalProcessOutOfMemory(char const*) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f2fcd",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002efd86",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002edcdc",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f93b4",
+      "symbol": "v8::internal::Heap::AllocateRawWithLightRetry(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f942f",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002c79d7",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001005e8207",
+      "symbol": "v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100927b99",
+      "symbol": "Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit [/Users/nerik/.nvm/versions/node/v12.9.0/bin/node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2162028544,
+    "totalCommittedMemory": 2158504328,
+    "usedMemory": 1834418248,
+    "availableMemory": 95203768,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 31744,
+        "capacity": 261832,
+        "used": 31432,
+        "available": 230400
+      },
+      "new_space": {
+        "memorySize": 33554432,
+        "committedMemory": 31719976,
+        "capacity": 16757248,
+        "used": 3077000,
+        "available": 13680248
+      },
+      "old_space": {
+        "memorySize": 2030153728,
+        "committedMemory": 2028979576,
+        "capacity": 1767706608,
+        "used": 1738957488,
+        "available": 28749120
+      },
+      "code_space": {
+        "memorySize": 2260992,
+        "committedMemory": 2023712,
+        "capacity": 1866656,
+        "used": 1866656,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 8392704,
+        "committedMemory": 8344776,
+        "capacity": 3311680,
+        "used": 3311680,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 86781952,
+        "committedMemory": 86781952,
+        "capacity": 86623432,
+        "used": 86623432,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 622592,
+        "committedMemory": 622592,
+        "capacity": 550560,
+        "used": 550560,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 16757248,
+        "used": 0,
+        "available": 16757248
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 160.607,
+    "kernelCpuSeconds": 48.0407,
+    "cpuConsumptionPercent": 103.291,
+    "maxRss": 2530490712064,
+    "pageFaults": {
+      "IORequired": 4,
+      "IONotRequired": 1780972
+    },
+    "fsActivity": {
+      "reads": 0,
+      "writes": 0
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "TERM_PROGRAM": "iTerm.app",
+    "NODE": "/Users/nerik/.nvm/versions/node/v12.9.0/bin/node",
+    "npm_config_version_git_tag": "true",
+    "NVM_CD_FLAGS": "-q",
+    "INIT_CWD": "/Users/nerik/Work/gfw/map-components/sandbox",
+    "SHELL": "/bin/zsh",
+    "TERM": "xterm-256color",
+    "TMPDIR": "/var/folders/89/9fcrm82d4kj86p9skwyjp0hw0000gn/T/",
+    "npm_config_init_license": "MIT",
+    "Apple_PubSub_Socket_Render": "/private/tmp/com.apple.launchd.gPiPINIJUi/Render",
+    "TERM_PROGRAM_VERSION": "3.1.6",
+    "TERM_SESSION_ID": "w0t1p3:07166D5D-0908-4FDA-9D89-B42A6B272E23",
+    "npm_config_registry": "https://registry.yarnpkg.com",
+    "npm_package_private": "true",
+    "npm_package_dependencies_react_dom": "^16.9.0",
+    "ZSH": "/Users/nerik/.oh-my-zsh",
+    "npm_package_readmeFilename": "README.md",
+    "npm_config_python": "/usr/bin/python",
+    "npm_package_description": "[CRA](https://github.com/facebook/create-react-app) used to test and develop gfw-map-components.",
+    "USER": "nerik",
+    "NVM_DIR": "/Users/nerik/.nvm",
+    "npm_package_eslintConfig_extends": "react-app",
+    "SSH_AUTH_SOCK": "/private/tmp/com.apple.launchd.iyhWTCztYz/Listeners",
+    "npm_package_dependencies_customize_cra": "^0.5.0",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0x0:0x0",
+    "npm_execpath": "/usr/local/Cellar/yarn/1.16.0/libexec/bin/yarn.js",
+    "PAGER": "less",
+    "npm_package_devDependencies_http_server": "^0.11.1",
+    "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+    "npm_package_scripts_postinstall": "npm link ../node_modules/react",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"start\"],\"original\":[\"start\"]}",
+    "PATH": "/var/folders/89/9fcrm82d4kj86p9skwyjp0hw0000gn/T/yarn--1568123344112-0.7914636630318888:/Users/nerik/Work/gfw/map-components/sandbox/node_modules/.bin:/Users/nerik/.config/yarn/link/node_modules/.bin:/Users/nerik/.nvm/versions/node/v12.9.0/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nerik/.nvm/versions/node/v12.9.0/lib/node_modules/npm/bin/node-gyp-bin:/Users/nerik/.nvm/versions/node/v12.9.0/bin/node_modules/npm/bin/node-gyp-bin:/Users/nerik/.nvm/versions/node/v12.9.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "_": "/Users/nerik/Work/gfw/map-components/sandbox/node_modules/.bin/react-app-rewired",
+    "PWD": "/Users/nerik/Work/gfw/map-components/sandbox",
+    "npm_lifecycle_event": "start",
+    "EDITOR": "nano",
+    "npm_package_name": "@globalfishingwatch/map-components-sandbox",
+    "npm_package_dependencies__globalfishingwatch_map_components": "link:..",
+    "ITERM_PROFILE": "Default",
+    "npm_config_version_commit_hooks": "true",
+    "npm_package_scripts_start": "react-app-rewired start",
+    "npm_package_scripts_build": "react-app-rewired build",
+    "XPC_FLAGS": "0x0",
+    "npm_config_bin_links": "true",
+    "npm_package_dependencies_classnames": "^2.2.6",
+    "npm_package_version": "0.1.0",
+    "XPC_SERVICE_NAME": "0",
+    "COLORFGBG": "15;0",
+    "HOME": "/Users/nerik",
+    "SHLVL": "2",
+    "npm_package_scripts_test": "react-app-rewired test --env=jsdom",
+    "npm_config_strict_ssl": "true",
+    "npm_config_save_prefix": "^",
+    "npm_package_scripts_serve": "http-server ./build -p 8081",
+    "npm_config_version_git_message": "v%s",
+    "npm_package_browserslist_3": "not op_mini all",
+    "npm_package_browserslist_2": "not ie <= 11",
+    "NPM_CONFIG_PYTHON": "/usr/bin/python",
+    "npm_package_browserslist_1": "not dead",
+    "npm_package_devDependencies_react_router_dom": "^5.0.1",
+    "ITERM_SESSION_ID": "w0t1p3:07166D5D-0908-4FDA-9D89-B42A6B272E23",
+    "npm_package_dependencies_react_scripts": "3.1.1",
+    "npm_package_browserslist_0": ">0.2%",
+    "YARN_WRAP_OUTPUT": "false",
+    "LOGNAME": "nerik",
+    "LESS": "-R",
+    "npm_lifecycle_script": "react-app-rewired start",
+    "PREFIX": "/usr/local",
+    "LC_CTYPE": "UTF-8",
+    "npm_package_dependencies_react": "^16.9.0",
+    "NVM_BIN": "/Users/nerik/.nvm/versions/node/v12.9.0/bin",
+    "npm_config_user_agent": "yarn/1.16.0 npm/? node/v12.9.0 darwin x64",
+    "npm_config_ignore_scripts": "",
+    "npm_config_version_git_sign": "",
+    "npm_config_ignore_optional": "",
+    "npm_config_init_version": "1.0.0",
+    "npm_package_scripts_eject": "react-scripts eject",
+    "npm_package_scripts_serve_workspace": "http-server ./ -p 3333 --cors",
+    "SECURITYSESSIONID": "186a7",
+    "npm_config_version_tag_prefix": "v",
+    "npm_package_dependencies_react_app_rewired": "^2.1.3",
+    "npm_node_execpath": "/Users/nerik/.nvm/versions/node/v12.9.0/bin/node",
+    "COLORTERM": "truecolor",
+    "NODE_ENV": "development",
+    "SKIP_PREFLIGHT_CHECK": "true",
+    "NODE_PATH": "",
+    "BABEL_ENV": "development"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 10240,
+      "hard": "unlimited"
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": 67104768
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 709,
+      "hard": 1064
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "/Users/nerik/.nvm/versions/node/v12.9.0/bin/node",
+    "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+    "/usr/lib/libSystem.B.dylib",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/usr/lib/libDiagnosticMessagesClient.dylib",
+    "/usr/lib/libicucore.A.dylib",
+    "/usr/lib/libz.1.dylib",
+    "/usr/lib/libc++abi.dylib",
+    "/usr/lib/system/libcache.dylib",
+    "/usr/lib/system/libcommonCrypto.dylib",
+    "/usr/lib/system/libcompiler_rt.dylib",
+    "/usr/lib/system/libcopyfile.dylib",
+    "/usr/lib/system/libcorecrypto.dylib",
+    "/usr/lib/system/libdispatch.dylib",
+    "/usr/lib/system/libdyld.dylib",
+    "/usr/lib/system/libkeymgr.dylib",
+    "/usr/lib/system/liblaunch.dylib",
+    "/usr/lib/system/libmacho.dylib",
+    "/usr/lib/system/libquarantine.dylib",
+    "/usr/lib/system/libremovefile.dylib",
+    "/usr/lib/system/libsystem_asl.dylib",
+    "/usr/lib/system/libsystem_blocks.dylib",
+    "/usr/lib/system/libsystem_c.dylib",
+    "/usr/lib/system/libsystem_configuration.dylib",
+    "/usr/lib/system/libsystem_coreservices.dylib",
+    "/usr/lib/system/libsystem_darwin.dylib",
+    "/usr/lib/system/libsystem_dnssd.dylib",
+    "/usr/lib/system/libsystem_info.dylib",
+    "/usr/lib/system/libsystem_m.dylib",
+    "/usr/lib/system/libsystem_malloc.dylib",
+    "/usr/lib/system/libsystem_networkextension.dylib",
+    "/usr/lib/system/libsystem_notify.dylib",
+    "/usr/lib/system/libsystem_sandbox.dylib",
+    "/usr/lib/system/libsystem_secinit.dylib",
+    "/usr/lib/system/libsystem_kernel.dylib",
+    "/usr/lib/system/libsystem_platform.dylib",
+    "/usr/lib/system/libsystem_pthread.dylib",
+    "/usr/lib/system/libsystem_symptoms.dylib",
+    "/usr/lib/system/libsystem_trace.dylib",
+    "/usr/lib/system/libunwind.dylib",
+    "/usr/lib/system/libxpc.dylib"
+  ]
+}

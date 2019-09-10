@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getTime } from '../utils'
+import { getTime } from '../utils/internal-utils'
 
 const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
   /* eslint key-spacing: 0, no-multi-spaces: 0 */
