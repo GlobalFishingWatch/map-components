@@ -78,10 +78,11 @@ const getCursor = createSelector(
     return internalCursor
   }
 )
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   viewport: state.map.viewport.viewport,
   maxZoom: state.map.viewport.maxZoom,
   minZoom: state.map.viewport.minZoom,
+  onLoad: state.map.module.onLoad,
   cursor: getCursor(state),
   token: state.map.module.token,
   mapStyle: getMapStyle(state),

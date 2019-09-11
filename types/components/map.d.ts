@@ -99,6 +99,7 @@ export interface MapModuleProps {
   clickPopup?: MapModuleClickPopup
   glyphsPath?: string
   onViewportChange?: (...args: any[]) => any
+  onLoad?: (...args: any[]) => any
   onLoadStart?: (...args: any[]) => any
   onLoadComplete?: (...args: any[]) => any
   onClick?: (...args: any[]) => any
