@@ -22,7 +22,7 @@
     "docz:dev": "docz dev",
     "docz:build": "docz build",
     "docz:deploy": "npm run docz:build && gh-pages -d .docz/dist",
-    "prepublish": "npm run build",
+    "prepublish": "yarn test && npm run build",
     "postpublish": "yarn docz:deploy",
     "debug-server": "./src/map/redux-debug-server.js",
     "test:watch": "jest test --env=jsdom --watch",
@@ -130,7 +130,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn test && lint-staged"
+      "pre-commit": "lint-staged"
     }
   },
   "files": [
