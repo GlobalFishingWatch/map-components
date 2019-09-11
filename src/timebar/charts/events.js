@@ -97,9 +97,9 @@ class Events extends Component {
       .curve(curveStepAfter)
     return (
       <svg width={outerWidth} height={graphHeight} className={styles.Events}>
-        {finalEvents.map((eventsForKey) => (
+        {finalEvents.map((eventsForKey, i) => (
           <path
-            key={eventsForKey.key}
+            key={eventsForKey.key + i}
             d={areaGenerator(eventsForKey)}
             className={styles[eventsForKey.key]}
           />

@@ -311,6 +311,10 @@ Callback that returns the following properties:
 }
 ```
 
+## `onLoad`
+
+Function. When map module has been loaded with the bounds as a param
+
 ## `onLoadStart`
 
 Function. TODO

@@ -46,17 +46,35 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    if (this._mapContainerRef !== null) {
-      this.loadObserver()
+    this.setBounds()
+  }
+
+  componentDidUpdate() {
+    this.setBounds()
+  }
+
+  onLoad = () => {
+    if (this.props.onLoad !== undefined) {
+      this.props.onLoad(this.getBounds())
     }
-    if (this.glMap && this.props.setBounds !== undefined) {
-      const { _ne, _sw } = this.glMap.getBounds()
-      this.props.setBounds({
-        north: _ne.lat,
-        south: _sw.lat,
-        west: _sw.lng,
-        east: _ne.lng,
-      })
+  }
+
+  setBounds = () => {
+    const bounds = this.getBounds()
+    if (bounds !== null && this.props.setBounds !== undefined) {
+      this.props.setBounds(bounds)
+    }
+  }
+
+  getBounds = () => {
+    if (!this.glMap) return null
+
+    const { _ne, _sw } = this.glMap.getBounds()
+    return {
+      north: _ne.lat,
+      south: _sw.lat,
+      west: _sw.lng,
+      east: _ne.lng,
     }
   }
 
@@ -178,6 +196,7 @@ class Map extends React.Component {
           ref={this.getRef}
           transformRequest={this.transformRequest}
           onTransitionEnd={transitionEnd}
+          onLoad={this.onLoad}
           onHover={this.onHover}
           onClick={this.onClick}
           getCursor={this.getCursor}
@@ -233,6 +252,7 @@ Map.propTypes = {
   setViewport: PropTypes.func.isRequired,
   setBounds: PropTypes.func,
   mapInteraction: PropTypes.func,
+  onLoad: PropTypes.func,
   onClosePopup: PropTypes.func,
   transitionEnd: PropTypes.func,
   cursor: PropTypes.string,
@@ -252,6 +272,7 @@ Map.defaultProps = {
   clickPopup: null,
   hoverPopup: null,
   mapInteraction: () => {},
+  onLoad: () => {},
   onClosePopup: () => {},
   transitionEnd: () => {},
   cursor: null,
