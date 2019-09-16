@@ -1,4 +1,4 @@
-export const GL_TYPE = 'GL_TYLES'
+export const GL_TYPE = 'GL_STYLES'
 
 class GlStyleGenerator {
   type = GL_TYPE

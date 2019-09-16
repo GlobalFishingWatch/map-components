@@ -21,11 +21,12 @@ export interface LayerManagerOptions {
 
 export interface LayerManagerLayer {
   id: string
-  type: 'BACKGROUND' | 'BASEMAP' | 'CARTO_POLYGONS' | string
+  type: 'BACKGROUND' | 'BASEMAP' | 'CARTO_POLYGONS' | 'GL_STYLES' | string
   data?: any
   visible?: boolean
   opacity?: number
   color?: string
+  attribution?: string
 }
 
 export interface LayerManagerComponent {

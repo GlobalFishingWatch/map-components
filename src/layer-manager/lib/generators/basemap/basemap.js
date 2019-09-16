@@ -6,9 +6,13 @@ class BasemapGenerator {
   type = BASEMAP_TYPE
 
   _getStyleSources = (layer) => {
-    const { id } = layer
-    const sourceData = layersDirectory[id] || layer
-    return [{ id, ...sourceData.source }] || []
+    const { id, attribution } = layer
+    const source = {
+      ...layer.source,
+      ...(layersDirectory[id] && layersDirectory[id].source),
+      ...(attribution && { attribution }),
+    }
+    return [{ id, ...source }]
   }
   _getStyleLayers = (layer) => {
     const layerData = layersDirectory[layer.id]
