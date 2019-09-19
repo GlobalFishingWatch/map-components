@@ -14,8 +14,6 @@ export const ACTIVITY_HIGHLIGHT_HUE = 312
 
 export const VESSELS_HEATMAP_DIMMING_ALPHA = 0.5
 
-export const TRACKS_DOTS_STYLE_ZOOM_THRESHOLD = 2
-
 export const MAX_SPRITES_PER_LAYER = 200000
 
 // interaction

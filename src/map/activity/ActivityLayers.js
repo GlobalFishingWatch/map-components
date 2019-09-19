@@ -19,7 +19,6 @@ import {
   VESSEL_CLICK_TOLERANCE_PX,
 } from '../config'
 import HeatmapLayer from '../heatmap/HeatmapLayer'
-import TracksLayer from '../tracks/TracksLayer'
 
 const shouldUseRadialGradientStyle = (zoom) => zoom < VESSELS_RADIAL_GRADIENT_STYLE_ZOOM_THRESHOLD
 
@@ -271,10 +270,8 @@ class ActivityLayers extends BaseControl {
       zoom,
       heatmapLayers,
       temporalExtentIndexes,
-      highlightTemporalExtentIndexes,
       highlightedVessels,
       highlightedClickedVessel,
-      tracks,
       leftWorldScaled,
       rightWorldScaled,
     } = this.props
@@ -288,7 +285,7 @@ class ActivityLayers extends BaseControl {
     if (highlightedVessels.isEmpty !== true) {
       this.toggleHeatmapDimming(true)
     }
-    if (highlightedVessels.isEmpty === true && tracks.length === 0) {
+    if (highlightedVessels.isEmpty === true) {
       this._startHeatmapFadein()
     }
     if (this.renderer && this.renderer.gl && this.renderer.gl.getError !== undefined) {
@@ -345,17 +342,6 @@ class ActivityLayers extends BaseControl {
                 viewportRight={rightWorldScaled}
               />
             )}
-            {this.stage !== undefined && (
-              <TracksLayer
-                tracks={tracks}
-                viewport={viewport}
-                zoom={zoom}
-                startIndex={startIndex}
-                endIndex={endIndex}
-                highlightTemporalExtentIndexes={highlightTemporalExtentIndexes}
-                rootStage={this.stage}
-              />
-            )}
           </Fragment>
         )}
       </div>
@@ -367,10 +353,8 @@ ActivityLayers.propTypes = {
   zoom: PropTypes.number,
   heatmapLayers: PropTypes.array,
   temporalExtentIndexes: PropTypes.array,
-  highlightTemporalExtentIndexes: PropTypes.array,
   highlightedVessels: PropTypes.object,
   highlightedClickedVessel: PropTypes.object,
-  tracks: PropTypes.array,
   queryHeatmapVessels: PropTypes.func,
   exportNativeViewport: PropTypes.func,
   leftWorldScaled: PropTypes.number,
