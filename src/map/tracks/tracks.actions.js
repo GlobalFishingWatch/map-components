@@ -126,10 +126,6 @@ function loadTrack(track) {
         const timelineBounds = getTrackTimeBounds(data)
         const geoBounds = getTrackBounds(data)
 
-        //const data = getTracksPlaybackData(vectorArray)
-
-        const geoJSON = convertLegacyTrackToGeoJSON(vectorArray)
-
         dispatch({
           type: UPDATE_TRACK,
           payload: {
