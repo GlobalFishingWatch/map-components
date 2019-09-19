@@ -1,3 +1,5 @@
+import tbbox from '@turf/bbox'
+import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
 import { getTrackBounds, getTrackTimeBounds } from '..'
 
@@ -123,6 +125,10 @@ function loadTrack(track) {
         const data = convertLegacyTrackToGeoJSON(rawTrackData)
         const timelineBounds = getTrackTimeBounds(data)
         const geoBounds = getTrackBounds(data)
+
+        //const data = getTracksPlaybackData(vectorArray)
+
+        const geoJSON = convertLegacyTrackToGeoJSON(vectorArray)
 
         dispatch({
           type: UPDATE_TRACK,
