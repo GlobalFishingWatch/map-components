@@ -2,12 +2,9 @@ import { createSelector } from 'reselect'
 import { getTemporalExtent, getHighlightTemporalExtent } from '../module/module.selectors'
 
 export const getTracksData = (state) => state.map.tracks.data
-export const getGeojsonTracks = createSelector(
-  getTracksData,
-  (tracks) => tracks.filter((t) => t.type === 'geojson')
-)
+
 export const getGeojsonTracksReady = createSelector(
-  getGeojsonTracks,
+  getTracksData,
   (tracks) => tracks.filter((t) => t.data !== undefined)
 )
 
@@ -74,6 +71,7 @@ const getFullTracksStyles = createSelector(
       start: temporalExtent[0].getTime(),
       end: temporalExtent[1].getTime(),
     }
+    console.log(tracks)
     const styles = tracks.reduce(
       (acc, track) => {
         if (!track.data) return acc
@@ -108,6 +106,7 @@ const getFullTracksStyles = createSelector(
             },
           ],
         }
+        console.log(style)
         return mergeStyles(acc, style)
       },
       { sources: {}, layers: [] }

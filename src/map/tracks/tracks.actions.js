@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
 import { getTrackBounds, getTrackTimeBounds } from '..'
 
@@ -65,6 +66,66 @@ const getOldTrackBoundsFormat = (data, addOffset = false) => {
   }
 }
 
+const convertLegacyTrackToGeoJSON = (vectorArrays) => {
+  const createFeature = (segId, type = 'track', geomType = 'LineString') => ({
+    type: 'Feature',
+    geometry: {
+      type: geomType,
+      coordinates: [],
+    },
+    properties: {
+      type,
+      segId,
+      coordinateProperties: {
+        times: [],
+      },
+    },
+  })
+
+  let currentLng
+  let currentSeries = vectorArrays.series[0]
+  let currentFeature = createFeature(currentSeries)
+  const fishingPoints = createFeature('fishing', 'fishing', 'MultiPoint')
+  const features = []
+  let lngOffset = 0
+
+  for (let index = 0, length = vectorArrays.latitude.length; index < length; index++) {
+    const series = vectorArrays.series[index]
+    const longitude = vectorArrays.longitude[index]
+    const latitude = vectorArrays.latitude[index]
+    const weight = vectorArrays.weight[index]
+
+    if (currentLng) {
+      if (longitude - currentLng < -180) {
+        lngOffset += 360
+      } else if (longitude - currentLng > 180) {
+        lngOffset -= 360
+      }
+    }
+
+    const ll = [longitude + lngOffset, latitude]
+    if (series !== currentSeries && index !== 0) {
+      features.push(cloneDeep(currentFeature))
+      currentFeature = createFeature(series)
+    }
+
+    currentFeature.geometry.coordinates.push(ll)
+    if (weight > 0) {
+      fishingPoints.geometry.coordinates.push(ll)
+    }
+    currentFeature.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
+
+    currentSeries = series
+    currentLng = longitude
+  }
+  features.push(fishingPoints)
+
+  return {
+    type: 'FeatureCollection',
+    features,
+  }
+}
+
 function loadTrack(track) {
   return (dispatch, getState) => {
     const { id, url, type, fitBoundsOnLoad, layerTemporalExtents, color, data } = track
@@ -117,11 +178,15 @@ function loadTrack(track) {
         const vectorArray = addTracksPointsRenderingData(rawTrackData)
         const bounds = getOldTrackBoundsFormat(rawTrackData)
 
+        //const data = getTracksPlaybackData(vectorArray)
+
+        const geoJSON = convertLegacyTrackToGeoJSON(vectorArray)
+
         dispatch({
           type: UPDATE_TRACK,
           payload: {
             id,
-            data: getTracksPlaybackData(vectorArray),
+            data: geoJSON,
             geoBounds: bounds.geo,
             timelineBounds: bounds.time,
           },
