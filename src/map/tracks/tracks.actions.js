@@ -1,67 +1,72 @@
+import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
 import { getTrackBounds, getTrackTimeBounds } from '..'
 
-import {
-  getTilePromises,
-  getCleanVectorArrays,
-  groupData,
-  addTracksPointsRenderingData,
-  getTracksPlaybackData,
-} from '../utils/heatmapTileData'
+import { getTilePromises, getCleanVectorArrays, groupData } from '../utils/heatmapTileData'
 import { startLoader, completeLoader } from '../module/module.actions'
 
 export const ADD_TRACK = 'ADD_TRACK'
 export const UPDATE_TRACK = 'UPDATE_TRACK'
 export const REMOVE_TRACK = 'REMOVE_TRACK'
 
-// Deprecated tracks format parsing
-const getOldTrackBoundsFormat = (data, addOffset = false) => {
-  const time = {
-    start: Infinity,
-    end: 0,
-  }
-  const geo = {
-    minLat: Infinity,
-    maxLat: -Infinity,
-    minLng: Infinity,
-    maxLng: -Infinity,
-  }
-  for (let i = 0, length = data.datetime.length; i < length; i++) {
-    const datetime = data.datetime[i]
-    if (datetime < time.start) {
-      time.start = datetime
-    } else if (datetime > time.end) {
-      time.end = datetime
-    }
+const convertLegacyTrackToGeoJSON = (vectorArrays) => {
+  const createFeature = (segId, type = 'track', geomType = 'LineString') => ({
+    type: 'Feature',
+    geometry: {
+      type: geomType,
+      coordinates: [],
+    },
+    properties: {
+      type,
+      segId,
+      coordinateProperties: {
+        times: [],
+      },
+    },
+  })
 
-    const lat = data.latitude[i]
-    if (lat < geo.minLat) {
-      geo.minLat = lat
-    } else if (lat > geo.maxLat) {
-      geo.maxLat = lat
-    }
+  let currentLng
+  let currentSeries = vectorArrays.series[0]
+  let currentFeature = createFeature(currentSeries)
+  const fishingPoints = createFeature('fishing', 'fishing', 'MultiPoint')
+  const features = []
+  let lngOffset = 0
 
-    let lng = data.longitude[i]
-    if (addOffset === true) {
-      if (lng < 0) {
-        lng += 360
+  for (let index = 0, length = vectorArrays.latitude.length; index < length; index++) {
+    const series = vectorArrays.series[index]
+    const longitude = vectorArrays.longitude[index]
+    const latitude = vectorArrays.latitude[index]
+    const weight = vectorArrays.weight[index]
+
+    if (currentLng) {
+      if (longitude - currentLng < -180) {
+        lngOffset += 360
+      } else if (longitude - currentLng > 180) {
+        lngOffset -= 360
       }
     }
-    if (lng < geo.minLng) {
-      geo.minLng = lng
-    } else if (lng > geo.maxLng) {
-      geo.maxLng = lng
-    }
-  }
 
-  // track crosses the antimeridian
-  if (geo.maxLng - geo.minLng > 350 && addOffset === false) {
-    return getOldTrackBoundsFormat(data, true)
+    const ll = [longitude + lngOffset, latitude]
+    if (series !== currentSeries && index !== 0) {
+      features.push(cloneDeep(currentFeature))
+      currentFeature = createFeature(series)
+    }
+
+    currentFeature.geometry.coordinates.push(ll)
+    if (weight > 0) {
+      fishingPoints.geometry.coordinates.push(ll)
+      fishingPoints.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
+    }
+    currentFeature.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
+
+    currentSeries = series
+    currentLng = longitude
   }
+  features.push(fishingPoints)
 
   return {
-    time: [time.start, time.end],
-    geo,
+    type: 'FeatureCollection',
+    features,
   }
 }
 
@@ -114,16 +119,17 @@ function loadTrack(track) {
           'sigma',
         ])
 
-        const vectorArray = addTracksPointsRenderingData(rawTrackData)
-        const bounds = getOldTrackBoundsFormat(rawTrackData)
+        const data = convertLegacyTrackToGeoJSON(rawTrackData)
+        const timelineBounds = getTrackTimeBounds(data)
+        const geoBounds = getTrackBounds(data)
 
         dispatch({
           type: UPDATE_TRACK,
           payload: {
             id,
-            data: getTracksPlaybackData(vectorArray),
-            geoBounds: bounds.geo,
-            timelineBounds: bounds.time,
+            data,
+            geoBounds,
+            timelineBounds,
           },
         })
         dispatch(completeLoader(loaderID))

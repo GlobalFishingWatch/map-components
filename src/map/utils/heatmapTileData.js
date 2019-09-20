@@ -205,51 +205,6 @@ export const getTilePlaybackData = (data, colsByName, tileCoordinates, prevPlayb
   return tilePlaybackData
 }
 
-export const addTracksPointsRenderingData = (data) => {
-  data.hasFishing = []
-  data.worldX = []
-  data.worldY = []
-
-  for (let index = 0, length = data.weight.length; index < length; index++) {
-    const [worldX, worldY] = lngLatToWorld([data.longitude[index], data.latitude[index]], 1)
-    data.worldX[index] = worldX
-    data.worldY[index] = worldY
-    data.hasFishing[index] = data.weight[index] > 0
-  }
-  return data
-}
-
-/**
- * A simplified version of getTilePlaybackData for tracks
- * Converts Vector Array data to Playback format (organized by days) and stores it locally
- * @param vectorArray the source data before indexing by day
- */
-export const getTracksPlaybackData = (vectorArray) => {
-  const playbackData = []
-
-  for (let index = 0, length = vectorArray.series.length; index < length; index++) {
-    const datetime = vectorArray.datetime[index]
-    const timeIndex = convert.getOffsetedTimeAtPrecision(datetime)
-
-    if (!playbackData[timeIndex]) {
-      const frame = {
-        worldX: [vectorArray.worldX[index]],
-        worldY: [vectorArray.worldY[index]],
-        series: [vectorArray.series[index]],
-        hasFishing: [vectorArray.hasFishing[index]],
-      }
-      playbackData[timeIndex] = frame
-      continue
-    }
-    const frame = playbackData[timeIndex]
-    frame.worldX.push(vectorArray.worldX[index])
-    frame.worldY.push(vectorArray.worldY[index])
-    frame.series.push(vectorArray.series[index])
-    frame.hasFishing.push(vectorArray.hasFishing[index])
-  }
-  return playbackData
-}
-
 export const vesselSatisfiesFilters = (frame, index, filterValues) => {
   const satisfiesFilters = Object.keys(filterValues).every((field) => {
     if (frame[field] === undefined) {
