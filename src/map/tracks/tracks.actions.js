@@ -1,4 +1,3 @@
-import tbbox from '@turf/bbox'
 import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
 import { getTrackBounds, getTrackTimeBounds } from '..'
