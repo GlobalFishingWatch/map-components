@@ -55,6 +55,7 @@ const convertLegacyTrackToGeoJSON = (vectorArrays) => {
     currentFeature.geometry.coordinates.push(ll)
     if (weight > 0) {
       fishingPoints.geometry.coordinates.push(ll)
+      fishingPoints.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
     }
     currentFeature.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
 

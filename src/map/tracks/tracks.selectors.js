@@ -71,7 +71,7 @@ const getFullTracksStyles = createSelector(
       start: temporalExtent[0].getTime(),
       end: temporalExtent[1].getTime(),
     }
-    console.log(tracks)
+
     const styles = tracks.reduce(
       (acc, track) => {
         if (!track.data) return acc
@@ -106,7 +106,7 @@ const getFullTracksStyles = createSelector(
             },
           ],
         }
-        console.log(style)
+
         return mergeStyles(acc, style)
       },
       { sources: {}, layers: [] }
