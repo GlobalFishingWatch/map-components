@@ -46,6 +46,9 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
+    if (this._mapContainerRef !== null) {
+      this.loadObserver()
+    }
     this.setBounds()
   }
 
