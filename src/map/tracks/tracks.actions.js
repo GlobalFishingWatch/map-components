@@ -1,6 +1,6 @@
-import tbbox from '@turf/bbox'
 import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
+import { getTrackBounds, getTrackTimeBounds } from '..'
 
 import { getTilePromises, getCleanVectorArrays, groupData } from '../utils/heatmapTileData'
 import { startLoader, completeLoader } from '../module/module.actions'
@@ -55,6 +55,7 @@ const convertLegacyTrackToGeoJSON = (vectorArrays) => {
     currentFeature.geometry.coordinates.push(ll)
     if (weight > 0) {
       fishingPoints.geometry.coordinates.push(ll)
+      fishingPoints.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
     }
     currentFeature.properties.coordinateProperties.times.push(vectorArrays.datetime[index])
 
@@ -140,13 +141,13 @@ function loadTrack(track) {
           return res.json()
         })
         .then((data) => {
-          const { geojson, timelineBounds } = getTrackDataParsed(data)
+          const timelineBounds = getTrackTimeBounds(data)
           const geoBounds = getTrackBounds(data)
           dispatch({
             type: UPDATE_TRACK,
             payload: {
               id,
-              data: geojson,
+              data,
               geoBounds,
               timelineBounds,
             },
