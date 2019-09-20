@@ -1,9 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
-import { getTrackBounds, getTrackTimeBounds } from '..'
 
 import { getTilePromises, getCleanVectorArrays, groupData } from '../utils/heatmapTileData'
 import { startLoader, completeLoader } from '../module/module.actions'
+import { getTrackBounds, getTrackTimeBounds } from '../utils/getTrackBounds'
 
 export const ADD_TRACK = 'ADD_TRACK'
 export const UPDATE_TRACK = 'UPDATE_TRACK'
