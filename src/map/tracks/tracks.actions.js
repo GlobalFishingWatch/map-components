@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep'
 import { targetMapVessel } from '../store'
 import { getTrackBounds, getTrackTimeBounds } from '..'
 
@@ -48,7 +47,7 @@ const convertLegacyTrackToGeoJSON = (vectorArrays) => {
 
     const ll = [longitude + lngOffset, latitude]
     if (series !== currentSeries && index !== 0) {
-      features.push(cloneDeep(currentFeature))
+      features.push(currentFeature)
       currentFeature = createFeature(series)
     }
 
@@ -62,6 +61,8 @@ const convertLegacyTrackToGeoJSON = (vectorArrays) => {
     currentSeries = series
     currentLng = longitude
   }
+
+  features.push(currentFeature)
   features.push(fishingPoints)
 
   return {
