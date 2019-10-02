@@ -62,6 +62,7 @@ const convertLegacyTrackToGeoJSON = (vectorArrays) => {
     currentLng = longitude
   }
 
+  features.push(currentFeature)
   features.push(fishingPoints)
 
   return {
