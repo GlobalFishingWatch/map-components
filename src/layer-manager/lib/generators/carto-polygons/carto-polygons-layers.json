@@ -16,7 +16,8 @@
   "mpant": {
      "source": {
         "sql": "select * FROM wdpa_no_take_mpas",
-        "type": "vector"
+        "type": "vector",
+        "attribution": "MPA: Protected Planet WDPA"
      },
      "layers": [
         {
