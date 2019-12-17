@@ -136,6 +136,7 @@
   },
   "files": [
     "components",
-    "types"
+    "types",
+    "src"
   ]
 }
