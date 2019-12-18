@@ -34,7 +34,7 @@
     .gfw-header-container .gfw-header .white-bg {
       position: absolute;
       left: 0;
-      right: 60px;
+      right: 0;
       bottom: 0;
       top: 0;
       pointer-events: none;
@@ -73,13 +73,14 @@
       position: absolute;
       cursor: pointer;
       opacity: 0;
-      z-index: 2;
+      z-index: 4;
       -webkit-touch-callout: none;
     }
 
     .gfw-header-container .gfw-header .nav-mobile-menu-icon {
       width: 3.2rem;
       height: 2.4rem;
+      z-index: 3;
     }
 
     .gfw-header-container .gfw-header .nav-mobile-menu-icon > span {
@@ -126,11 +127,14 @@
       left: 0;
       right: 0;
       min-width: 300px;
-      padding: var(--space-M);
+      padding: 0;
       transform-origin: 0% 0%;
       transform: translateY(calc(-100% - var(--header-height, 87px)));
       transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
       background-color: white;
+      height: calc(100vh - var(--header-height, 87px));
+      overflow: auto;
+      background-color: #f9f9f9;
     }
 
     .gfw-header-container .gfw-header .nav-list {
@@ -145,13 +149,15 @@
       flex-direction: column;
       align-items: flex-start;
       position: relative;
-      border-top: 3px solid transparent;
-      margin-right: var(--space-L, 40px);
-      margin-top: -3px;
+      border-top: 1px solid rgba(127, 178, 192, 0.2);
+      overflow: hidden;
     }
 
     .gfw-header-container .gfw-header .nav-list > li.highlight-btn {
       height: auto;
+      width: 100%;
+      text-align: center;
+      padding: var(--space-M);
     }
 
     .gfw-header-container .gfw-header .nav-list > li.highlight-btn:hover {
@@ -163,6 +169,9 @@
       color: var(--color-highlight, #ff6b6b);
       padding: var(--space-S) var(--space-M);
       transition: all 0.3s linear;
+      width: 100%;
+      display: block;
+      text-align: center;
     }
 
     .gfw-header-container .gfw-header .nav-list > li.highlight-btn a:hover {
@@ -173,18 +182,53 @@
 
     .gfw-header-container .gfw-header .nav-list > li > a {
       text-decoration: none;
-      padding: var(--space-M) 0;
       font-size: 14px;
       font-weight: 500;
+      padding: var(--space-M);
+    }
+
+    .gfw-header-container .gfw-header .nav-list > li a:hover {
+      color: var(--color-highlight, #ff6b6b);
+    }
+
+    .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu {
+      list-style: none;
+    }
+
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 10px;
+      padding: 0;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAGCAYAAAAVMmT4AAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAC6ADAAQAAAABAAAABgAAAABa5ryNAAAAxUlEQVQYGWOUcuoyYvjHxPXsQMkRBizAwaGB5cZ/rkAGLo4DTCCFf/7/zRJz7HFHVwtSeI2BM/8/I4Pbv1//mJg/P9j1iFvZ7TPDv38JfIpuX7882H0HpMnBYT9Q4csCRgZGDQY2prZXe4qfMMJME3Nqd2P4y5TAxPB/sQaj+e5rDKeBCv+rMzKwtb44UPgApA6uGMQRs+90BVKJQPyEkZFBkJHhH1Bh5QMgHwyYYQwQ/fXhnns8is4fGRmZNIEKu5EVguQB/I5E8Vh6z/0AAAAASUVORK5CYII=)
+        no-repeat center transparent;
+    }
+
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle:checked {
+      transform: rotate(180deg);
+    }
+
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle:focus
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle:hover {
+      border: none;
+    }
+
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle + .nav-list-sub-menu {
+      height: 0;
+      width: 100%;
+    }
+
+    .gfw-header-container .gfw-header .nav-list .accordion-toggle:checked + .nav-list-sub-menu {
+      height: auto;
     }
 
     .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu > li {
-      border-bottom: 1px solid rgba(225,225,225,0.5);
-      background-color: var(--color-brand-text, white);
-    }
-
-    .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu > li:hover {
-      background-color: #81bbc7;
+      border-top: 1px solid rgba(127, 178, 192, 0.2);
+      padding: 0 var(--space-M);
     }
 
     .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu > li > a {
@@ -192,20 +236,9 @@
       padding: var(--space-S);
       display: block;
       width: 100%;
-      min-width: 140px;
       text-decoration: none;
       font-size: 14px;
       line-height: 1.9;
-    }
-
-    .gfw-header-container .gfw-header .nav-list > li:hover {
-      border-color: var(--color-highlight);
-    }
-
-    .gfw-header-container .gfw-header .nav-list > li:hover .nav-list-sub-menu,
-    .gfw-header-container .gfw-header .nav-list > li:focus-within .nav-list-sub-menu {
-      height: auto;
-      border-color: var(--color-highlight);
     }
 
     .gfw-header-container .gfw-header .nav-mobile-menu-action:checked ~ .nav {
@@ -219,7 +252,8 @@
         background-color: transparent;
       }
 
-      .gfw-header-container .gfw-header .white-bg {
+      .gfw-header-container .gfw-header .white-bg,
+      .gfw-header-container .gfw-header .accordion-toggle {
         display: none;
       }
 
@@ -230,6 +264,7 @@
         top: 0;
         background-color: transparent;
         height: var(--header-height, 87px);
+        overflow: unset;
       }
 
       .gfw-header-container .gfw-header .nav-list {
@@ -241,14 +276,51 @@
         height: var(--header-height, 87px);
         flex-direction: row;
         align-items: center;
+        overflow: unset;
+        border-top: 3px solid transparent;
+        border-bottom: none;
+        padding: 0;
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li > a {
+        padding: 0;
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li:hover {
+        border-top: 3px solid var(--color-highlight);
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li:hover .nav-list-sub-menu,
+      .gfw-header-container .gfw-header .nav-list > li:focus-within .nav-list-sub-menu {
+        height: auto;
+        border-color: var(--color-highlight);
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li.highlight-btn {
+        width: auto;
+        padding: 0;
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li.highlight-btn a {
+        display: inline-block;
       }
 
       .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu {
         top: 84px;
+        min-width: 140px;
         position: absolute;
         height: 0;
         overflow: hidden;
         border-top: 3px solid transparent;
+        height: auto;
+      }
+      .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu > li {
+        border-bottom: 1px solid rgba(225,225,225,0.5);
+        background-color: var(--color-brand-text, white);
+      }
+
+      .gfw-header-container .gfw-header .nav-list > li .nav-list-sub-menu > li:hover {
+        background-color: #81bbc7;
       }
 
       .gfw-header-container .gfw-header .nav-mobile {
@@ -256,7 +328,7 @@
       }
     }
 
-    @media only screen and (min-width: 8600px) {
+    @media only screen and (min-width: 860px) {
       .gfw-header-container .gfw-header .nav-list > li {
         margin-right: var(--space-M);
       }
@@ -288,6 +360,7 @@
             <a href="https://globalfishingwatch.org/map-and-data/" aria-haspopup="true">
               Map &amp; data
             </a>
+            <input name="accordion-toggle-1" class="accordion-toggle" type="checkbox">
             <ul role="menu" class="nav-list-sub-menu">
               <li role="menuitem">
                 <a href="https://globalfishingwatch.org/our-map/" class="fusion-bar-highlight"><span>Our map</span></a>
@@ -313,6 +386,7 @@
             <a href="https://globalfishingwatch.org/research/" aria-haspopup="true">
               Research
             </a>
+            <input name="accordion-toggle-2" class="accordion-toggle" type="checkbox">
             <ul role="menu" class="nav-list-sub-menu">
               <li role="menuitem">
                 <a href="https://globalfishingwatch.org/research-partners/">
@@ -329,6 +403,7 @@
               <a href="https://globalfishingwatch.org/news/" class="fusion-bar-highlight" aria-haspopup="true">
                 News &amp; Blog
               </a>
+              <input name="accordion-toggle-3" class="accordion-toggle" type="checkbox">
               <ul role="menu" class="nav-list-sub-menu">
                 <li role="menuitem">
                   <a href="https://globalfishingwatch.org/news/press-centre/">
@@ -351,6 +426,7 @@
               <a href="https://globalfishingwatch.org/get-involved/" aria-haspopup="true">
                 Get involved
               </a>
+              <input name="accordion-toggle-4" class="accordion-toggle" type="checkbox">
               <ul role="menu" class="nav-list-sub-menu">
                 <li role="menuitem">
                   <a href="https://globalfishingwatch.org/transparency-makes-a-difference/">
@@ -373,7 +449,8 @@
             <li role="menuitem">
               <a href="https://globalfishingwatch.org/about-us/" aria-haspopup="true">
                 About us
-                </a>
+              </a>
+              <input name="accordion-toggle-5" class="accordion-toggle" type="checkbox">
               <ul role="menu" class="nav-list-sub-menu">
                 <li role="menuitem">
                   <a href="https://globalfishingwatch.org/programs/">
@@ -400,7 +477,7 @@
           <li role="menuitem" class="highlight-btn">
             <a href="https://globalfishingwatch.org/donate/" class="fusion-bar-highlight">
               Donate
-              </a>
+            </a>
           </li>
 
         </ul>
