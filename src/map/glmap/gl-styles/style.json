@@ -12,8 +12,6 @@
     },
     "gfw:basemap-layers": [
       { "id": "satellite", "label": "Satellite" },
-      { "id": "north-star", "label": "North Star" },
-      { "id": "labels", "isOption": true },
       { "id": "graticules", "isOption": true },
       { "id": "bathymetry", "isOption": true }
     ],
@@ -38,7 +36,9 @@
   "sources": {
     "satellite": {
       "tiles": [
-        "https://gtiles-dot-world-fishing-827.appspot.com/v1/tileset/sat/tile?x={x}&y={y}&z={z}"
+        "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+        "https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+        "https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
       ],
       "type": "raster",
       "tileSize": 256,
