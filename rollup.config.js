@@ -1,5 +1,6 @@
 import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
+import html from 'rollup-plugin-html'
 import external from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
@@ -30,6 +31,7 @@ export default {
   plugins: [
     json(),
     svgr(),
+    html({ include: '**/*.html' }),
     external(),
     multiInput(),
     postcss({

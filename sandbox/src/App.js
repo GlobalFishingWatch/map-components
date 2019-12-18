@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { BrowserRouter as Router, Route, Switch, NavLink } from 'react-router-dom'
 import './App.css'
 
+import HeaderPage from './header/header'
 import MapPage from './map/map'
 import LayerManagerPage from './layer-manager/layer-manager'
 import MapWorkspace from './map-workspace/map-workspace'
@@ -17,6 +18,7 @@ class App extends Component {
       <Router className="app">
         <Fragment>
           <nav className="nav">
+            <NavLink to="/header">Header</NavLink>
             <NavLink to="/miniglobe">Miniglobe</NavLink>
             <NavLink to="/layer-manager">Layer Manager</NavLink>
             <NavLink to="/map">Map</NavLink>
@@ -27,6 +29,7 @@ class App extends Component {
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
+              <Route path="/header" component={HeaderPage} />
               <Route path="/layer-manager" component={LayerManagerPage} />
               <Route path="/map" component={MapPage} />
               <Route path="/map-workspace" component={MapWorkspace} />
