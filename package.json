@@ -26,6 +26,7 @@
     "postpublish": "yarn docz:deploy",
     "debug-server": "./src/map/redux-debug-server.js",
     "test:watch": "jest test --env=jsdom --watch",
+    "test:watch:generators": "jest src/layer-manager/test/generators --watch",
     "test": "jest test --env=jsdom"
   },
   "dependencies": {
