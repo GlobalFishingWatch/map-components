@@ -1,7 +1,9 @@
-const DEFAULT_FAST_TILES_API = 'https://fst-tiles-jzzp2ui3wq-uc.a.run.app/v1/'
-const BASE_WORKER_URL = 'http://__heatmap__/{z}/{x}/{y}'
+import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
+
+const DEFAULT_FAST_TILES_API = 'https://fst-tiles-jzzp2ui3wq-uc.a.run.app/v1/'
+const BASE_WORKER_URL = 'http://__heatmap__/{z}/{x}/{y}'
 
 export const GEOM_TYPES = {
   BLOB: 'blob',
@@ -9,8 +11,20 @@ export const GEOM_TYPES = {
   EXTRUDED: 'extruded',
 }
 
+export const GEOM_TYPES_GL_TYPES = {
+  [GEOM_TYPES.BLOB]: 'heatmap',
+  [GEOM_TYPES.GRIDDED]: 'fill',
+  [GEOM_TYPES.EXTRUDED]: 'fill-extrusion',
+}
+
 export const COLOR_RAMPS = {
-  FISHING: [
+  FISHING: 'fishing',
+  PRESENCE: 'presence',
+  RECEPTION: 'reception',
+}
+
+const COLOR_RAMPS_RAMPS = {
+  [COLOR_RAMPS.FISHING]: [
     'interpolate',
     ['linear'],
     'dummy',
@@ -25,7 +39,7 @@ export const COLOR_RAMPS = {
     1,
     '#ffffff',
   ],
-  PRESENCE: [
+  [COLOR_RAMPS.PRESENCE]: [
     'interpolate',
     ['linear'],
     'dummy',
@@ -40,7 +54,7 @@ export const COLOR_RAMPS = {
     1,
     '#ffffff',
   ],
-  RECEPTION: [
+  [COLOR_RAMPS.RECEPTION]: [
     'interpolate',
     ['linear'],
     'dummy',
@@ -57,7 +71,10 @@ export const COLOR_RAMPS = {
   ],
 }
 
-const getDelta = (start, end, unit) => {
+// TODO this can yield different deltas depending even when start and end stays equally further apart:
+//  improve logic or throttle
+// TODO should work also with hours
+const getDelta = (start, end) => {
   const startTimestampMs = new Date(start).getTime()
   const endTimestampMs = new Date(end).getTime()
   const startTimestampDays = Math.floor(startTimestampMs / 1000 / 60 / 60 / 24)
@@ -88,11 +105,41 @@ class HeatmapGenerator {
     ]
   }
 
-  _getStyleLayers = (layer) => [
-    // {
-    //   id: layer.id,
-    // },
-  ]
+  _getStyleLayers = (layer) => {
+    const paint = { ...paintByGeomType[layer.geomType] }
+    const originalColorRamp = COLOR_RAMPS_RAMPS[layer.colorRamp]
+    const colorRamp = [...COLOR_RAMPS_RAMPS[layer.colorRamp]]
+
+    const colorRampMult = layer.colorRampMult || 1
+
+    // TODO actually pick correct offset, not '0'
+    colorRamp[2] = ['to-number', ['get', '0']]
+    colorRamp[5] = colorRampMult * originalColorRamp[5]
+    colorRamp[7] = colorRampMult * originalColorRamp[7]
+    colorRamp[9] = colorRampMult * originalColorRamp[9]
+    colorRamp[11] = colorRampMult * originalColorRamp[11]
+
+    switch (layer.geomType) {
+      case GEOM_TYPES.GRIDDED:
+        paint['fill-color'] = colorRamp
+        break
+      default:
+        break
+    }
+
+    return [
+      {
+        id: layer.id,
+        source: layer.id,
+        'source-layer': layer.tileset,
+        type: GEOM_TYPES_GL_TYPES[layer.geomType],
+        layout: {
+          visibility: layer.visible ? 'visible' : 'none',
+        },
+        paint,
+      },
+    ]
+  }
 
   getStyle = (layer) => {
     return {
