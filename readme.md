@@ -44,6 +44,15 @@ yarn link "@globalfishingwatch/map-components"
 yarn start
 ```
 
+### React hooks error
+
+This is due to mismatching `react(-dom)` versions between `map-components` and the parent project when using `yarn link`. Run from the `map-components` directory:
+
+```
+npm link ../carrier-portal/node_modules/react
+npm link ../carrier-portal/node_modules/react-dom
+```
+
 ## Documentation
 
 [Docz](https://www.docz.site/) is used to include live components documentation using mdx.

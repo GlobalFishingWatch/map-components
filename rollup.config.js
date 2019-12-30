@@ -21,38 +21,50 @@ const distFolder = pkg.main.split('/')[0]
 const isProduction = process.env.NODE_ENV === 'production'
 const bundleVisualizer = process.env.BUNDLE_VISUALIZER === 'true' && !isProduction
 
-export default {
-  input: ['./src/**/index.js'],
-  output: {
-    dir: distFolder,
-    format: 'esm',
-    sourcemap: !isProduction,
+export default [
+  {
+    input: './src/fast-tiles-worker/index.js',
+    output: {
+      file: './workers-dist/fast-tiles-worker.js',
+      format: 'iife',
+      sourcemap: !isProduction,
+      name: 'FastTilesWorker',
+    },
+    plugins: [resolve(), commonjs()],
   },
-  plugins: [
-    json(),
-    svgr(),
-    html({ include: '**/*.html' }),
-    external(),
-    multiInput(),
-    postcss({
-      modules: true,
-      plugins: [autoprefixer()],
-    }),
-    url(),
-    babel({ exclude: 'node_modules/**' }),
-    resolve(),
-    commonjs({ include: 'node_modules/**' }),
-    replace({
-      'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    }),
-    bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
-    isProduction &&
-      terser({
-        // TODO: improve this as layer manager generators are crashing with:
-        // "Cannot call a class as a function" but can't find the reason why
-        // so this increases a 30kb the bundle sizes but at least it works
-        keep_fnames: true,
+  {
+    input: ['./src/**/index.js'],
+    output: {
+      dir: distFolder,
+      format: 'esm',
+      sourcemap: !isProduction,
+    },
+    plugins: [
+      json(),
+      svgr(),
+      html({ include: '**/*.html' }),
+      external(),
+      multiInput(),
+      postcss({
+        modules: true,
+        plugins: [autoprefixer()],
       }),
-  ],
-}
+      url(),
+      babel({ exclude: 'node_modules/**' }),
+      resolve(),
+      commonjs({ include: 'node_modules/**' }),
+      replace({
+        'process.env.MAP_REDUX_REMOTE_DEBUG': process.env.MAP_REDUX_REMOTE_DEBUG === 'true',
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      }),
+      bundleVisualizer && visualizer({ title: 'GFW Components bundle sizes' }),
+      isProduction &&
+        terser({
+          // TODO: improve this as layer manager generators are crashing with:
+          // "Cannot call a class as a function" but can't find the reason why
+          // so this increases a 30kb the bundle sizes but at least it works
+          keep_fnames: true,
+        }),
+    ],
+  },
+]
