@@ -7,7 +7,7 @@ import CartoGenerator, {
 } from './carto-polygons/carto-polygons'
 import HeatmapGenerator, { HEATMAP_TYPE } from './heatmap/heatmap'
 
-const TYPES = { BASEMAP, CARTO_POLYGONS, BACKGROUND, GL }
+const TYPES = { BASEMAP, CARTO_POLYGONS, BACKGROUND, GL, HEATMAP_TYPE }
 export { TYPES }
 
 export default {
