@@ -78,7 +78,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
         id,
         type: 'vector',
         tiles: [
-          'http://__heatmap__/{z}/{x}/{y}?geomType=gridded&tileset=fishing_64cells&fastTilesAPI=https%3A%2F%2Ffst-tiles-jzzp2ui3wq-uc.a.run.app%2Fv1%2F&delta=90',
+          'http://__fast_tiles__/{z}/{x}/{y}?geomType=gridded&tileset=fishing_64cells&fastTilesAPI=https%3A%2F%2Ffst-tiles-jzzp2ui3wq-uc.a.run.app%2Fv1%2F&delta=90',
         ],
       },
     ],

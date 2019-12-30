@@ -6,6 +6,10 @@ import { VectorTile } from '@mapbox/vector-tile'
 import geojsonVt from 'geojson-vt'
 import tilebelt from '@mapbox/tilebelt'
 
+const FAST_TILES_KEY = '__fast_tiles__'
+const FAST_TILES_KEY_RX = new RegExp(FAST_TILES_KEY)
+const FAST_TILES_KEY_XYZ_RX = new RegExp(`${FAST_TILES_KEY}\\/(\\d+)\\/(\\d+)\\/(\\d+)`)
+
 self.addEventListener('install', (event) => {
   console.log('install sw')
   // cleaning up old cache values...
@@ -159,6 +163,8 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
       features,
     }
 
+    console.log(geoJSON, sourceLayer)
+
     const tileindex = geojsonVt(geoJSON)
     const newTile = tileindex.getTile(z, x, y)
     const newBuff = vtpbf.fromGeojsonVt({ [sourceLayer]: newTile })
@@ -177,9 +183,7 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
 }
 
 self.addEventListener('fetch', (e) => {
-  console.log('WTF')
-  console.log(/__heatmap__/.test(e.request.url))
-  if (/__heatmap__/.test(e.request.url) === true) {
+  if (FAST_TILES_KEY_RX.test(e.request.url) === true) {
     const originalUrl = e.request.url
 
     const url = new URL(originalUrl)
@@ -189,7 +193,7 @@ self.addEventListener('fetch', (e) => {
     const tileset = url.searchParams.get('tileset')
 
     const [z, x, y] = originalUrl
-      .match(/__heatmap__\/(\d+)\/(\d+)\/(\d+)/)
+      .match(FAST_TILES_KEY_XYZ_RX)
       .slice(1, 4)
       .map((d) => parseInt(d))
 
@@ -218,8 +222,9 @@ self.addEventListener('fetch', (e) => {
       const fetchPromise = fetch(finalUrl)
 
       fetchPromise.then((fetchResponse) => {
+        console.log('FETCH SUCEEDED')
         var responseToCache = fetchResponse.clone()
-        const CACHE_NAME = 'heatmap'
+        const CACHE_NAME = FAST_TILES_KEY
         self.caches.open(CACHE_NAME).then(function(cache) {
           cache.put(finalReq, responseToCache)
         })
