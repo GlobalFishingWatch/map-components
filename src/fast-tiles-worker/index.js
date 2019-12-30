@@ -10,6 +10,12 @@ const FAST_TILES_KEY = '__fast_tiles__'
 const FAST_TILES_KEY_RX = new RegExp(FAST_TILES_KEY)
 const FAST_TILES_KEY_XYZ_RX = new RegExp(`${FAST_TILES_KEY}\\/(\\d+)\\/(\\d+)\\/(\\d+)`)
 
+export const GEOM_TYPES = {
+  BLOB: 'blob',
+  GRIDDED: 'gridded',
+  EXTRUDED: 'extruded',
+}
+
 self.addEventListener('install', (event) => {
   console.log('install sw')
   // cleaning up old cache values...
@@ -115,14 +121,14 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
       const cell = values.cell
       const row = Math.floor(cell / numCells)
       // Skip every col and row, dividing num features by 4
-      if (geomType !== 'square' && (cell % 2 !== 0 || row % 2 !== 0)) {
+      if (geomType === GEOM_TYPES.BLOB && (cell % 2 !== 0 || row % 2 !== 0)) {
         continue
       }
 
-      if (geomType === 'square') {
-        feature.geometry = getSquareGeom(tileBBox, cell, numCells)
-      } else {
+      if (geomType === GEOM_TYPES.BLOB) {
         feature.geometry = getPointGeom(tileBBox, cell, numCells)
+      } else {
+        feature.geometry = getSquareGeom(tileBBox, cell, numCells)
       }
 
       delete values.cell
@@ -162,8 +168,6 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
       type: 'FeatureCollection',
       features,
     }
-
-    console.log(geoJSON, sourceLayer)
 
     const tileindex = geojsonVt(geoJSON)
     const newTile = tileindex.getTile(z, x, y)
@@ -222,7 +226,6 @@ self.addEventListener('fetch', (e) => {
       const fetchPromise = fetch(finalUrl)
 
       fetchPromise.then((fetchResponse) => {
-        console.log('FETCH SUCEEDED')
         var responseToCache = fetchResponse.clone()
         const CACHE_NAME = FAST_TILES_KEY
         self.caches.open(CACHE_NAME).then(function(cache) {
