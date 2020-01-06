@@ -21,6 +21,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
     geomType: GEOM_TYPES.GRIDDED,
     colorRamp: COLOR_RAMPS.PRESENCE,
     colorRampMult: 40,
+    // TBD: Passive layers are visible, with opacity 0, and receive no time updates - allowing them to be toggled on again rapidly but without performance hit
     // passive: false,
     // serverSideFilters: "flag=='ESP'",
   }

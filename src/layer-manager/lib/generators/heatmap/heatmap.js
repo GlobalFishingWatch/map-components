@@ -92,8 +92,10 @@ class HeatmapGenerator {
   }
 
   _getStyleSources = (layer) => {
+    const geomType = layer.geomType || GEOM_TYPES.GRIDDED
+
     const url = new URL(BASE_WORKER_URL)
-    url.searchParams.set('geomType', layer.geomType)
+    url.searchParams.set('geomType', geomType)
     url.searchParams.set('tileset', layer.tileset)
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('delta', getDelta(layer.start, layer.end))
@@ -111,11 +113,13 @@ class HeatmapGenerator {
   }
 
   _getStyleLayers = (layer) => {
-    const paint = { ...paintByGeomType[layer.geomType] }
-    const originalColorRamp = COLOR_RAMPS_RAMPS[layer.colorRamp]
-    const colorRamp = [...COLOR_RAMPS_RAMPS[layer.colorRamp]]
-
+    const geomType = layer.geomType || GEOM_TYPES.GRIDDED
+    const colorRampType = layer.colorRamp || COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
+
+    const paint = { ...paintByGeomType[geomType] }
+    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
+    const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
 
     // TODO actually pick correct offset, not '0'
     colorRamp[2] = ['to-number', ['get', '0']]
@@ -124,7 +128,7 @@ class HeatmapGenerator {
     colorRamp[9] = colorRampMult * originalColorRamp[9]
     colorRamp[11] = colorRampMult * originalColorRamp[11]
 
-    switch (layer.geomType) {
+    switch (geomType) {
       case GEOM_TYPES.GRIDDED:
         paint['fill-color'] = colorRamp
         break
@@ -137,7 +141,7 @@ class HeatmapGenerator {
         id: layer.id,
         source: layer.id,
         'source-layer': layer.tileset,
-        type: GEOM_TYPES_GL_TYPES[layer.geomType],
+        type: GEOM_TYPES_GL_TYPES[geomType],
         layout: {
           visibility: layer.visible ? 'visible' : 'none',
         },
