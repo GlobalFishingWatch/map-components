@@ -9,6 +9,8 @@ import tilebelt from '@mapbox/tilebelt'
 const FAST_TILES_KEY = '__fast_tiles__'
 const FAST_TILES_KEY_RX = new RegExp(FAST_TILES_KEY)
 const FAST_TILES_KEY_XYZ_RX = new RegExp(`${FAST_TILES_KEY}\\/(\\d+)\\/(\\d+)\\/(\\d+)`)
+const CACHE_TIMESTAMP_HEADER_KEY = 'sw-cache-timestamp'
+const CACHE_MAX_AGE_MS = 60 * 60 * 1000
 
 export const GEOM_TYPES = {
   BLOB: 'blob',
@@ -92,9 +94,9 @@ const getSquareGeom = (tileBBox, cell, numCells) => {
 
 const perfs = []
 
-const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
+const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
   const tileBBox = tilebelt.tileToBBOX([x, y, z])
-  return f.arrayBuffer().then((buffer) => {
+  return originalResponse.arrayBuffer().then((buffer) => {
     const t = performance.now()
 
     var tile = new VectorTile(new Pbf(buffer))
@@ -176,16 +178,14 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
     }
 
     return new Response(newBuff, {
-      status: f.status,
-      statusText: f.statusText,
-      headers: f.headers,
+      status: originalResponse.status,
+      statusText: originalResponse.statusText,
     })
   })
 }
 
 self.addEventListener('fetch', (fetchEvent) => {
   const originalUrl = fetchEvent.request.url
-  const originalHeaders = fetchEvent.request.headers
   if (FAST_TILES_KEY_RX.test(originalUrl) !== true) {
     return
   }
@@ -208,10 +208,7 @@ self.addEventListener('fetch', (fetchEvent) => {
     finalUrl.searchParams.set('filters', serverSideFilters)
   }
   const finalUrlStr = decodeURI(finalUrl.toString())
-
-  const finalReq = new Request(finalUrlStr, {
-    headers: originalHeaders,
-  })
+  const finalReq = new Request(finalUrlStr)
 
   const cachePromise = self.caches
     .match(finalReq)
@@ -228,26 +225,48 @@ self.addEventListener('fetch', (fetchEvent) => {
       }
       // Cache hit - return response
       if (cacheResponse) {
-        return aggregate(cacheResponse, aggregateParams)
+        const cachedTimestamp = parseInt(cacheResponse.headers.get(CACHE_TIMESTAMP_HEADER_KEY))
+        const now = new Date().getTime()
+
+        // only get value from cache if it's recent enough
+        if (now - cachedTimestamp < CACHE_MAX_AGE_MS) {
+          // console.log('recent enough get from cache')
+          return aggregate(cacheResponse, aggregateParams)
+        } else {
+          // console.log('too old, fetching again')
+        }
       }
 
       const fetchPromise = fetch(finalUrl)
 
+      // Will try to cach fetch response in parallel
       fetchPromise
         .then((fetchResponse) => {
           if (!fetchResponse.ok) {
             throw new Error()
           }
           var responseToCache = fetchResponse.clone()
-          const CACHE_NAME = FAST_TILES_KEY
-          self.caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(finalReq, responseToCache)
+          responseToCache.blob().then((blob) => {
+            const headers = new Headers()
+            const timestamp = new Date().getTime()
+            // add extra header to set a timestamp on cache - will be read at cache.matches call
+            headers.set(CACHE_TIMESTAMP_HEADER_KEY, timestamp)
+            const cacheResponse = new Response(blob, {
+              status: fetchResponse.status,
+              statusText: fetchResponse.statusText,
+              headers,
+            })
+            const CACHE_NAME = FAST_TILES_KEY
+            self.caches.open(CACHE_NAME).then(function(cache) {
+              cache.put(finalReq, cacheResponse)
+            })
           })
         })
         .catch((e) => {
           console.log('Cant cache')
         })
 
+      // then, aggregate
       const aggregatePromise = fetchPromise
         .then((fetchResponse) => {
           if (!fetchResponse.ok) {
