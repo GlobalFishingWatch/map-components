@@ -183,34 +183,39 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
   })
 }
 
-self.addEventListener('fetch', (e) => {
-  if (FAST_TILES_KEY_RX.test(e.request.url) === true) {
-    const originalUrl = e.request.url
+self.addEventListener('fetch', (fetchEvent) => {
+  const originalUrl = fetchEvent.request.url
+  const originalHeaders = fetchEvent.request.headers
+  if (FAST_TILES_KEY_RX.test(originalUrl) !== true) {
+    return
+  }
 
-    const url = new URL(originalUrl)
-    const geomType = url.searchParams.get('geomType')
-    const delta = parseInt(url.searchParams.get('delta') || '10')
-    const fastTilesAPI = url.searchParams.get('fastTilesAPI')
-    const tileset = url.searchParams.get('tileset')
-    const serverSideFilters = url.searchParams.get('serverSideFilters')
+  const url = new URL(originalUrl)
+  const geomType = url.searchParams.get('geomType')
+  const delta = parseInt(url.searchParams.get('delta') || '10')
+  const fastTilesAPI = url.searchParams.get('fastTilesAPI')
+  const tileset = url.searchParams.get('tileset')
+  const serverSideFilters = url.searchParams.get('serverSideFilters')
 
-    const [z, x, y] = originalUrl
-      .match(FAST_TILES_KEY_XYZ_RX)
-      .slice(1, 4)
-      .map((d) => parseInt(d))
+  const [z, x, y] = originalUrl
+    .match(FAST_TILES_KEY_XYZ_RX)
+    .slice(1, 4)
+    .map((d) => parseInt(d))
 
-    const finalUrl = new URL(`${fastTilesAPI}${tileset}/tile/heatmap/${z}/${x}/${y}`)
+  const finalUrl = new URL(`${fastTilesAPI}${tileset}/tile/heatmap/${z}/${x}/${y}`)
 
-    if (serverSideFilters) {
-      finalUrl.searchParams.set('filters', serverSideFilters)
-    }
-    const finalUrlStr = decodeURI(finalUrl.toString())
+  if (serverSideFilters) {
+    finalUrl.searchParams.set('filters', serverSideFilters)
+  }
+  const finalUrlStr = decodeURI(finalUrl.toString())
 
-    const finalReq = new Request(finalUrlStr, {
-      headers: e.request.headers,
-    })
+  const finalReq = new Request(finalUrlStr, {
+    headers: originalHeaders,
+  })
 
-    const cachePromise = self.caches.match(finalReq).then((cacheResponse) => {
+  const cachePromise = self.caches
+    .match(finalReq)
+    .then((cacheResponse) => {
       const TILESET_NUM_CELLS = 64
       const aggregateParams = {
         sourceLayer: tileset,
@@ -228,20 +233,38 @@ self.addEventListener('fetch', (e) => {
 
       const fetchPromise = fetch(finalUrl)
 
-      fetchPromise.then((fetchResponse) => {
-        var responseToCache = fetchResponse.clone()
-        const CACHE_NAME = FAST_TILES_KEY
-        self.caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(finalReq, responseToCache)
+      fetchPromise
+        .then((fetchResponse) => {
+          if (!fetchResponse.ok) {
+            throw new Error()
+          }
+          var responseToCache = fetchResponse.clone()
+          const CACHE_NAME = FAST_TILES_KEY
+          self.caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(finalReq, responseToCache)
+          })
         })
-      })
+        .catch((e) => {
+          console.log('Cant cache')
+        })
 
-      const aggregatePromise = fetchPromise.then((fetchResponse) => {
-        return aggregate(fetchResponse, aggregateParams)
-      })
+      const aggregatePromise = fetchPromise
+        .then((fetchResponse) => {
+          if (!fetchResponse.ok) {
+            throw new Error()
+          }
+          return aggregate(fetchResponse, aggregateParams)
+        })
+        .catch((e) => {
+          console.log('Cant aggregate')
+          throw new Error()
+        })
+
       return aggregatePromise
     })
+    .catch((e) => {
+      console.log('Failed caching/aggregating')
+    })
 
-    e.respondWith(cachePromise)
-  }
+  fetchEvent.respondWith(cachePromise)
 })
