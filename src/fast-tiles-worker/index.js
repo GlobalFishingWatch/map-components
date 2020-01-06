@@ -41,8 +41,6 @@ self.addEventListener('activate', (event) => {
   console.log('Now ready to handle fetches!')
 })
 
-// self.importScripts('readTile.js');
-
 const getCellCoords = (tileBBox, cell, numCells) => {
   const col = cell % numCells
   const row = Math.floor(cell / numCells)
@@ -110,14 +108,13 @@ const aggregate = (f, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
 
     for (let i = 0; i < tileLayer.length; i++) {
       const rawFeature = tileLayer.feature(i)
-      // console.log(rawFeature.properties)
-      // const feature = rawFeature.toGeoJSON(x,y,z)
       const feature = {
         type: 'Feature',
         properties: {},
       }
 
       const values = rawFeature.properties
+
       const cell = values.cell
       const row = Math.floor(cell / numCells)
       // Skip every col and row, dividing num features by 4
@@ -195,15 +192,21 @@ self.addEventListener('fetch', (e) => {
     const delta = parseInt(url.searchParams.get('delta') || '10')
     const fastTilesAPI = url.searchParams.get('fastTilesAPI')
     const tileset = url.searchParams.get('tileset')
+    const serverSideFilters = url.searchParams.get('serverSideFilters')
 
     const [z, x, y] = originalUrl
       .match(FAST_TILES_KEY_XYZ_RX)
       .slice(1, 4)
       .map((d) => parseInt(d))
 
-    const finalUrl = `${fastTilesAPI}${tileset}/tile/heatmap/${z}/${x}/${y}`
+    const finalUrl = new URL(`${fastTilesAPI}${tileset}/tile/heatmap/${z}/${x}/${y}`)
 
-    const finalReq = new Request(finalUrl, {
+    if (serverSideFilters) {
+      finalUrl.searchParams.set('filters', serverSideFilters)
+    }
+    const finalUrlStr = decodeURI(finalUrl.toString())
+
+    const finalReq = new Request(finalUrlStr, {
       headers: e.request.headers,
     })
 

@@ -97,6 +97,10 @@ class HeatmapGenerator {
     url.searchParams.set('tileset', layer.tileset)
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('delta', getDelta(layer.start, layer.end))
+
+    if (layer.serverSideFilters) {
+      url.searchParams.set('serverSideFilters', layer.serverSideFilters)
+    }
     return [
       {
         id: layer.id,
