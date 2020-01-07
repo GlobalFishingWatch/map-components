@@ -110,6 +110,9 @@ const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x
 
     for (let i = 0; i < tileLayer.length; i++) {
       const rawFeature = tileLayer.feature(i)
+      // if (i === 0) {
+      //   console.log(rawFeature.properties)
+      // }
       const feature = {
         type: 'Feature',
         properties: {},
@@ -208,6 +211,7 @@ self.addEventListener('fetch', (fetchEvent) => {
     finalUrl.searchParams.set('filters', serverSideFilters)
   }
   const finalUrlStr = decodeURI(finalUrl.toString())
+  console.log('real tile zoom', z)
   const finalReq = new Request(finalUrlStr)
 
   const cachePromise = self.caches

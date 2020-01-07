@@ -1,3 +1,4 @@
+import memoizeOne from 'memoize-one'
 import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
@@ -91,6 +92,22 @@ class HeatmapGenerator {
     this.fastTilesAPI = fastTilesAPI
   }
 
+  _fetchStats = memoizeOne((endpoint, tileset, zoom, delta, serverSideFilters) => {
+    console.log('fetch stats', delta, zoom)
+    this.loadingStats = true
+    const statsUrl = new URL(`${endpoint}${tileset}/statistics/${zoom}`)
+    if (serverSideFilters) {
+      statsUrl.searchParams.set('filters', serverSideFilters)
+    }
+    return fetch(statsUrl.toString())
+      .then((r) => r.text())
+      .then((r) => {
+        this.statsMax = parseInt(r.max)
+        this.statsMin = parseInt(r.min)
+        this.loadingStats = false
+      })
+  })
+
   _getStyleSources = (layer) => {
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
 
@@ -112,10 +129,14 @@ class HeatmapGenerator {
     ]
   }
 
-  _getStyleLayers = (layer) => {
+  _getHeatmapLayers = (layer) => {
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
     const colorRampType = layer.colorRamp || COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
+    const statsMult = this.statsMax || 1
+    const deltaMult = getDelta(layer.start, layer.end)
+    // const mult = colorRampMult * statsMult * deltaMult
+    const mult = colorRampMult
 
     const paint = { ...paintByGeomType[geomType] }
     const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
@@ -123,10 +144,12 @@ class HeatmapGenerator {
 
     // TODO actually pick correct offset, not '0'
     colorRamp[2] = ['to-number', ['get', '0']]
-    colorRamp[5] = colorRampMult * originalColorRamp[5]
-    colorRamp[7] = colorRampMult * originalColorRamp[7]
-    colorRamp[9] = colorRampMult * originalColorRamp[9]
-    colorRamp[11] = colorRampMult * originalColorRamp[11]
+    colorRamp[5] = mult * originalColorRamp[5]
+    colorRamp[7] = mult * originalColorRamp[7]
+    colorRamp[9] = mult * originalColorRamp[9]
+    colorRamp[11] = mult * originalColorRamp[11]
+
+    console.log(colorRamp)
 
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
@@ -150,11 +173,37 @@ class HeatmapGenerator {
     ]
   }
 
+  _getStyleLayers = (layer) => {
+    const statsPromise = this._fetchStats(
+      this.fastTilesAPI,
+      layer.tileset,
+      Math.floor(layer.zoom),
+      30,
+      layer.serverSideFilters
+    )
+
+    const layers = this._getHeatmapLayers(layer)
+
+    if (this.loadingStats === false) {
+      return { layers }
+    }
+
+    const promise = new Promise((resolve) => {
+      statsPromise.then(() => {
+        resolve(this.getStyle(layer))
+      })
+    })
+
+    return { layers, promise }
+  }
+
   getStyle = (layer) => {
+    const { layers, promise } = this._getStyleLayers(layer)
     return {
       id: layer.id,
       sources: this._getStyleSources(layer),
-      layers: this._getStyleLayers(layer),
+      layers,
+      promise,
     }
   }
 }
