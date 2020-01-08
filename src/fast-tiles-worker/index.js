@@ -108,6 +108,7 @@ const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x
     const ABS_START_DAY = new Date('2019-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
     const ABS_END_DAY = new Date('2019-12-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
 
+    console.log(tileLayer.length, ' features on tile ', x, y, z)
     for (let i = 0; i < tileLayer.length; i++) {
       const rawFeature = tileLayer.feature(i)
       // if (i === 0) {

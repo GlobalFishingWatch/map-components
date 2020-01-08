@@ -47,7 +47,7 @@ const COLOR_RAMPS_RAMPS = {
     'dummy',
     0,
     'rgba(0, 0, 0, 0)',
-    0.01,
+    0.0000000001,
     '#0c276c',
     0.4,
     '#114685',
@@ -92,6 +92,21 @@ class HeatmapGenerator {
     this.fastTilesAPI = fastTilesAPI
   }
 
+  _getServerSideFilters = (serverSideFilter, start, end, useStartAndEnd) => {
+    const serverSideFiltersList = []
+
+    if (serverSideFilter) {
+      serverSideFiltersList.push(serverSideFilter)
+    }
+
+    if (useStartAndEnd) {
+      serverSideFiltersList.push(`timestamp > '${start.slice(0, 19).replace('T', ' ')}'`)
+      serverSideFiltersList.push(`timestamp < '${end.slice(0, 19).replace('T', ' ')}'`)
+    }
+    const serverSideFilters = serverSideFiltersList.join(' AND ')
+    return serverSideFilters
+  }
+
   _fetchStats = memoizeOne((endpoint, tileset, zoom, delta, serverSideFilters) => {
     console.log('fetch stats', delta, zoom)
     this.loadingStats = true
@@ -117,8 +132,16 @@ class HeatmapGenerator {
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('delta', getDelta(layer.start, layer.end))
 
-    if (layer.serverSideFilters) {
-      url.searchParams.set('serverSideFilters', layer.serverSideFilters)
+    if (layer.serverSideFilter) {
+      url.searchParams.set(
+        'serverSideFilters',
+        this._getServerSideFilters(
+          layer.serverSideFilter,
+          layer.start,
+          layer.end,
+          layer.updateColorRampOnTimeChange
+        )
+      )
     }
     return [
       {
@@ -149,7 +172,7 @@ class HeatmapGenerator {
     colorRamp[9] = mult * originalColorRamp[9]
     colorRamp[11] = mult * originalColorRamp[11]
 
-    console.log(colorRamp)
+    // console.log(colorRamp)
 
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
@@ -174,12 +197,18 @@ class HeatmapGenerator {
   }
 
   _getStyleLayers = (layer) => {
+    const serverSideFilters = this._getServerSideFilters(
+      layer.serverSideFilter,
+      layer.start,
+      layer.end,
+      layer.updateColorRampOnTimeChange
+    )
     const statsPromise = this._fetchStats(
       this.fastTilesAPI,
       layer.tileset,
       Math.floor(layer.zoom),
-      30,
-      layer.serverSideFilters
+      getDelta(layer.start, layer.end),
+      serverSideFilters
     )
 
     const layers = this._getHeatmapLayers(layer)
