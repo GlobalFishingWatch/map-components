@@ -47,7 +47,7 @@ const COLOR_RAMPS_RAMPS = {
     'dummy',
     0,
     'rgba(0, 0, 0, 0)',
-    0.0000000001,
+    0.01,
     '#0c276c',
     0.4,
     '#114685',
@@ -87,6 +87,7 @@ const getDelta = (start, end) => {
 
 class HeatmapGenerator {
   type = HEATMAP_TYPE
+  loadingStats = false
 
   constructor({ fastTilesAPI = DEFAULT_FAST_TILES_API }) {
     this.fastTilesAPI = fastTilesAPI
@@ -108,7 +109,7 @@ class HeatmapGenerator {
   }
 
   _fetchStats = memoizeOne((endpoint, tileset, zoom, delta, serverSideFilters) => {
-    console.log('fetch stats', delta, zoom)
+    // console.log('fetch stats', delta, zoom)
     this.loadingStats = true
     const statsUrl = new URL(`${endpoint}${tileset}/statistics/${zoom}`)
     if (serverSideFilters) {
@@ -197,6 +198,9 @@ class HeatmapGenerator {
   }
 
   _getStyleLayers = (layer) => {
+    if (layer.fetchStats !== true) {
+      return { layers: this._getHeatmapLayers(layer) }
+    }
     const serverSideFilters = this._getServerSideFilters(
       layer.serverSideFilter,
       layer.start,
