@@ -1,16 +1,53 @@
 import Pbf from 'pbf'
 import { VectorTile } from '@mapbox/vector-tile'
+import geojsonhint from '@mapbox/geojsonhint'
+import validation from 'geojson-validation'
 import aggregate from '../aggregate'
+import tilebelt from '@mapbox/tilebelt'
+
 const fs = require('fs')
 const { performance } = require('perf_hooks')
 
 let tileLayer
 const quantizeOffset = new Date('2017-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
+const tileBBox = tilebelt.tileToBBOX([2, 3, 2])
 
 beforeEach(() => {
   const tileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-2-3-2.pbf')
   const tile = new VectorTile(new Pbf(tileRaw))
   tileLayer = tile.layers.carriers
+})
+
+test('Return a correct grid', () => {
+  let agg = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
+  expect(agg.features.length).toBe(tileLayer.length)
+
+  agg = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox, skipOddCells: true })
+  expect(agg.features.length).toBe(322)
+
+  // 0,46875
+  // 0,46875
+  // cell: 30 - bbox lng range: 0 - 90
+  const lngCell30 = agg.features[0].geometry.coordinates[0][0][0]
+  expect(lngCell30 / tileBBox[2]).toBe(0.46875)
+})
+
+test('Return valid geometries/GeoJSON', () => {
+  const gridded = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
+  let errors = geojsonhint.hint(gridded)
+  if (errors.length) {
+    console.log(errors)
+  }
+  expect(validation.valid(gridded)).toBe(true)
+  expect(validation.isPolygon(gridded.features[100].geometry)).toBe(true)
+
+  const blob = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox, geomType: 'blob' })
+  errors = geojsonhint.hint(blob)
+  if (errors.length) {
+    console.log(errors)
+  }
+  expect(validation.valid(blob)).toBe(true)
+  expect(validation.isPoint(blob.features[100].geometry)).toBe(true)
 })
 
 test('Pick a value (delta 1)', () => {
@@ -28,12 +65,12 @@ test('Pick a value (delta 1)', () => {
   const testFeatureIndex = 0
   const testValueDay = 17716
 
-  const aggregated = aggregate(tileLayer, { delta: 1, quantizeOffset })
+  const aggregated = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
 
   // console.log(aggregated[0])
   // // at 549, 1
   const testValueDayAtOffset = (testValueDay - quantizeOffset).toString()
-  expect(aggregated[testFeatureIndex].properties[testValueDayAtOffset]).toBe(1)
+  expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset]).toBe(1)
 })
 
 test('Aggregates several days', () => {
@@ -48,13 +85,17 @@ test('Aggregates several days', () => {
   const testFeatureIndex = 906
 
   const t = performance.now()
-  const aggregated = aggregate(tileLayer, { delta: 3, quantizeOffset })
+  const aggregated = aggregate(tileLayer, { delta: 3, quantizeOffset, tileBBox })
   console.log('Aggregation done in ', performance.now() - t)
   const testValueDayAtOffset = testValueDay - quantizeOffset
 
-  expect(aggregated[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(4)
-  expect(aggregated[testFeatureIndex].properties[(testValueDayAtOffset + 1).toString()]).toBe(3)
-  expect(aggregated[testFeatureIndex].properties[(testValueDayAtOffset + 2).toString()]).toBe(3)
+  expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(4)
+  expect(
+    aggregated.features[testFeatureIndex].properties[(testValueDayAtOffset + 1).toString()]
+  ).toBe(3)
+  expect(
+    aggregated.features[testFeatureIndex].properties[(testValueDayAtOffset + 2).toString()]
+  ).toBe(3)
 })
 
 test('Aggregates long time', () => {
@@ -281,27 +322,29 @@ test('Aggregates long time', () => {
     '17446': 3,
     '17447': 3,
   */
-  const p = tileLayer.feature(965).properties
-  let v = 0
-  Object.keys(p).forEach((k) => {
-    const kn = parseInt(k)
-    if (kn >= 17179 && kn < 17179 + 200) {
-      v += p[k]
-    }
-  })
-  console.log(v)
+  // const p = tileLayer.feature(965).properties
+  // let v = 0
+  // Object.keys(p).forEach((k) => {
+  //   const kn = parseInt(k)
+  //   if (kn >= 17179 && kn < 17179 + 200) {
+  //     v += p[k]
+  //   }
+  // })
+  // console.log(v)
 
   const testValueDay = 17179
   const testFeatureIndex = 965
 
   const t = performance.now()
-  const aggregated = aggregate(tileLayer, { delta: 200, quantizeOffset })
+  const aggregated = aggregate(tileLayer, { delta: 200, quantizeOffset, tileBBox })
   console.log('Big Aggregation done in ', performance.now() - t)
   const testValueDayAtOffset = testValueDay - quantizeOffset
 
-  expect(aggregated[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(535)
-  expect(aggregated[testFeatureIndex].properties[(testValueDayAtOffset + 1).toString()]).toBe(
-    535 - 4 + 1
+  expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(
+    535
   )
+  expect(
+    aggregated.features[testFeatureIndex].properties[(testValueDayAtOffset + 1).toString()]
+  ).toBe(535 - 4 + 1)
   // expect(aggregated[testFeatureIndex].properties[(testValueDayAtOffset + 2).toString()]).toBe(3)
 })
