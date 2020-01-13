@@ -46,7 +46,7 @@ const COLOR_RAMPS_RAMPS = {
     ['linear'],
     'dummy',
     0,
-    'rgba(0, 0, 0, 0)',
+    'rgba(255, 0, 0, 1)',
     0.01,
     '#0c276c',
     0.4,
@@ -83,6 +83,19 @@ const getDelta = (start, end) => {
   const endTimestampDays = Math.floor(endTimestampMs / 1000 / 60 / 60 / 24)
   let daysDelta = endTimestampDays - startTimestampDays
   return daysDelta
+}
+
+const toDays = (d) => {
+  return new Date(d).getTime() / 1000 / 60 / 60 / 24
+}
+
+// TODO This is hardcoded for now, but it will need to be set intelligently
+const quantizeOffset = toDays('2017-01-01T00:00:00.000Z')
+
+// TODO for now only works in days
+const toQuantizedDays = (d) => {
+  const days = toDays(d)
+  return days - quantizeOffset
 }
 
 class HeatmapGenerator {
@@ -131,7 +144,11 @@ class HeatmapGenerator {
     url.searchParams.set('geomType', geomType)
     url.searchParams.set('tileset', layer.tileset)
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
-    url.searchParams.set('delta', getDelta(layer.start, layer.end))
+    // url.searchParams.set('delta', getDelta(layer.start, layer.end))
+    url.searchParams.set('delta', 1000)
+
+    console.log(quantizeOffset)
+    url.searchParams.set('quantizeOffset', quantizeOffset)
 
     if (layer.serverSideFilter) {
       url.searchParams.set(
@@ -165,15 +182,18 @@ class HeatmapGenerator {
     const paint = { ...paintByGeomType[geomType] }
     const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
     const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
+    const d = toQuantizedDays(layer.start)
+
+    console.log(d)
 
     // TODO actually pick correct offset, not '0'
-    colorRamp[2] = ['to-number', ['get', '0']]
+    colorRamp[2] = ['to-number', ['get', d.toString()]]
     colorRamp[5] = mult * originalColorRamp[5]
     colorRamp[7] = mult * originalColorRamp[7]
     colorRamp[9] = mult * originalColorRamp[9]
     colorRamp[11] = mult * originalColorRamp[11]
 
-    // console.log(colorRamp)
+    console.log(colorRamp)
 
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
