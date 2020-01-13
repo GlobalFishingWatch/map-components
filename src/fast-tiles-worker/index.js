@@ -5,18 +5,13 @@ import vtpbf from 'vt-pbf'
 import { VectorTile } from '@mapbox/vector-tile'
 import geojsonVt from 'geojson-vt'
 import tilebelt from '@mapbox/tilebelt'
+import aggregate from './aggregate'
 
 const FAST_TILES_KEY = '__fast_tiles__'
 const FAST_TILES_KEY_RX = new RegExp(FAST_TILES_KEY)
 const FAST_TILES_KEY_XYZ_RX = new RegExp(`${FAST_TILES_KEY}\\/(\\d+)\\/(\\d+)\\/(\\d+)`)
 const CACHE_TIMESTAMP_HEADER_KEY = 'sw-cache-timestamp'
 const CACHE_MAX_AGE_MS = 60 * 60 * 1000
-
-export const GEOM_TYPES = {
-  BLOB: 'blob',
-  GRIDDED: 'gridded',
-  EXTRUDED: 'extruded',
-}
 
 self.addEventListener('install', (event) => {
   console.log('install sw')
@@ -43,58 +38,12 @@ self.addEventListener('activate', (event) => {
   console.log('Now ready to handle fetches!')
 })
 
-const getCellCoords = (tileBBox, cell, numCells) => {
-  const col = cell % numCells
-  const row = Math.floor(cell / numCells)
-  const [minX, minY, maxX, maxY] = tileBBox
-  const width = maxX - minX
-  const height = maxY - minY
-  return {
-    col,
-    row,
-    width,
-    height,
-  }
-}
-
-const getPointGeom = (tileBBox, cell, numCells) => {
-  const [minX, minY] = tileBBox
-  const { col, row, width, height } = getCellCoords(tileBBox, cell, numCells)
-
-  const pointMinX = minX + (col / numCells) * width
-  const pointMinY = minY + (row / numCells) * height
-
-  return {
-    type: 'Point',
-    coordinates: [pointMinX, pointMinY],
-  }
-}
-
-const getSquareGeom = (tileBBox, cell, numCells) => {
-  const [minX, minY] = tileBBox
-  const { col, row, width, height } = getCellCoords(tileBBox, cell, numCells)
-
-  const squareMinX = minX + (col / numCells) * width
-  const squareMinY = minY + (row / numCells) * height
-  const squareMaxX = minX + ((col + 1) / numCells) * width
-  const squareMaxY = minY + ((row + 1) / numCells) * height
-  return {
-    type: 'Polygon',
-    coordinates: [
-      [
-        [squareMinX, squareMinY],
-        [squareMaxX, squareMinY],
-        [squareMaxX, squareMaxY],
-        [squareMinX, squareMaxY],
-        [squareMinX, squareMinY],
-      ],
-    ],
-  }
-}
-
 const perfs = []
 
-const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x, y, z }) => {
+const aggregateResponse = (
+  originalResponse,
+  { sourceLayer, geomType, numCells, delta, x, y, z, quantizeOffset }
+) => {
   const tileBBox = tilebelt.tileToBBOX([x, y, z])
   return originalResponse.arrayBuffer().then((buffer) => {
     const t = performance.now()
@@ -102,75 +51,21 @@ const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x
     var tile = new VectorTile(new Pbf(buffer))
 
     const tileLayer = tile.layers[sourceLayer]
-    const features = []
+    console.log(quantizeOffset)
+    const geoJSON = aggregate(tileLayer, {
+      quantizeOffset,
+      tileBBox,
+      delta,
+      geomType,
+      numCells,
+      skipOddCells: false,
+    })
 
-    const QUANTIZE_OFFSET = new Date('2019-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
-    const ABS_START_DAY = new Date('2019-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
-    const ABS_END_DAY = new Date('2019-12-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
-
-    console.log(tileLayer.length, ' features on tile ', x, y, z)
-    for (let i = 0; i < tileLayer.length; i++) {
-      const rawFeature = tileLayer.feature(i)
-      // if (i === 0) {
-      //   console.log(rawFeature.properties)
-      // }
-      const feature = {
-        type: 'Feature',
-        properties: {},
-      }
-
-      const values = rawFeature.properties
-
-      const cell = values.cell
-      const row = Math.floor(cell / numCells)
-      // Skip every col and row, dividing num features by 4
-      if (geomType === GEOM_TYPES.BLOB && (cell % 2 !== 0 || row % 2 !== 0)) {
-        continue
-      }
-
-      if (geomType === GEOM_TYPES.BLOB) {
-        feature.geometry = getPointGeom(tileBBox, cell, numCells)
-      } else {
-        feature.geometry = getSquareGeom(tileBBox, cell, numCells)
-      }
-
-      delete values.cell
-
-      const finalValues = []
-      let currentValue = 0
-      let j = 0
-      for (let d = ABS_START_DAY; d < ABS_END_DAY + delta; d++) {
-        const tipValue = values[d] ? 1 : 0
-        currentValue += tipValue
-
-        if (j < delta) {
-          j++
-          continue
-        }
-
-        const tailValueIndex = d - delta
-        let tailValue = tailValueIndex > 0 ? values[tailValueIndex] : 0
-        if (tailValue === undefined) {
-          tailValue = 0
-        } else {
-          tailValue = 1
-        }
-        currentValue -= tailValue
-
-        if (currentValue > 0) {
-          finalValues[d - delta - QUANTIZE_OFFSET] = currentValue
-        }
-        j++
-      }
-      feature.properties = finalValues
-
-      features.push(feature)
-    }
-
-    const geoJSON = {
-      type: 'FeatureCollection',
-      features,
-    }
+    // if (z === 2 && x === 3 && y === 2) {
+    console.log(geoJSON)
+    console.log(geoJSON.features[906])
+    console.log(geoJSON.features[906].properties['17167'])
+    // }
 
     const tileindex = geojsonVt(geoJSON)
     const newTile = tileindex.getTile(z, x, y)
@@ -190,6 +85,7 @@ const aggregate = (originalResponse, { sourceLayer, geomType, numCells, delta, x
 
 self.addEventListener('fetch', (fetchEvent) => {
   const originalUrl = fetchEvent.request.url
+
   if (FAST_TILES_KEY_RX.test(originalUrl) !== true) {
     return
   }
@@ -199,6 +95,7 @@ self.addEventListener('fetch', (fetchEvent) => {
   const delta = parseInt(url.searchParams.get('delta') || '10')
   const fastTilesAPI = url.searchParams.get('fastTilesAPI')
   const tileset = url.searchParams.get('tileset')
+  const quantizeOffset = parseInt(url.searchParams.get('quantizeOffset'))
   const serverSideFilters = url.searchParams.get('serverSideFilters')
 
   const [z, x, y] = originalUrl
@@ -212,7 +109,7 @@ self.addEventListener('fetch', (fetchEvent) => {
     finalUrl.searchParams.set('filters', serverSideFilters)
   }
   const finalUrlStr = decodeURI(finalUrl.toString())
-  console.log('real tile zoom', z)
+  // console.log('real tile zoom', z)
   const finalReq = new Request(finalUrlStr)
 
   const cachePromise = self.caches
@@ -227,6 +124,7 @@ self.addEventListener('fetch', (fetchEvent) => {
         x,
         y,
         z,
+        quantizeOffset,
       }
       // Cache hit - return response
       if (cacheResponse) {
@@ -236,7 +134,7 @@ self.addEventListener('fetch', (fetchEvent) => {
         // only get value from cache if it's recent enough
         if (now - cachedTimestamp < CACHE_MAX_AGE_MS) {
           // console.log('recent enough get from cache')
-          return aggregate(cacheResponse, aggregateParams)
+          return aggregateResponse(cacheResponse, aggregateParams)
         } else {
           // console.log('too old, fetching again')
         }
@@ -277,7 +175,7 @@ self.addEventListener('fetch', (fetchEvent) => {
           if (!fetchResponse.ok) {
             throw new Error()
           }
-          return aggregate(fetchResponse, aggregateParams)
+          return aggregateResponse(fetchResponse, aggregateParams)
         })
         .catch((e) => {
           console.log('Cant aggregate')

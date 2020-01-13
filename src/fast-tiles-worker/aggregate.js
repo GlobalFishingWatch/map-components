@@ -2,6 +2,15 @@ import { GEOM_TYPES } from './constants'
 
 const dayToTime = (day) => day * 24 * 60 * 60 * 1000
 
+export const rawTileToBlob = (rawTile) => {
+  let bytes = new Uint8Array(59)
+
+  for (let i = 0; i < 59; i++) {
+    bytes[i] = 32 + i
+  }
+  const b = new Blob()
+}
+
 const getCellCoords = (tileBBox, cell, numCells) => {
   const col = cell % numCells
   const row = Math.floor(cell / numCells)
@@ -89,34 +98,43 @@ const aggregate = (
     delete values.cell
 
     const finalValues = {}
-    let currentValue = 0
-    let j = 0
+
+    // TODO decouple from aggregation
     const allTimestamps = Object.keys(values).map((t) => parseInt(t))
     const minTimestamp = Math.min(...allTimestamps)
     const maxTimestamp = Math.max(...allTimestamps)
 
-    for (let d = minTimestamp; d < maxTimestamp + delta; d++) {
+    const dayToQuantizedDay = (d) => {
+      return (d - quantizeOffset).toString()
+    }
+
+    // compute initial value by aggregating values[minTimestamp] to values[minTimestamp + delta]
+    // (delta not included) (stop before if minTimestamp + delta > maxTs)
+    let initialValue = 0
+    for (let d = minTimestamp; d < minTimestamp + delta && d < maxTimestamp + 1; d++) {
       const key = d.toString()
-      const headValue = values[key] ? parseInt(values[key]) : 0
-      currentValue += headValue
-
-      // if not yet at aggregation delta, just keep up aggregating, do not write anything yet
-      j++
-      if (j < delta) {
-        continue
+      const currentValue = values[key] ? parseInt(values[key]) : 0
+      initialValue += currentValue
+    }
+    // store first value, and also the [delta] values before
+    // (ie if delta is 30 days, 15 days before minTimestamp the aggregated value is already equal to the value at minTimestamp)
+    for (let d = minTimestamp - delta + 1; d <= minTimestamp; d++) {
+      const qd = dayToQuantizedDay(d)
+      if (qd >= 0) {
+        finalValues[qd.toString()] = initialValue
       }
+    }
 
-      // substract tail value
-      const tailValueIndex = d - delta
-      const tailValueKey = tailValueIndex.toString()
-      let tailValue = tailValueIndex > 0 ? values[tailValueKey] : 0
-      tailValue = tailValue !== undefined ? parseInt(tailValue) : 0
-      currentValue -= tailValue
-
-      if (currentValue > 0) {
-        const finalIndex = d - delta - quantizeOffset + 1
-        finalValues[finalIndex.toString()] = currentValue
-      }
+    // start at minTimestamp + 1, stop at maxTimestamp + delta
+    // add head value, subtract tail value
+    let currentValue = initialValue
+    for (let d = minTimestamp + 1; d < maxTimestamp; d++) {
+      const headKey = (d + delta - 1).toString()
+      const headValue = values[headKey] ? parseInt(values[headKey]) : 0
+      const tailKey = (d - 1).toString()
+      const tailValue = values[tailKey] ? parseInt(values[tailKey]) : 0
+      currentValue = currentValue + headValue - tailValue
+      finalValues[dayToQuantizedDay(d).toString()] = currentValue
     }
 
     feature.properties = finalValues

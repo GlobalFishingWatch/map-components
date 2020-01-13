@@ -73,6 +73,21 @@ test('Pick a value (delta 1)', () => {
   expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset]).toBe(1)
 })
 
+test('Works with isolated value and long delta', () => {
+  const testFeatureIndex = 0
+  const testValueDay = 17716
+  const testValueDayAtOffset = testValueDay - quantizeOffset
+  const aggregated = aggregate(tileLayer, { delta: 30, quantizeOffset, tileBBox })
+
+  expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(1)
+  expect(
+    aggregated.features[testFeatureIndex].properties[(testValueDayAtOffset - 1).toString()]
+  ).toBe(1)
+  expect(
+    aggregated.features[testFeatureIndex].properties[(testValueDayAtOffset - 29).toString()]
+  ).toBe(1)
+})
+
 test('Aggregates several days', () => {
   // @ 906
   //     '17167': 2,
