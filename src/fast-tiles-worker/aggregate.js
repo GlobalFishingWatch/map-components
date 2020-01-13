@@ -1,14 +1,46 @@
+import Pbf from 'pbf'
+import { VectorTile } from '@mapbox/vector-tile'
 import { GEOM_TYPES } from './constants'
 
 const dayToTime = (day) => day * 24 * 60 * 60 * 1000
 
-export const rawTileToBlob = (rawTile) => {
-  let bytes = new Uint8Array(59)
+export const ARRAY_BUFFER_HEADER_OFFSET_INDEX = 3
 
-  for (let i = 0; i < 59; i++) {
-    bytes[i] = 32 + i
+export const rawTileToArrayBuffers = (rawTile, tileset) => {
+  const tile = new VectorTile(new Pbf(rawTile))
+  const tileLayer = tile.layers[tileset]
+
+  const arrayBuffers = []
+  for (let f = 0; f < tileLayer.length; f++) {
+    const rawFeature = tileLayer.feature(f)
+    const values = rawFeature.properties
+    const cell = values.cell
+
+    delete values.cell
+
+    const allTimestamps = Object.keys(values).map((t) => parseInt(t))
+    const minTimestamp = Math.min(...allTimestamps)
+    const maxTimestamp = Math.max(...allTimestamps)
+
+    const bufferLength = maxTimestamp - minTimestamp + 1 + ARRAY_BUFFER_HEADER_OFFSET_INDEX
+    let bytes = new Uint16Array(bufferLength)
+    bytes[0] = cell
+    bytes[1] = minTimestamp
+    bytes[2] = maxTimestamp
+
+    let i = 0
+    for (let d = minTimestamp; d <= maxTimestamp; d++) {
+      const currentValue = values[d.toString()]
+      // if (f === 0) console.log(currentValue)
+      const index = i + ARRAY_BUFFER_HEADER_OFFSET_INDEX
+      bytes[index] = currentValue
+      i++
+    }
+    // if (i === 0) console.log(bytes)
+    arrayBuffers.push(bytes)
   }
-  const b = new Blob()
+
+  return arrayBuffers
 }
 
 const getCellCoords = (tileBBox, cell, numCells) => {
@@ -61,7 +93,7 @@ const getSquareGeom = (tileBBox, cell, numCells) => {
 }
 
 const aggregate = (
-  tileLayer,
+  arrayBuffers,
   {
     quantizeOffset,
     tileBBox,
@@ -73,10 +105,12 @@ const aggregate = (
 ) => {
   const features = []
 
-  for (let f = 0; f < tileLayer.length; f++) {
-    const rawFeature = tileLayer.feature(f)
-    const values = rawFeature.properties
-    const cell = values.cell
+  for (let f = 0; f < arrayBuffers.length; f++) {
+    const rawFeature = arrayBuffers[f]
+    const cell = rawFeature[0]
+    const minTimestamp = rawFeature[1]
+    const maxTimestamp = rawFeature[2]
+    const values = rawFeature.slice(ARRAY_BUFFER_HEADER_OFFSET_INDEX)
     const row = Math.floor(cell / numCells)
     // Skip every col and row, dividing num features by 4
     // This is a very cheap hack to reduce number of points and allow faster animation
@@ -99,11 +133,6 @@ const aggregate = (
 
     const finalValues = {}
 
-    // TODO decouple from aggregation
-    const allTimestamps = Object.keys(values).map((t) => parseInt(t))
-    const minTimestamp = Math.min(...allTimestamps)
-    const maxTimestamp = Math.max(...allTimestamps)
-
     const dayToQuantizedDay = (d) => {
       return (d - quantizeOffset).toString()
     }
@@ -112,8 +141,8 @@ const aggregate = (
     // (delta not included) (stop before if minTimestamp + delta > maxTs)
     let initialValue = 0
     for (let d = minTimestamp; d < minTimestamp + delta && d < maxTimestamp + 1; d++) {
-      const key = d.toString()
-      const currentValue = values[key] ? parseInt(values[key]) : 0
+      const key = d - minTimestamp
+      const currentValue = values[key] ? values[key] : 0
       initialValue += currentValue
     }
     // store first value, and also the [delta] values before
@@ -129,10 +158,10 @@ const aggregate = (
     // add head value, subtract tail value
     let currentValue = initialValue
     for (let d = minTimestamp + 1; d < maxTimestamp; d++) {
-      const headKey = (d + delta - 1).toString()
-      const headValue = values[headKey] ? parseInt(values[headKey]) : 0
-      const tailKey = (d - 1).toString()
-      const tailValue = values[tailKey] ? parseInt(values[tailKey]) : 0
+      const headKey = d + delta - 1 - minTimestamp
+      const headValue = values[headKey] ? values[headKey] : 0
+      const tailKey = d - 1 - minTimestamp
+      const tailValue = values[tailKey] ? values[tailKey] : 0
       currentValue = currentValue + headValue - tailValue
       finalValues[dayToQuantizedDay(d).toString()] = currentValue
     }

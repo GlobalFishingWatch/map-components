@@ -2,27 +2,48 @@ import Pbf from 'pbf'
 import { VectorTile } from '@mapbox/vector-tile'
 import geojsonhint from '@mapbox/geojsonhint'
 import validation from 'geojson-validation'
-import aggregate from '../aggregate'
 import tilebelt from '@mapbox/tilebelt'
+import aggregate, { rawTileToArrayBuffers, ARRAY_BUFFER_HEADER_OFFSET_INDEX } from '../aggregate'
 
 const fs = require('fs')
 const { performance } = require('perf_hooks')
 
-let tileLayer
+const tileset = 'carriers'
 const quantizeOffset = new Date('2017-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24
+
+let tileRaw
+let tileLayer
+let arrayBuffers
 const tileBBox = tilebelt.tileToBBOX([2, 3, 2])
 
 beforeEach(() => {
-  const tileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-2-3-2.pbf')
+  tileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-2-3-2.pbf')
   const tile = new VectorTile(new Pbf(tileRaw))
-  tileLayer = tile.layers.carriers
+  tileLayer = tile.layers[tileset]
+  // console.log(tileLayer.feature(906).properties)
+  arrayBuffers = rawTileToArrayBuffers(tileRaw, tileset)
+})
+
+test('Builds intermediate array buffers', () => {
+  const arrayBuffs = rawTileToArrayBuffers(tileRaw, tileset)
+
+  const testFeatureIndex1 = 0
+  const testFeatureIndex2 = 906
+
+  // @ feature 0: 17716 --> 0 : 1
+  // @ feature 906: 17267 --> 100: 2,
+  const testValueDay1AtOffset = ARRAY_BUFFER_HEADER_OFFSET_INDEX
+  const testValueDay2AtOffset = ARRAY_BUFFER_HEADER_OFFSET_INDEX + 100
+
+  expect(arrayBuffs[testFeatureIndex1][testValueDay1AtOffset]).toBe(1)
+  expect(arrayBuffs[testFeatureIndex2][testValueDay2AtOffset]).toBe(4)
 })
 
 test('Return a correct grid', () => {
-  let agg = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
+  let agg = aggregate(arrayBuffers, { delta: 1, quantizeOffset, tileBBox })
   expect(agg.features.length).toBe(tileLayer.length)
 
-  agg = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox, skipOddCells: true })
+  agg = aggregate(arrayBuffers, { delta: 1, quantizeOffset, tileBBox, skipOddCells: true })
   expect(agg.features.length).toBe(322)
 
   // 0,46875
@@ -33,7 +54,7 @@ test('Return a correct grid', () => {
 })
 
 test('Return valid geometries/GeoJSON', () => {
-  const gridded = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
+  const gridded = aggregate(arrayBuffers, { delta: 1, quantizeOffset, tileBBox })
   let errors = geojsonhint.hint(gridded)
   if (errors.length) {
     console.log(errors)
@@ -41,7 +62,7 @@ test('Return valid geometries/GeoJSON', () => {
   expect(validation.valid(gridded)).toBe(true)
   expect(validation.isPolygon(gridded.features[100].geometry)).toBe(true)
 
-  const blob = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox, geomType: 'blob' })
+  const blob = aggregate(arrayBuffers, { delta: 1, quantizeOffset, tileBBox, geomType: 'blob' })
   errors = geojsonhint.hint(blob)
   if (errors.length) {
     console.log(errors)
@@ -65,7 +86,7 @@ test('Pick a value (delta 1)', () => {
   const testFeatureIndex = 0
   const testValueDay = 17716
 
-  const aggregated = aggregate(tileLayer, { delta: 1, quantizeOffset, tileBBox })
+  const aggregated = aggregate(arrayBuffers, { delta: 1, quantizeOffset, tileBBox })
 
   // console.log(aggregated[0])
   // // at 549, 1
@@ -77,7 +98,7 @@ test('Works with isolated value and long delta', () => {
   const testFeatureIndex = 0
   const testValueDay = 17716
   const testValueDayAtOffset = testValueDay - quantizeOffset
-  const aggregated = aggregate(tileLayer, { delta: 30, quantizeOffset, tileBBox })
+  const aggregated = aggregate(arrayBuffers, { delta: 30, quantizeOffset, tileBBox })
 
   expect(aggregated.features[testFeatureIndex].properties[testValueDayAtOffset.toString()]).toBe(1)
   expect(
@@ -100,7 +121,7 @@ test('Aggregates several days', () => {
   const testFeatureIndex = 906
 
   const t = performance.now()
-  const aggregated = aggregate(tileLayer, { delta: 3, quantizeOffset, tileBBox })
+  const aggregated = aggregate(arrayBuffers, { delta: 3, quantizeOffset, tileBBox })
   console.log('Aggregation done in ', performance.now() - t)
   const testValueDayAtOffset = testValueDay - quantizeOffset
 
@@ -351,7 +372,7 @@ test('Aggregates long time', () => {
   const testFeatureIndex = 965
 
   const t = performance.now()
-  const aggregated = aggregate(tileLayer, { delta: 200, quantizeOffset, tileBBox })
+  const aggregated = aggregate(arrayBuffers, { delta: 200, quantizeOffset, tileBBox })
   console.log('Big Aggregation done in ', performance.now() - t)
   const testValueDayAtOffset = testValueDay - quantizeOffset
 
