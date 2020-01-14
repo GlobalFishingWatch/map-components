@@ -147,7 +147,6 @@ class HeatmapGenerator {
     // url.searchParams.set('delta', getDelta(layer.start, layer.end))
     url.searchParams.set('delta', 1000)
 
-    console.log(quantizeOffset)
     url.searchParams.set('quantizeOffset', quantizeOffset)
 
     if (layer.serverSideFilter) {
@@ -184,16 +183,12 @@ class HeatmapGenerator {
     const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
     const d = toQuantizedDays(layer.start)
 
-    console.log(d)
-
     // TODO actually pick correct offset, not '0'
     colorRamp[2] = ['to-number', ['get', d.toString()]]
     colorRamp[5] = mult * originalColorRamp[5]
     colorRamp[7] = mult * originalColorRamp[7]
     colorRamp[9] = mult * originalColorRamp[9]
     colorRamp[11] = mult * originalColorRamp[11]
-
-    console.log(colorRamp)
 
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
