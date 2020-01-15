@@ -7,10 +7,7 @@ const dayToTime = (day) => day * 24 * 60 * 60 * 1000
 export const ARRAY_BUFFER_HEADER_OFFSET_INDEX = 3
 export const BUFFER_HEADERS = ['new', 'cell', 'min', 'max']
 
-export const rawTileToIntArrays = (
-  rawTileArrayBuffer,
-  { tileset, maxDelta = 1000, quantizeOffset }
-) => {
+export const rawTileToIntArrays = (rawTileArrayBuffer, { tileset }) => {
   const tile = new VectorTile(new Pbf(rawTileArrayBuffer))
   const tileLayer = tile.layers[tileset]
 
@@ -28,23 +25,16 @@ export const rawTileToIntArrays = (
     const minTimestamp = Math.min(...allTimestamps)
     const maxTimestamp = Math.max(...allTimestamps)
 
-    // start will actually be maxDelta days - 1 before the actual start,
-    // so that values before take into account first values when aggregating
-    // except when absolute start/quantizeOffset is after that value
-    const realMinTimeStamp = Math.max(minTimestamp - maxDelta + 1, quantizeOffset)
-    // const realMinTimeStamp = minTimestamp - maxDelta + 1
-    // const realMinTimeStamp = minTimestamp
-
     // if (f === 0) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
     // if (f === 100) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
     // if (f === 1000) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
 
-    const featureSize = BUFFER_HEADERS.length + (maxTimestamp - realMinTimeStamp) + 1
+    const featureSize = BUFFER_HEADERS.length + (maxTimestamp - minTimestamp + 1)
 
     featuresProps.push({
       values,
       cell,
-      minTimestamp: realMinTimeStamp,
+      minTimestamp,
       maxTimestamp,
       featureSize,
     })
@@ -135,28 +125,49 @@ const aggregate = (
 ) => {
   const features = []
 
+  let aggregating = []
+
+  let currentFeatureIndex = -1
   let currentFeature
   let currentFeatureCell
   let currentFeatureMinTimestamp
   let currentFeatureMaxTimestamp
   let currentAggregatedValue
-  let currentTailValue
   let featureBufferPos
-  let currentTs
+  let head
+  let tail
+
   for (let i = 0; i < arrayBuffer.length; i++) {
     const value = arrayBuffer[i]
+
     if (value === -1) {
       // add previously completed feature
       if (i > 0) {
+        let finalTailValue = 0
+        for (let finalTail = tail + 1; finalTail <= currentFeatureMaxTimestamp; finalTail++) {
+          currentAggregatedValue = currentAggregatedValue - finalTailValue
+          if (finalTail > currentFeatureMinTimestamp) {
+            finalTailValue = aggregating.shift()
+          } else {
+            finalTailValue = 0
+          }
+          const quantizedTail = finalTail - quantizeOffset
+          currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+          // if (currentFeatureCell === /*3505*/ 30 && featureBufferPos < 35) {
+          //   console.log(finalTail, currentAggregatedValue)
+          // }
+        }
+
         features.push(currentFeature)
       }
       currentFeature = {
         type: 'Feature',
         properties: {},
       }
-      featureBufferPos = 0
-      currentTailValue = 0
+      featureBufferPos = 1
       currentAggregatedValue = 0
+      aggregating = []
+      currentFeatureIndex++
       continue
     }
 
@@ -173,118 +184,50 @@ const aggregate = (
       // minTs
       case 2:
         currentFeatureMinTimestamp = value
-        currentTs = currentFeatureMinTimestamp
+        head = currentFeatureMinTimestamp
         break
-      // maxTs
+      // mx
       case 3:
         currentFeatureMaxTimestamp = value
         break
       // actual value
       default:
-        currentAggregatedValue = currentAggregatedValue + value - currentTailValue
-        const quantizedDay = currentTs - quantizeOffset
-        if (value > 0) {
-          if (features.length === 0) {
-            console.log(currentAggregatedValue)
-          }
-          currentFeature.properties[quantizedDay.toString()] = currentAggregatedValue
+        // when we are looking at ts 0 and delta is 10, we are in fact looking at the aggregation of day -9
+        tail = head - delta + 1
+
+        aggregating.push(value)
+
+        let tailValue = 0
+        if (tail > currentFeatureMinTimestamp) {
+          tailValue = aggregating.shift()
         }
-        currentTailValue = value
+        currentAggregatedValue = currentAggregatedValue + value - tailValue
+
+        const quantizedTail = tail - quantizeOffset
+        // if (currentFeatureCell === /*3505*/ 30 && featureBufferPos < 35) {
+        //   console.log(
+        //     head,
+        //     tail,
+        //     quantizedTail,
+        //     currentAggregatedValue,
+        //     'adding:',
+        //     value,
+        //     'rem_:',
+        //     tailValue,
+        //     'agglen',
+        //     aggregating.length
+        //   )
+        // }
+
+        if (currentAggregatedValue > 0) {
+          currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+        }
+        head++
     }
-    currentTs++
     featureBufferPos++
   }
+  // add last feature
   features.push(currentFeature)
-
-  const geoJSON = {
-    type: 'FeatureCollection',
-    features,
-  }
-  return geoJSON
-}
-
-const aggregate_ = (
-  arrayBuffers,
-  {
-    quantizeOffset,
-    tileBBox,
-    delta = 30,
-    geomType = GEOM_TYPES.GRIDDED,
-    numCells = 64,
-    skipOddCells = false,
-  }
-) => {
-  const features = []
-
-  for (let f = 0; f < arrayBuffers.length; f++) {
-    const rawFeature = arrayBuffers[f]
-    const cell = rawFeature[0]
-    const minTimestamp = rawFeature[1]
-    const maxTimestamp = rawFeature[2]
-    const values = rawFeature.slice(ARRAY_BUFFER_HEADER_OFFSET_INDEX)
-    const row = Math.floor(cell / numCells)
-    // Skip every col and row, dividing num features by 4
-    // This is a very cheap hack to reduce number of points and allow faster animation
-    if (skipOddCells === true && (cell % 2 !== 0 || row % 2 !== 0)) {
-      continue
-    }
-
-    const feature = {
-      type: 'Feature',
-      properties: {},
-    }
-
-    if (geomType === GEOM_TYPES.BLOB) {
-      feature.geometry = getPointGeom(tileBBox, cell, numCells)
-    } else {
-      feature.geometry = getSquareGeom(tileBBox, cell, numCells)
-    }
-
-    delete values.cell
-
-    const finalValues = {}
-
-    const dayToQuantizedDay = (d) => {
-      return d - quantizeOffset
-    }
-
-    // compute initial value by aggregating values[minTimestamp] to values[minTimestamp + delta]
-    // (delta not included) (stop before if minTimestamp + delta > maxTs)
-    let initialValue = 0
-    for (let d = minTimestamp; d < minTimestamp + delta && d < maxTimestamp + 1; d++) {
-      const key = d - minTimestamp
-      const currentValue = values[key] ? values[key] : 0
-      initialValue += currentValue
-    }
-    // store first value, and also the [delta] values before
-    // (ie if delta is 30 days, 15 days before minTimestamp the aggregated value is already equal to the value at minTimestamp)
-    for (let d = minTimestamp - delta + 1; d <= minTimestamp; d++) {
-      const qd = dayToQuantizedDay(d)
-      if (qd >= 0) {
-        finalValues[qd.toString()] = initialValue
-      }
-    }
-
-    // start at minTimestamp + 1, stop at maxTimestamp + delta
-    // add head value, subtract tail value
-    let currentValue = initialValue
-    let tailValue = 0
-    for (let d = minTimestamp + 1; d < maxTimestamp; d++) {
-      const headKey = d + delta - 1 - minTimestamp
-      const headValue = values[headKey] ? values[headKey] : 0
-      // const tailKey = d - 1 - minTimestamp
-      // const tailValue = values[tailKey] ? values[tailKey] : 0
-      currentValue = currentValue + headValue - tailValue
-      finalValues[dayToQuantizedDay(d).toString()] = currentValue
-      tailValue = headValue
-    }
-
-    // console.log
-
-    feature.properties = finalValues
-
-    features.push(feature)
-  }
 
   const geoJSON = {
     type: 'FeatureCollection',
