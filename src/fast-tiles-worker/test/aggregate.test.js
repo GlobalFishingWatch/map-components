@@ -10,6 +10,7 @@ const { performance } = require('perf_hooks')
 
 const tileset = 'carriers'
 const quantizeOffset = new Date('2017-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24 // 17167
+const start = quantizeOffset
 
 let tileRaw
 let tileLayer
@@ -48,11 +49,18 @@ test('Has the correct number of features', () => {
   expect(aggregated.features.length).toBe(1321)
 })
 
-test('Big tile, big delta', () => {
+test('Big tile, big delta, single frame mode, last feature', () => {
   const bigTileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-1-1-0.pbf')
   const t0 = performance.now()
   const bigTileArrayBuffers = rawTileToIntArrays(bigTileRaw, { tileset, quantizeOffset })
   console.log('Bufferisation done in ', performance.now() - t0)
+
+  // const tile = new VectorTile(new Pbf(bigTileRaw))
+  // tileLayer = tile.layers[tileset]
+  // for (let index = 0; index < tileLayer.length; index++) {
+  //   if (Object.keys(tileLayer.feature(index).properties).length < 10)
+  //     console.log(tileLayer.feature(index).properties, index)
+  // }
 
   const t = performance.now()
   const agg = aggregate(bigTileArrayBuffers, {
@@ -61,8 +69,22 @@ test('Big tile, big delta', () => {
     tileBBox: tilebelt.tileToBBOX([1, 1, 0]),
   })
   console.log('Aggregation done in ', performance.now() - t)
-  // console.log(agg.features[0].properties)
-  expect(false).toBe(true)
+
+  // { '17688': 1, cell: 4081 } 2699
+  //  { '17345': 1, '17618': 1, '18041': 2, '18123': 1, cell: 4095 } 2713
+  expect(agg.features[2699].properties[17688 - quantizeOffset]).toBe(1)
+  expect(agg.features[2713].properties[17345 - quantizeOffset]).toBe(5)
+
+  const t2 = performance.now()
+  const aggSingleFrame = aggregate(bigTileArrayBuffers, {
+    delta: 1000,
+    quantizeOffset,
+    singleFrameStart: start,
+    tileBBox: tilebelt.tileToBBOX([1, 1, 0]),
+  })
+  console.log('Aggregation done in ', performance.now() - t2)
+
+  // expect(false).toBe(true)
 })
 
 test('Return a correct grid', () => {
@@ -144,7 +166,7 @@ test('Agg is correct with isolated value and long delta', () => {
 })
 
 test('Aggregates several days', () => {
-  // @ 906
+  // @ index 906 / cell 3505
   //     '17167': 2,
   //     '17168': 1,
   //     '17169': 1,

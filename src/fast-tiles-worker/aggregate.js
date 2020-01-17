@@ -137,27 +137,36 @@ const aggregate = (
   let head
   let tail
 
+  const writeValueToFeature = (quantizedTail) => {
+    // TODO add skipOddCells check
+    // TODO add singleFrame check (write only if quantizedTrail === quantizedStart) + write properties.value =
+    currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+  }
+
+  // write values after tail > minTimestamp
+  const writeFinalTail = () => {
+    let finalTailValue = 0
+    for (let finalTail = tail + 1; finalTail <= currentFeatureMaxTimestamp; finalTail++) {
+      currentAggregatedValue = currentAggregatedValue - finalTailValue
+      if (finalTail > currentFeatureMinTimestamp) {
+        finalTailValue = aggregating.shift()
+      } else {
+        finalTailValue = 0
+      }
+      const quantizedTail = finalTail - quantizeOffset
+      if (quantizedTail >= 0) {
+        writeValueToFeature(quantizedTail)
+      }
+    }
+  }
+
   for (let i = 0; i < arrayBuffer.length; i++) {
     const value = arrayBuffer[i]
 
     if (value === -1) {
       // add previously completed feature
       if (i > 0) {
-        let finalTailValue = 0
-        for (let finalTail = tail + 1; finalTail <= currentFeatureMaxTimestamp; finalTail++) {
-          currentAggregatedValue = currentAggregatedValue - finalTailValue
-          if (finalTail > currentFeatureMinTimestamp) {
-            finalTailValue = aggregating.shift()
-          } else {
-            finalTailValue = 0
-          }
-          const quantizedTail = finalTail - quantizeOffset
-          currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
-          // if (currentFeatureCell === /*3505*/ 30 && featureBufferPos < 35) {
-          //   console.log(finalTail, currentAggregatedValue)
-          // }
-        }
-
+        writeFinalTail()
         features.push(currentFeature)
       }
       currentFeature = {
@@ -219,14 +228,15 @@ const aggregate = (
         //   )
         // }
 
-        if (currentAggregatedValue > 0) {
-          currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+        if (currentAggregatedValue > 0 && quantizedTail >= 0) {
+          writeValueToFeature(quantizedTail)
         }
         head++
     }
     featureBufferPos++
   }
   // add last feature
+  writeFinalTail()
   features.push(currentFeature)
 
   const geoJSON = {
