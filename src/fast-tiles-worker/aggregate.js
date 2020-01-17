@@ -25,10 +25,6 @@ export const rawTileToIntArrays = (rawTileArrayBuffer, { tileset }) => {
     const minTimestamp = Math.min(...allTimestamps)
     const maxTimestamp = Math.max(...allTimestamps)
 
-    // if (f === 0) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-    // if (f === 100) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-    // if (f === 1000) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-
     const featureSize = BUFFER_HEADERS.length + (maxTimestamp - minTimestamp + 1)
 
     featuresProps.push({
@@ -121,6 +117,7 @@ const aggregate = (
     geomType = GEOM_TYPES.GRIDDED,
     numCells = 64,
     skipOddCells = false,
+    singleFrameStart = null,
   }
 ) => {
   const features = []
@@ -139,8 +136,13 @@ const aggregate = (
 
   const writeValueToFeature = (quantizedTail) => {
     // TODO add skipOddCells check
-    // TODO add singleFrame check (write only if quantizedTrail === quantizedStart) + write properties.value =
-    currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+    if (singleFrameStart === null) {
+      currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+    } else {
+      if (singleFrameStart === quantizedTail) {
+        currentFeature.properties.value = currentAggregatedValue
+      }
+    }
   }
 
   // write values after tail > minTimestamp

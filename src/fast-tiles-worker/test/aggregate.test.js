@@ -3,14 +3,13 @@ import { VectorTile } from '@mapbox/vector-tile'
 import geojsonhint from '@mapbox/geojsonhint'
 import validation from 'geojson-validation'
 import tilebelt from '@mapbox/tilebelt'
-import aggregate, { rawTileToIntArrays, ARRAY_BUFFER_HEADER_OFFSET_INDEX } from '../aggregate'
+import aggregate, { rawTileToIntArrays } from '../aggregate'
 
 const fs = require('fs')
 const { performance } = require('perf_hooks')
 
 const tileset = 'carriers'
 const quantizeOffset = new Date('2017-01-01T00:00:00.000Z').getTime() / 1000 / 60 / 60 / 24 // 17167
-const start = quantizeOffset
 
 let tileRaw
 let tileLayer
@@ -79,10 +78,12 @@ test('Big tile, big delta, single frame mode, last feature', () => {
   const aggSingleFrame = aggregate(bigTileArrayBuffers, {
     delta: 1000,
     quantizeOffset,
-    singleFrameStart: start,
+    singleFrameStart: 0,
     tileBBox: tilebelt.tileToBBOX([1, 1, 0]),
   })
   console.log('Aggregation done in ', performance.now() - t2)
+  expect(aggSingleFrame.features[2699].properties.value).toBe(1)
+  expect(aggSingleFrame.features[2713].properties.value).toBe(5)
 
   // expect(false).toBe(true)
 })
