@@ -5,7 +5,7 @@ import { GEOM_TYPES } from './constants'
 const dayToTime = (day) => day * 24 * 60 * 60 * 1000
 
 export const ARRAY_BUFFER_HEADER_OFFSET_INDEX = 3
-export const BUFFER_HEADERS = ['new', 'cell', 'min', 'max']
+export const BUFFER_HEADERS = ['cell', 'min', 'max']
 
 export const rawTileToIntArrays = (rawTileArrayBuffer, { tileset }) => {
   const tile = new VectorTile(new Pbf(rawTileArrayBuffer))
@@ -38,14 +38,13 @@ export const rawTileToIntArrays = (rawTileArrayBuffer, { tileset }) => {
     bufferSize += featureSize
   }
 
-  const buffer = new Int16Array(bufferSize)
+  const buffer = new Uint16Array(bufferSize)
   let bufferPos = 0
   featuresProps.forEach((featureProps, i) => {
-    buffer[bufferPos] = -1 // start feature
-    buffer[bufferPos + 1] = featureProps.cell
-    buffer[bufferPos + 2] = featureProps.minTimestamp
-    buffer[bufferPos + 3] = featureProps.maxTimestamp
-    let featureBufferPos = bufferPos + 4
+    buffer[bufferPos + 0] = featureProps.cell
+    buffer[bufferPos + 1] = featureProps.minTimestamp
+    buffer[bufferPos + 2] = featureProps.maxTimestamp
+    let featureBufferPos = bufferPos + BUFFER_HEADERS.length
 
     for (let d = featureProps.minTimestamp; d <= featureProps.maxTimestamp; d++) {
       const currentValue = featureProps.values[d.toString()]
@@ -124,13 +123,17 @@ const aggregate = (
 
   let aggregating = []
 
-  let currentFeatureIndex = -1
-  let currentFeature
+  let currentFeatureIndex = 0
+  let currentFeature = {
+    type: 'Feature',
+    properties: {},
+  }
   let currentFeatureCell
   let currentFeatureMinTimestamp
   let currentFeatureMaxTimestamp
-  let currentAggregatedValue
-  let featureBufferPos
+  let currentFeatureTimestampDelta
+  let currentAggregatedValue = 0
+  let featureBufferPos = 0
   let head
   let tail
 
@@ -165,26 +168,9 @@ const aggregate = (
   for (let i = 0; i < arrayBuffer.length; i++) {
     const value = arrayBuffer[i]
 
-    if (value === -1) {
-      // add previously completed feature
-      if (i > 0) {
-        writeFinalTail()
-        features.push(currentFeature)
-      }
-      currentFeature = {
-        type: 'Feature',
-        properties: {},
-      }
-      featureBufferPos = 1
-      currentAggregatedValue = 0
-      aggregating = []
-      currentFeatureIndex++
-      continue
-    }
-
     switch (featureBufferPos) {
       // cell
-      case 1:
+      case 0:
         currentFeatureCell = value
         if (geomType === GEOM_TYPES.BLOB) {
           currentFeature.geometry = getPointGeom(tileBBox, currentFeatureCell, numCells)
@@ -193,13 +179,14 @@ const aggregate = (
         }
         break
       // minTs
-      case 2:
+      case 1:
         currentFeatureMinTimestamp = value
         head = currentFeatureMinTimestamp
         break
       // mx
-      case 3:
+      case 2:
         currentFeatureMaxTimestamp = value
+        currentFeatureTimestampDelta = currentFeatureMaxTimestamp - currentFeatureMinTimestamp
         break
       // actual value
       default:
@@ -236,10 +223,24 @@ const aggregate = (
         head++
     }
     featureBufferPos++
+
+    const isEndOfFeature =
+      featureBufferPos - BUFFER_HEADERS.length - 1 === currentFeatureTimestampDelta
+
+    if (isEndOfFeature) {
+      writeFinalTail()
+      features.push(currentFeature)
+      currentFeature = {
+        type: 'Feature',
+        properties: {},
+      }
+      featureBufferPos = 0
+      currentAggregatedValue = 0
+      aggregating = []
+      currentFeatureIndex++
+      continue
+    }
   }
-  // add last feature
-  writeFinalTail()
-  features.push(currentFeature)
 
   const geoJSON = {
     type: 'FeatureCollection',

@@ -29,17 +29,14 @@ test('Builds intermediate array buffer', () => {
   // @ feature 0: 17716 --> 0 : 1
   // @ feature 906: 17267 --> 100: 2,
 
-  expect(arrayBuff[0]).toBe(-1) // new feature
-  expect(arrayBuff[1]).toBe(30) // cell
-  expect(arrayBuff[2]).toBe(17716) // start
-  expect(arrayBuff[3]).toBe(17716) // max
-  expect(arrayBuff[4]).toBe(1) // value
-  expect(arrayBuff[5]).toBe(-1) // new feature
-  expect(arrayBuff[6]).toBe(34) // cell
-  expect(arrayBuff[7]).toBe(17889) // start
-  expect(arrayBuff[8]).toBe(17889) // max
-  expect(arrayBuff[9]).toBe(1) // value
-  expect(arrayBuff[10]).toBe(-1)
+  expect(arrayBuff[0]).toBe(30) // cell
+  expect(arrayBuff[1]).toBe(17716) // start
+  expect(arrayBuff[2]).toBe(17716) // max
+  expect(arrayBuff[3]).toBe(1) // value
+  expect(arrayBuff[4]).toBe(34) // cell
+  expect(arrayBuff[5]).toBe(17889) // start
+  expect(arrayBuff[6]).toBe(17889) // max
+  expect(arrayBuff[7]).toBe(1) // value
 })
 
 test('Has the correct number of features', () => {
@@ -52,7 +49,7 @@ test('Big tile, big delta, single frame mode, last feature', () => {
   const bigTileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-1-1-0.pbf')
   const t0 = performance.now()
   const bigTileArrayBuffers = rawTileToIntArrays(bigTileRaw, { tileset, quantizeOffset })
-  console.log('Bufferisation done in ', performance.now() - t0)
+  console.log('Big tile/big delta Bufferisation done in ', performance.now() - t0)
 
   // const tile = new VectorTile(new Pbf(bigTileRaw))
   // tileLayer = tile.layers[tileset]
@@ -67,7 +64,7 @@ test('Big tile, big delta, single frame mode, last feature', () => {
     quantizeOffset,
     tileBBox: tilebelt.tileToBBOX([1, 1, 0]),
   })
-  console.log('Aggregation done in ', performance.now() - t)
+  console.log('Big tile/big delta Aggregation done in ', performance.now() - t)
 
   // { '17688': 1, cell: 4081 } 2699
   //  { '17345': 1, '17618': 1, '18041': 2, '18123': 1, cell: 4095 } 2713
@@ -81,7 +78,7 @@ test('Big tile, big delta, single frame mode, last feature', () => {
     singleFrameStart: 0,
     tileBBox: tilebelt.tileToBBOX([1, 1, 0]),
   })
-  console.log('Aggregation done in ', performance.now() - t2)
+  console.log('Big tile/big delta (single frame) Aggregation done in ', performance.now() - t2)
   expect(aggSingleFrame.features[2699].properties.value).toBe(1)
   expect(aggSingleFrame.features[2713].properties.value).toBe(5)
 
