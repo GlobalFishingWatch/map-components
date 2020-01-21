@@ -2,12 +2,10 @@ import Pbf from 'pbf'
 import { VectorTile } from '@mapbox/vector-tile'
 import { GEOM_TYPES } from './constants'
 
-const dayToTime = (day) => day * 24 * 60 * 60 * 1000
-
 export const ARRAY_BUFFER_HEADER_OFFSET_INDEX = 3
 export const BUFFER_HEADERS = ['cell', 'min', 'max']
 
-export const rawTileToIntArrays = (rawTileArrayBuffer, { tileset }) => {
+export const rawTileToIntArray = (rawTileArrayBuffer, { tileset }) => {
   const tile = new VectorTile(new Pbf(rawTileArrayBuffer))
   const tileLayer = tile.layers[tileset]
 
@@ -202,20 +200,6 @@ const aggregate = (
         currentAggregatedValue = currentAggregatedValue + value - tailValue
 
         const quantizedTail = tail - quantizeOffset
-        // if (currentFeatureCell === /*3505*/ 30 && featureBufferPos < 35) {
-        //   console.log(
-        //     head,
-        //     tail,
-        //     quantizedTail,
-        //     currentAggregatedValue,
-        //     'adding:',
-        //     value,
-        //     'rem_:',
-        //     tailValue,
-        //     'agglen',
-        //     aggregating.length
-        //   )
-        // }
 
         if (currentAggregatedValue > 0 && quantizedTail >= 0) {
           writeValueToFeature(quantizedTail)

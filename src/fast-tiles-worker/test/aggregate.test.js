@@ -3,7 +3,7 @@ import { VectorTile } from '@mapbox/vector-tile'
 import geojsonhint from '@mapbox/geojsonhint'
 import validation from 'geojson-validation'
 import tilebelt from '@mapbox/tilebelt'
-import aggregate, { rawTileToIntArrays } from '../aggregate'
+import aggregate, { rawTileToIntArray } from '../aggregate'
 
 const fs = require('fs')
 const { performance } = require('perf_hooks')
@@ -20,11 +20,11 @@ beforeEach(() => {
   tileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-2-3-2.pbf')
   const tile = new VectorTile(new Pbf(tileRaw))
   tileLayer = tile.layers[tileset]
-  arrayBuffers = rawTileToIntArrays(tileRaw, { tileset, quantizeOffset })
+  arrayBuffers = rawTileToIntArray(tileRaw, { tileset, quantizeOffset })
 })
 
 test('Builds intermediate array buffer', () => {
-  const arrayBuff = rawTileToIntArrays(tileRaw, { tileset, quantizeOffset })
+  const arrayBuff = rawTileToIntArray(tileRaw, { tileset, quantizeOffset })
 
   // @ feature 0: 17716 --> 0 : 1
   // @ feature 906: 17267 --> 100: 2,
@@ -48,7 +48,7 @@ test('Has the correct number of features', () => {
 test('Big tile, big delta, single frame mode, last feature', () => {
   const bigTileRaw = fs.readFileSync('./src/fast-tiles-worker/test/mocks/carriers-1-1-0.pbf')
   const t0 = performance.now()
-  const bigTileArrayBuffers = rawTileToIntArrays(bigTileRaw, { tileset, quantizeOffset })
+  const bigTileArrayBuffers = rawTileToIntArray(bigTileRaw, { tileset, quantizeOffset })
   console.log('Big tile/big delta Bufferisation done in ', performance.now() - t0)
 
   // const tile = new VectorTile(new Pbf(bigTileRaw))

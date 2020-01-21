@@ -46,7 +46,7 @@ const COLOR_RAMPS_RAMPS = {
     ['linear'],
     'dummy',
     0,
-    'rgba(255, 0, 0, 1)',
+    'rgba(0, 0, 0, 0)',
     0.01,
     '#0c276c',
     0.4,
@@ -113,6 +113,7 @@ class HeatmapGenerator {
       serverSideFiltersList.push(serverSideFilter)
     }
 
+    console.log('useStartAndEnd', useStartAndEnd, useStartAndEnd === true)
     if (useStartAndEnd) {
       serverSideFiltersList.push(`timestamp > '${start.slice(0, 19).replace('T', ' ')}'`)
       serverSideFiltersList.push(`timestamp < '${end.slice(0, 19).replace('T', ' ')}'`)
@@ -141,13 +142,13 @@ class HeatmapGenerator {
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
 
     const url = new URL(BASE_WORKER_URL)
-    url.searchParams.set('geomType', geomType)
     url.searchParams.set('tileset', layer.tileset)
+    url.searchParams.set('geomType', geomType)
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
-    // url.searchParams.set('delta', getDelta(layer.start, layer.end))
-    url.searchParams.set('delta', 1000)
-
     url.searchParams.set('quantizeOffset', quantizeOffset)
+    url.searchParams.set('delta', getDelta(layer.start, layer.end))
+    url.searchParams.set('singleFrame', layer.singleFrame)
+    url.searchParams.set('start', layer.start)
 
     if (layer.serverSideFilter) {
       url.searchParams.set(
@@ -183,8 +184,8 @@ class HeatmapGenerator {
     const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
     const d = toQuantizedDays(layer.start)
 
-    // TODO actually pick correct offset, not '0'
-    colorRamp[2] = ['to-number', ['get', d.toString()]]
+    const pickValueAt = layer.singleFrame ? 'value' : d.toString()
+    colorRamp[2] = ['to-number', ['get', pickValueAt]]
     colorRamp[5] = mult * originalColorRamp[5]
     colorRamp[7] = mult * originalColorRamp[7]
     colorRamp[9] = mult * originalColorRamp[9]
