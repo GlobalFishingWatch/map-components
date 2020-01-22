@@ -82,5 +82,19 @@
            "source-layer": "bluefin_rfmo"
         }
      ]
+  },
+  "landmass": {
+     "source": {
+        "sql": "SELECT the_geom, the_geom_webmercator, cartodb_id FROM landmass",
+        "type": "vector"
+     },
+     "layers": [
+      {
+         "id": "landmass",
+         "type": "fill",
+         "source": "landmass",
+         "source-layer": "landmass"
+      }
+   ]
   }
 }

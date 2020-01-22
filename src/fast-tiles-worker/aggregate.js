@@ -2,7 +2,6 @@ import Pbf from 'pbf'
 import { VectorTile } from '@mapbox/vector-tile'
 import { GEOM_TYPES } from './constants'
 
-export const ARRAY_BUFFER_HEADER_OFFSET_INDEX = 3
 export const BUFFER_HEADERS = ['cell', 'min', 'max']
 
 export const rawTileToIntArray = (rawTileArrayBuffer, { tileset }) => {
