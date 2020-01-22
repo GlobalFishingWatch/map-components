@@ -40,8 +40,7 @@ class LayerManagerLib {
   // Uses generators to return the layer with sources and layers
   _getGeneratedLayer = (layer) => {
     if (!this.generators[layer.type]) {
-      console.warn('There is no styleLayer generator loaded for the layer:', layer)
-      return []
+      throw new Error('There is no styleLayer generator loaded for the layer:', layer)
     }
     return this.generators[layer.type].getStyle(layer)
   }
