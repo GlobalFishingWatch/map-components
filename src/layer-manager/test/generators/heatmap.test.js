@@ -84,7 +84,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
         id,
         type: 'vector',
         tiles: [
-          `http://__fast_tiles__/{z}/{x}/{y}?tileset=${TILESET}&geomType=${
+          `https://__fast_tiles__/{z}/{x}/{y}?tileset=${TILESET}&geomType=${
             GEOM_TYPES.GRIDDED
           }&fastTilesAPI=${encodeURIComponent(
             FAST_TILES_API
