@@ -103,6 +103,11 @@ const toQuantizedDays = (d) => {
 class HeatmapGenerator {
   type = HEATMAP_TYPE
   loadingStats = false
+  stats = {
+    max: 30,
+    min: 1,
+    median: 1,
+  }
 
   constructor({ fastTilesAPI = DEFAULT_FAST_TILES_API }) {
     this.fastTilesAPI = fastTilesAPI
@@ -115,7 +120,6 @@ class HeatmapGenerator {
       serverSideFiltersList.push(serverSideFilter)
     }
 
-    console.log('useStartAndEnd', useStartAndEnd, useStartAndEnd === true)
     if (useStartAndEnd) {
       serverSideFiltersList.push(`timestamp > '${start.slice(0, 19).replace('T', ' ')}'`)
       serverSideFiltersList.push(`timestamp < '${end.slice(0, 19).replace('T', ' ')}'`)
@@ -124,18 +128,21 @@ class HeatmapGenerator {
     return serverSideFilters
   }
 
-  _fetchStats = memoizeOne((endpoint, tileset, zoom, delta, serverSideFilters) => {
-    // console.log('fetch stats', delta, zoom)
+  _fetchStats = memoizeOne((endpoint, tileset, zoom, serverSideFilters) => {
     this.loadingStats = true
     const statsUrl = new URL(`${endpoint}${tileset}/statistics/${zoom}`)
     if (serverSideFilters) {
       statsUrl.searchParams.set('filters', serverSideFilters)
     }
     return fetch(statsUrl.toString())
-      .then((r) => r.text())
+      .then((r) => r.json())
       .then((r) => {
-        this.statsMax = parseInt(r.max)
-        this.statsMin = parseInt(r.min)
+        this.stats = {
+          max: parseInt(r.max),
+          min: parseInt(r.min),
+          median: parseInt(r.median),
+        }
+
         this.loadingStats = false
       })
   })
@@ -182,22 +189,29 @@ class HeatmapGenerator {
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
     const colorRampType = layer.colorRamp || COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
-    const statsMult = this.statsMax || 1
-    const deltaMult = getDelta(layer.start, layer.end)
-    // const mult = colorRampMult * statsMult * deltaMult
-    const mult = colorRampMult
+
+    const delta = getDelta(layer.start, layer.end)
+    const overallMult = colorRampMult * delta
+
+    const medianMaxValue = this.stats.median + (this.stats.max - this.stats.median) / 2
+    const stops = [
+      0,
+      this.stats.min,
+      this.stats.median + 1 * overallMult,
+      medianMaxValue * overallMult,
+      this.stats.max * overallMult + 1,
+    ]
 
     const paint = { ...paintByGeomType[geomType] }
-    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
     const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
     const d = toQuantizedDays(layer.start)
 
     const pickValueAt = layer.singleFrame ? 'value' : d.toString()
     colorRamp[2] = ['to-number', ['get', pickValueAt]]
-    colorRamp[5] = mult * originalColorRamp[5]
-    colorRamp[7] = mult * originalColorRamp[7]
-    colorRamp[9] = mult * originalColorRamp[9]
-    colorRamp[11] = mult * originalColorRamp[11]
+    colorRamp[5] = stops[1]
+    colorRamp[7] = stops[2]
+    colorRamp[9] = stops[3]
+    colorRamp[11] = stops[4]
 
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
@@ -217,6 +231,15 @@ class HeatmapGenerator {
           visibility: layer.visible ? 'visible' : 'none',
         },
         paint,
+        metadata: {
+          legend: [
+            [0, colorRamp[4]],
+            [stops[1], colorRamp[6]],
+            [stops[2], colorRamp[8]],
+            [stops[3], colorRamp[10]],
+            [stops[4], colorRamp[12]],
+          ],
+        },
       },
     ]
   }
@@ -235,7 +258,6 @@ class HeatmapGenerator {
       this.fastTilesAPI,
       layer.tileset,
       Math.floor(layer.zoom),
-      getDelta(layer.start, layer.end),
       serverSideFilters
     )
 
