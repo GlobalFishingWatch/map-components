@@ -7,6 +7,12 @@ const FAST_TILES_KEY = '__fast_tiles__'
 const DEFAULT_FAST_TILES_API = 'https://fst-tiles-jzzp2ui3wq-uc.a.run.app/v1/'
 const BASE_WORKER_URL = `http://${FAST_TILES_KEY}/{z}/{x}/{y}`
 
+export const toDays = (d) => {
+  return new Date(d).getTime() / 1000 / 60 / 60 / 24
+}
+
+export const DEFAULT_QUANTIZE_OFFSET = toDays('2017-01-01T00:00:00.000Z')
+
 export const GEOM_TYPES = {
   BLOB: 'blob',
   GRIDDED: 'gridded',
@@ -85,12 +91,8 @@ const getDelta = (start, end) => {
   return daysDelta
 }
 
-const toDays = (d) => {
-  return new Date(d).getTime() / 1000 / 60 / 60 / 24
-}
-
 // TODO This is hardcoded for now, but it will need to be set intelligently
-const quantizeOffset = toDays('2017-01-01T00:00:00.000Z')
+const quantizeOffset = DEFAULT_QUANTIZE_OFFSET
 
 // TODO for now only works in days
 const toQuantizedDays = (d) => {
@@ -139,6 +141,9 @@ class HeatmapGenerator {
   })
 
   _getStyleSources = (layer) => {
+    if (!layer.start || !layer.end || !layer.tileset) {
+      throw new Error('Heatmap generator must specify start, end and tileset parameters', layer)
+    }
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
 
     const url = new URL(BASE_WORKER_URL)
@@ -147,8 +152,11 @@ class HeatmapGenerator {
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('quantizeOffset', quantizeOffset)
     url.searchParams.set('delta', getDelta(layer.start, layer.end))
-    url.searchParams.set('singleFrame', layer.singleFrame)
     url.searchParams.set('start', layer.start)
+
+    if (layer.singleFrame === true) {
+      url.searchParams.set('singleFrame', layer.singleFrame)
+    }
 
     if (layer.serverSideFilter) {
       url.searchParams.set(
