@@ -106,6 +106,11 @@
   var SHIFT_LEFT_32 = (1 << 16) * (1 << 16),
     SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32
 
+  // Threshold chosen based on both benchmarking and knowledge about browser string
+  // data structures (which currently switch structure types at 12 bytes or more)
+  var TEXT_DECODER_MIN_LENGTH = 12
+  var utf8TextDecoder = typeof TextDecoder === 'undefined' ? null : new TextDecoder('utf8')
+
   Pbf.prototype = {
     destroy: function() {
       this.buf = null
@@ -209,10 +214,16 @@
     },
 
     readString: function() {
-      var end = this.readVarint() + this.pos,
-        str = readUtf8(this.buf, this.pos, end)
+      var end = this.readVarint() + this.pos
+      var pos = this.pos
       this.pos = end
-      return str
+
+      if (end - pos >= TEXT_DECODER_MIN_LENGTH && utf8TextDecoder) {
+        // longer strings are fast with the built-in browser TextDecoder API
+        return readUtf8TextDecoder(this.buf, pos, end)
+      }
+      // short strings are fast with our custom implementation
+      return readUtf8(this.buf, pos, end)
     },
 
     readBytes: function() {
@@ -722,6 +733,10 @@
     }
 
     return str
+  }
+
+  function readUtf8TextDecoder(buf, pos, end) {
+    return utf8TextDecoder.decode(buf.subarray(pos, end))
   }
 
   function writeUtf8(buf, str, pos) {
@@ -2863,9 +2878,9 @@
     EXTRUDED: 'extruded',
   }
 
-  const BUFFER_HEADERS = ['new', 'cell', 'min', 'max']
+  const BUFFER_HEADERS = ['cell', 'min', 'max']
 
-  const rawTileToIntArrays = (rawTileArrayBuffer, { tileset, maxDelta = 1000, quantizeOffset }) => {
+  const rawTileToIntArray = (rawTileArrayBuffer, { tileset }) => {
     const tile = new VectorTile$1(new pbf(rawTileArrayBuffer))
     const tileLayer = tile.layers[tileset]
 
@@ -2883,10 +2898,6 @@
       const minTimestamp = Math.min(...allTimestamps)
       const maxTimestamp = Math.max(...allTimestamps)
 
-      // if (f === 0) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-      // if (f === 100) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-      // if (f === 1000) console.log(realMinTimeStamp, minTimestamp, maxTimestamp)
-
       const featureSize = BUFFER_HEADERS.length + (maxTimestamp - minTimestamp + 1)
 
       featuresProps.push({
@@ -2900,14 +2911,13 @@
       bufferSize += featureSize
     }
 
-    const buffer = new Int16Array(bufferSize)
+    const buffer = new Uint16Array(bufferSize)
     let bufferPos = 0
     featuresProps.forEach((featureProps, i) => {
-      buffer[bufferPos] = -1 // start feature
-      buffer[bufferPos + 1] = featureProps.cell
-      buffer[bufferPos + 2] = featureProps.minTimestamp
-      buffer[bufferPos + 3] = featureProps.maxTimestamp
-      let featureBufferPos = bufferPos + 4
+      buffer[bufferPos + 0] = featureProps.cell
+      buffer[bufferPos + 1] = featureProps.minTimestamp
+      buffer[bufferPos + 2] = featureProps.maxTimestamp
+      let featureBufferPos = bufferPos + BUFFER_HEADERS.length
 
       for (let d = featureProps.minTimestamp; d <= featureProps.maxTimestamp; d++) {
         const currentValue = featureProps.values[d.toString()]
@@ -2979,37 +2989,59 @@
       geomType = GEOM_TYPES.GRIDDED,
       numCells = 64,
       skipOddCells = false,
+      singleFrameStart = null,
     }
   ) => {
     const features = []
 
-    const aggregating = []
-
-    let currentFeature
+    let aggregating = []
+    let currentFeature = {
+      type: 'Feature',
+      properties: {},
+    }
     let currentFeatureCell
     let currentFeatureMinTimestamp
-    let currentAggregatedValue
-    let featureBufferPos
-    let currentTs
+    let currentFeatureMaxTimestamp
+    let currentFeatureTimestampDelta
+    let currentAggregatedValue = 0
+    let featureBufferPos = 0
+    let head
+    let tail
+
+    const writeValueToFeature = (quantizedTail) => {
+      // TODO add skipOddCells check
+      if (singleFrameStart === null) {
+        currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
+      } else {
+        if (singleFrameStart === quantizedTail) {
+          currentFeature.properties.value = currentAggregatedValue
+        }
+      }
+    }
+
+    // write values after tail > minTimestamp
+    const writeFinalTail = () => {
+      let finalTailValue = 0
+      for (let finalTail = tail + 1; finalTail <= currentFeatureMaxTimestamp; finalTail++) {
+        currentAggregatedValue = currentAggregatedValue - finalTailValue
+        if (finalTail > currentFeatureMinTimestamp) {
+          finalTailValue = aggregating.shift()
+        } else {
+          finalTailValue = 0
+        }
+        const quantizedTail = finalTail - quantizeOffset
+        if (quantizedTail >= 0) {
+          writeValueToFeature(quantizedTail)
+        }
+      }
+    }
+
     for (let i = 0; i < arrayBuffer.length; i++) {
       const value = arrayBuffer[i]
-      if (value === -1) {
-        // add previously completed feature
-        if (i > 0) {
-          features.push(currentFeature)
-        }
-        currentFeature = {
-          type: 'Feature',
-          properties: {},
-        }
-        featureBufferPos = 0
-        currentAggregatedValue = 0
-        continue
-      }
 
       switch (featureBufferPos) {
         // cell
-        case 1:
+        case 0:
           currentFeatureCell = value
           if (geomType === GEOM_TYPES.BLOB) {
             currentFeature.geometry = getPointGeom(tileBBox, currentFeatureCell, numCells)
@@ -3018,36 +3050,53 @@
           }
           break
         // minTs
-        case 2:
+        case 1:
           currentFeatureMinTimestamp = value
-          currentTs = currentFeatureMinTimestamp
+          head = currentFeatureMinTimestamp
           break
-        // maxTs
-        case 3:
+        // mx
+        case 2:
+          currentFeatureMaxTimestamp = value
+          currentFeatureTimestampDelta = currentFeatureMaxTimestamp - currentFeatureMinTimestamp
           break
         // actual value
         default:
           // when we are looking at ts 0 and delta is 10, we are in fact looking at the aggregation of day -9
-          const realTimestamp = currentTs - delta + 1
+          tail = head - delta + 1
 
           aggregating.push(value)
-          currentAggregatedValue = currentAggregatedValue + value
 
-          if (realTimestamp > currentFeatureMinTimestamp) {
-            const tailValue = aggregating.shift()
-            currentAggregatedValue -= tailValue
+          let tailValue = 0
+          if (tail > currentFeatureMinTimestamp) {
+            tailValue = aggregating.shift()
           }
+          currentAggregatedValue = currentAggregatedValue + value - tailValue
 
-          const quantizedDay = realTimestamp - quantizeOffset
+          const quantizedTail = tail - quantizeOffset
 
-          if (currentAggregatedValue > 0) {
-            currentFeature.properties[quantizedDay.toString()] = currentAggregatedValue
+          if (currentAggregatedValue > 0 && quantizedTail >= 0) {
+            writeValueToFeature(quantizedTail)
           }
+          head++
       }
-      currentTs++
       featureBufferPos++
+
+      const isEndOfFeature =
+        featureBufferPos - BUFFER_HEADERS.length - 1 === currentFeatureTimestampDelta
+
+      if (isEndOfFeature) {
+        writeFinalTail()
+        features.push(currentFeature)
+        currentFeature = {
+          type: 'Feature',
+          properties: {},
+        }
+        featureBufferPos = 0
+        currentAggregatedValue = 0
+        aggregating = []
+        continue
+      }
     }
-    features.push(currentFeature)
 
     const geoJSON = {
       type: 'FeatureCollection',
@@ -3062,7 +3111,16 @@
   const FAST_TILES_KEY_RX = new RegExp(FAST_TILES_KEY)
   const FAST_TILES_KEY_XYZ_RX = new RegExp(`${FAST_TILES_KEY}\\/(\\d+)\\/(\\d+)\\/(\\d+)`)
   const CACHE_TIMESTAMP_HEADER_KEY = 'sw-cache-timestamp'
+  const CACHE_NAME = FAST_TILES_KEY
   const CACHE_MAX_AGE_MS = 60 * 60 * 1000
+
+  const isoToDate = (iso) => {
+    return new Date(iso).getTime()
+  }
+
+  const isoToDay = (iso) => {
+    return isoToDate(iso) / 1000 / 60 / 60 / 24
+  }
 
   self.addEventListener('install', (event) => {
     console.log('install sw')
@@ -3089,18 +3147,19 @@
     console.log('Now ready to handle fetches!')
   })
 
-  const aggregateIntArrays = (
-    intArrays,
-    { geomType, numCells, delta, x, y, z, quantizeOffset }
+  const aggregateIntArray = (
+    intArray,
+    { geomType, numCells, delta, x, y, z, quantizeOffset, start, singleFrameStart }
   ) => {
     const tileBBox = tilebelt.tileToBBOX([x, y, z])
-    const aggregated = aggregate(intArrays, {
+    const aggregated = aggregate(intArray, {
       quantizeOffset,
       tileBBox,
       delta,
       geomType,
       numCells,
-      // TODO make configurable
+      singleFrameStart,
+      // TODO make me configurable
       skipOddCells: false,
     })
     return aggregated
@@ -3108,8 +3167,8 @@
 
   const decodeTile = (originalResponse, tileset) => {
     return originalResponse.arrayBuffer().then((buffer) => {
-      const intArrays = rawTileToIntArrays(buffer, tileset)
-      return intArrays
+      const intArray = rawTileToIntArray(buffer, { tileset })
+      return intArray
     })
   }
 
@@ -3129,11 +3188,13 @@
     }
 
     const url = new URL(originalUrl)
-    const geomType = url.searchParams.get('geomType')
-    const delta = parseInt(url.searchParams.get('delta') || '10')
-    const fastTilesAPI = url.searchParams.get('fastTilesAPI')
     const tileset = url.searchParams.get('tileset')
+    const geomType = url.searchParams.get('geomType')
+    const fastTilesAPI = url.searchParams.get('fastTilesAPI')
     const quantizeOffset = parseInt(url.searchParams.get('quantizeOffset'))
+    const delta = parseInt(url.searchParams.get('delta') || '10')
+    const singleFrame = url.searchParams.get('singleFrame') === 'true'
+    const start = isoToDay(url.searchParams.get('start'))
     const serverSideFilters = url.searchParams.get('serverSideFilters')
 
     const [z, x, y] = originalUrl
@@ -3151,6 +3212,7 @@
       z,
       quantizeOffset,
       tileset,
+      singleFrameStart: singleFrame ? start - quantizeOffset : null,
     }
 
     const finalUrl = new URL(`${fastTilesAPI}${tileset}/tile/heatmap/${z}/${x}/${y}`)
@@ -3168,20 +3230,12 @@
         cacheResponse && parseInt(cacheResponse.headers.get(CACHE_TIMESTAMP_HEADER_KEY))
       // only get value from cache if it's recent enough
       const hasRecentCache = cacheResponse && now - cachedTimestamp < CACHE_MAX_AGE_MS
-      console.log(hasRecentCache)
       if (hasRecentCache) {
-        return (
-          cacheResponse
-            .arrayBuffer()
-            // .blob()
-            // .then((blob) => blob.arrayBuffer())
-            // .then((blob) => blob.arrayBuffer())
-            .then((ab) => {
-              console.log(ab)
-              const aggregated = aggregateIntArrays(ab, aggregateParams)
-              return encodeTileResponse(aggregated, aggregateParams)
-            })
-        )
+        return cacheResponse.arrayBuffer().then((ab) => {
+          const intArray = new Uint16Array(ab)
+          const aggregated = aggregateIntArray(intArray, aggregateParams)
+          return encodeTileResponse(aggregated, aggregateParams)
+        })
       }
 
       const fetchPromise = fetch(finalUrl)
@@ -3189,123 +3243,36 @@
         if (!fetchResponse.ok) throw new Error()
         // Response needs to be cloned to m odify headers (used for cache expiration)
         // const responseToCache = fetchResponse.clone()
-        const t = performance.now()
         const decoded = decodeTile(fetchResponse, tileset)
-        console.log('decoded in ', performance.now() - t)
         return decoded
       })
 
       // Cache fetch response in parallel
-      decodePromise.then((intArrays) => {
+      decodePromise.then((intArray) => {
         const headers = new Headers()
         const timestamp = new Date().getTime()
         // add extra header to set a timestamp on cache - will be read at cache.matches call
         headers.set(CACHE_TIMESTAMP_HEADER_KEY, timestamp)
         // convert response to decoded int arrays
-        const blob = new Blob(intArrays, { type: 'application/octet-binary' })
+        const blob = new Blob([intArray], { type: 'application/octet-binary' })
 
         const cacheResponse = new Response(blob, {
           // status: fetchResponse.status,
           // statusText: fetchResponse.statusText,
           headers,
         })
-        // self.caches.open(CACHE_NAME).then((cache) => {
-        //   cache.put(finalReq, cacheResponse)
-        // })
+        self.caches.open(CACHE_NAME).then((cache) => {
+          cache.put(finalReq, cacheResponse)
+        })
       })
 
       // then, aggregate
-      const aggregatePromise = decodePromise.then((intArrays) => {
-        const t = performance.now()
-        const aggregated = aggregateIntArrays(intArrays, aggregateParams)
-        console.log('aggregated in ', performance.now() - t, ' - ', x, y, z)
+      const aggregatePromise = decodePromise.then((intArray) => {
+        const aggregated = aggregateIntArray(intArray, aggregateParams)
         return encodeTileResponse(aggregated, aggregateParams)
       })
       return aggregatePromise
     })
     fetchEvent.respondWith(cachePromise)
   })
-
-  /*
-    const cachePromise = self.caches
-      .match(finalReq)
-      .then((cacheResponse) => {
-        const TILESET_NUM_CELLS = 64
-        const aggregateParams = {
-          sourceLayer: tileset,
-          geomType,
-          delta,
-          numCells: TILESET_NUM_CELLS,
-          x,
-          y,
-          z,
-          quantizeOffset,
-        }
-        // Cache hit - return response
-        if (cacheResponse) {
-          const cachedTimestamp = parseInt(cacheResponse.headers.get(CACHE_TIMESTAMP_HEADER_KEY))
-          const now = new Date().getTime()
-
-          // only get value from cache if it's recent enough
-          if (now - cachedTimestamp < CACHE_MAX_AGE_MS) {
-            // console.log('recent enough get from cache')
-            return aggregateResponse(cacheResponse, aggregateParams)
-          } else {
-            // console.log('too old, fetching again')
-          }
-        }
-
-        const fetchPromise = fetch(finalUrl)
-
-        // Will try to cache fetch response in parallel
-        fetchPromise
-          .then((fetchResponse) => {
-            if (!fetchResponse.ok) {
-              throw new Error()
-            }
-            var responseToCache = fetchResponse.clone()
-            responseToCache.blob().then((blob) => {
-              const headers = new Headers()
-              const timestamp = new Date().getTime()
-              // add extra header to set a timestamp on cache - will be read at cache.matches call
-              headers.set(CACHE_TIMESTAMP_HEADER_KEY, timestamp)
-              const cacheResponse = new Response(blob, {
-                status: fetchResponse.status,
-                statusText: fetchResponse.statusText,
-                headers,
-              })
-              const CACHE_NAME = FAST_TILES_KEY
-              self.caches.open(CACHE_NAME).then(function(cache) {
-                cache.put(finalReq, cacheResponse)
-              })
-            })
-          })
-          .catch((e) => {
-            console.log("Can't cache")
-          })
-
-        // then, aggregate
-        const aggregatePromise = fetchPromise
-          .then((fetchResponse) => {
-            if (!fetchResponse.ok) {
-              throw new Error()
-            }
-            // return aggregateResponse(fetchResponse, aggregateParams)
-            return decodeTile(fetchResponse, tileset)
-          })
-          .catch((e) => {
-            console.log("Can't aggregate")
-            throw new Error()
-          })
-
-        return aggregatePromise
-      })
-      .catch((e) => {
-        console.log('Failed caching/aggregating')
-      })
-
-    fetchEvent.respondWith(cachePromise)
-
-    */
 })()
-//# sourceMappingURL=fast-tiles-worker.js.map
