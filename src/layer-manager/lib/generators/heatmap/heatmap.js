@@ -5,7 +5,7 @@ export const HEATMAP_TYPE = 'HEATMAP'
 
 const FAST_TILES_KEY = '__fast_tiles__'
 const DEFAULT_FAST_TILES_API = 'https://fst-tiles-jzzp2ui3wq-uc.a.run.app/v1/'
-const BASE_WORKER_URL = `http://${FAST_TILES_KEY}/{z}/{x}/{y}`
+const BASE_WORKER_URL = `https://${FAST_TILES_KEY}/{z}/{x}/{y}`
 
 export const toDays = (d) => {
   return new Date(d).getTime() / 1000 / 60 / 60 / 24

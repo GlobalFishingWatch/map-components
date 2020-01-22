@@ -1,6 +1,6 @@
 {
   "name": "@globalfishingwatch/map-components",
-  "version": "2.9.0",
+  "version": "2.9.3",
   "description": "Set of components used in global fishing watch world",
   "author": "Satellite Studio",
   "license": "MIT",
@@ -144,6 +144,8 @@
   "files": [
     "components",
     "types",
-    "src"
+    "src",
+    "scripts",
+    "workers-dist"
   ]
 }
