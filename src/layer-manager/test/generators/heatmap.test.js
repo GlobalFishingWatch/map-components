@@ -24,7 +24,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
     visible: true,
     geomType: GEOM_TYPES.GRIDDED,
     colorRamp: COLOR_RAMPS.PRESENCE,
-    colorRampMult: 40,
+    colorRampMult: 1,
     fetchStats: false,
     // TBD: Passive layers are visible, with opacity 0, and receive no time updates - allowing them to be toggled on again rapidly but without performance hit
     // passive: false,
@@ -88,7 +88,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
             GEOM_TYPES.GRIDDED
           }&fastTilesAPI=${encodeURIComponent(
             FAST_TILES_API
-          )}&quantizeOffset=${DEFAULT_QUANTIZE_OFFSET}&delta=90&start=${encodeURIComponent(START)}`,
+          )}&quantizeOffset=${DEFAULT_QUANTIZE_OFFSET}&delta=90`,
         ],
       },
     ],

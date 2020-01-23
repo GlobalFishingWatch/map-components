@@ -9,7 +9,7 @@ const DEFAULT_FAST_TILES_API = 'https://fst-tiles-jzzp2ui3wq-uc.a.run.app/v1/'
 const BASE_WORKER_URL = `http://${FAST_TILES_KEY}/{z}/{x}/{y}`
 
 export const toDays = (d) => {
-  return new Date(d).getTime() / 1000 / 60 / 60 / 24
+  return Math.floor(new Date(d).getTime() / 1000 / 60 / 60 / 24)
 }
 
 export const DEFAULT_QUANTIZE_OFFSET = toDays('2017-01-01T00:00:00.000Z')
@@ -122,10 +122,10 @@ class HeatmapGenerator {
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('quantizeOffset', quantizeOffset)
     url.searchParams.set('delta', getDelta(layer.start, layer.end))
-    url.searchParams.set('start', layer.start)
 
     if (layer.singleFrame === true) {
       url.searchParams.set('singleFrame', layer.singleFrame)
+      url.searchParams.set('start', layer.start)
     }
 
     if (layer.serverSideFilter) {
