@@ -1,4 +1,5 @@
 import memoizeOne from 'memoize-one'
+import flatten from 'lodash/flatten'
 import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
@@ -32,51 +33,9 @@ export const COLOR_RAMPS = {
 }
 
 const COLOR_RAMPS_RAMPS = {
-  [COLOR_RAMPS.FISHING]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#0c276c',
-    0.4,
-    '#3B9088',
-    0.8,
-    '#EEFF00',
-    1,
-    '#ffffff',
-  ],
-  [COLOR_RAMPS.PRESENCE]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#0c276c',
-    0.4,
-    '#114685',
-    0.8,
-    '#00ffc3',
-    1,
-    '#ffffff',
-  ],
-  [COLOR_RAMPS.RECEPTION]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#ff4573',
-    0.4,
-    '#7b2e8d',
-    0.8,
-    '#093b76',
-    1,
-    '#0c276c',
-  ],
+  [COLOR_RAMPS.FISHING]: ['rgba(0, 0, 0, 0)', '#0c276c', '#3B9088', '#EEFF00', '#ffffff'],
+  [COLOR_RAMPS.PRESENCE]: ['rgba(0, 0, 0, 0)', '#0c276c', '#114685', '#00ffc3', '#ffffff'],
+  [COLOR_RAMPS.RECEPTION]: ['rgba(0, 0, 0, 0)', '#ff4573', '#7b2e8d', '#093b76', '#0c276c'],
 }
 
 // TODO this can yield different deltas depending even when start and end stays equally further apart:
@@ -106,7 +65,7 @@ class HeatmapGenerator {
   stats = {
     max: 30,
     min: 1,
-    median: 1,
+    median: 2,
   }
 
   constructor({ fastTilesAPI = DEFAULT_FAST_TILES_API }) {
@@ -137,10 +96,14 @@ class HeatmapGenerator {
     return fetch(statsUrl.toString())
       .then((r) => r.json())
       .then((r) => {
+        // prevent values being exactly the same to avoid a style error
+        const min = r.min - 0.001
+        const median = r.median
+        const max = r.max + 0.001
         this.stats = {
-          max: parseInt(r.max),
-          min: parseInt(r.min),
-          median: parseInt(r.median),
+          min,
+          median,
+          max,
         }
 
         this.loadingStats = false
@@ -193,26 +156,41 @@ class HeatmapGenerator {
     const delta = getDelta(layer.start, layer.end)
     const overallMult = colorRampMult * delta
 
-    const medianMaxValue = this.stats.median + (this.stats.max - this.stats.median) / 2
+    const medianOffseted = this.stats.median - this.stats.min + 0.001
+    const maxOffseted = this.stats.max - this.stats.min + 0.002
+    const medianMaxOffsetedValue = medianOffseted + (maxOffseted - medianOffseted) / 2
     const stops = [
+      // probably always start at 0 (black alpha)
       0,
+      // first meaningful value = use minimum value in stats
       this.stats.min,
-      this.stats.median + 1 * overallMult,
-      medianMaxValue * overallMult,
-      this.stats.max * overallMult + 1,
+      // next step = use median value in stats
+      this.stats.min + medianOffseted * overallMult,
+      // this is the intermediate value bnetween median and max
+      this.stats.min + medianMaxOffsetedValue * overallMult,
+      // final step = max value for current zoom level
+      this.stats.min + maxOffseted * overallMult,
+    ]
+
+    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
+    let legend = originalColorRamp.map((color, i) => {
+      const stop = stops[i]
+      return [stop, color]
+    })
+
+    const colorRampValues = flatten(legend)
+
+    const d = toQuantizedDays(layer.start)
+    const pickValueAt = layer.singleFrame ? 'value' : d.toString()
+
+    const colorRamp = [
+      'interpolate',
+      ['linear'],
+      ['to-number', ['get', pickValueAt]],
+      ...colorRampValues,
     ]
 
     const paint = { ...paintByGeomType[geomType] }
-    const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
-    const d = toQuantizedDays(layer.start)
-
-    const pickValueAt = layer.singleFrame ? 'value' : d.toString()
-    colorRamp[2] = ['to-number', ['get', pickValueAt]]
-    colorRamp[5] = stops[1]
-    colorRamp[7] = stops[2]
-    colorRamp[9] = stops[3]
-    colorRamp[11] = stops[4]
-
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
         paint['fill-color'] = colorRamp
@@ -220,6 +198,21 @@ class HeatmapGenerator {
       default:
         break
     }
+
+    // 'desactivate' legend values that are similar
+    let prevValidValue
+    legend = legend.map(([value, color], i) => {
+      let rdFn = Math.round
+      if (i === 0) rdFn = Math.floor
+      if (i === 4) rdFn = Math.ceil
+      let finalValue = rdFn(value)
+      if (i > 0 && prevValidValue === finalValue) {
+        finalValue = null
+      } else {
+        prevValidValue = finalValue
+      }
+      return [finalValue, color]
+    })
 
     return [
       {
@@ -232,13 +225,7 @@ class HeatmapGenerator {
         },
         paint,
         metadata: {
-          legend: [
-            [0, colorRamp[4]],
-            [stops[1], colorRamp[6]],
-            [stops[2], colorRamp[8]],
-            [stops[3], colorRamp[10]],
-            [stops[4], colorRamp[12]],
-          ],
+          legend,
         },
       },
     ]
