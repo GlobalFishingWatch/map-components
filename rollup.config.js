@@ -27,7 +27,7 @@ export default [
     output: {
       file: './workers-dist/fast-tiles-worker.js',
       format: 'iife',
-      sourcemap: !isProduction,
+      sourcemap: true,
       name: 'FastTilesWorker',
     },
     plugins: [resolve(), commonjs()],
