@@ -1,4 +1,5 @@
 import memoizeOne from 'memoize-one'
+import flatten from 'lodash/flatten'
 import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
@@ -32,51 +33,9 @@ export const COLOR_RAMPS = {
 }
 
 const COLOR_RAMPS_RAMPS = {
-  [COLOR_RAMPS.FISHING]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#0c276c',
-    0.4,
-    '#3B9088',
-    0.8,
-    '#EEFF00',
-    1,
-    '#ffffff',
-  ],
-  [COLOR_RAMPS.PRESENCE]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#0c276c',
-    0.4,
-    '#114685',
-    0.8,
-    '#00ffc3',
-    1,
-    '#ffffff',
-  ],
-  [COLOR_RAMPS.RECEPTION]: [
-    'interpolate',
-    ['linear'],
-    'dummy',
-    0,
-    'rgba(0, 0, 0, 0)',
-    0.01,
-    '#ff4573',
-    0.4,
-    '#7b2e8d',
-    0.8,
-    '#093b76',
-    1,
-    '#0c276c',
-  ],
+  [COLOR_RAMPS.FISHING]: ['rgba(0, 0, 0, 0)', '#0c276c', '#3B9088', '#EEFF00', '#ffffff'],
+  [COLOR_RAMPS.PRESENCE]: ['rgba(0, 0, 0, 0)', '#0c276c', '#114685', '#00ffc3', '#ffffff'],
+  [COLOR_RAMPS.RECEPTION]: ['rgba(0, 0, 0, 0)', '#ff4573', '#7b2e8d', '#093b76', '#0c276c'],
 }
 
 // TODO this can yield different deltas depending even when start and end stays equally further apart:
@@ -103,6 +62,11 @@ const toQuantizedDays = (d) => {
 class HeatmapGenerator {
   type = HEATMAP_TYPE
   loadingStats = false
+  stats = {
+    max: 30,
+    min: 1,
+    median: 2,
+  }
 
   constructor({ fastTilesAPI = DEFAULT_FAST_TILES_API }) {
     this.fastTilesAPI = fastTilesAPI
@@ -115,7 +79,6 @@ class HeatmapGenerator {
       serverSideFiltersList.push(serverSideFilter)
     }
 
-    console.log('useStartAndEnd', useStartAndEnd, useStartAndEnd === true)
     if (useStartAndEnd) {
       serverSideFiltersList.push(`timestamp > '${start.slice(0, 19).replace('T', ' ')}'`)
       serverSideFiltersList.push(`timestamp < '${end.slice(0, 19).replace('T', ' ')}'`)
@@ -124,18 +87,25 @@ class HeatmapGenerator {
     return serverSideFilters
   }
 
-  _fetchStats = memoizeOne((endpoint, tileset, zoom, delta, serverSideFilters) => {
-    // console.log('fetch stats', delta, zoom)
+  _fetchStats = memoizeOne((endpoint, tileset, zoom, serverSideFilters) => {
     this.loadingStats = true
     const statsUrl = new URL(`${endpoint}${tileset}/statistics/${zoom}`)
     if (serverSideFilters) {
       statsUrl.searchParams.set('filters', serverSideFilters)
     }
     return fetch(statsUrl.toString())
-      .then((r) => r.text())
+      .then((r) => r.json())
       .then((r) => {
-        this.statsMax = parseInt(r.max)
-        this.statsMin = parseInt(r.min)
+        // prevent values being exactly the same to avoid a style error
+        const min = r.min - 0.001
+        const median = r.median
+        const max = r.max + 0.001
+        this.stats = {
+          min,
+          median,
+          max,
+        }
+
         this.loadingStats = false
       })
   })
@@ -182,23 +152,45 @@ class HeatmapGenerator {
     const geomType = layer.geomType || GEOM_TYPES.GRIDDED
     const colorRampType = layer.colorRamp || COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
-    const statsMult = this.statsMax || 1
-    const deltaMult = getDelta(layer.start, layer.end)
-    // const mult = colorRampMult * statsMult * deltaMult
-    const mult = colorRampMult
+
+    const delta = getDelta(layer.start, layer.end)
+    const overallMult = colorRampMult * delta
+
+    const medianOffseted = this.stats.median - this.stats.min + 0.001
+    const maxOffseted = this.stats.max - this.stats.min + 0.002
+    const medianMaxOffsetedValue = medianOffseted + (maxOffseted - medianOffseted) / 2
+    const stops = [
+      // probably always start at 0 (black alpha)
+      0,
+      // first meaningful value = use minimum value in stats
+      this.stats.min,
+      // next step = use median value in stats
+      this.stats.min + medianOffseted * overallMult,
+      // this is the intermediate value bnetween median and max
+      this.stats.min + medianMaxOffsetedValue * overallMult,
+      // final step = max value for current zoom level
+      this.stats.min + maxOffseted * overallMult,
+    ]
+
+    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
+    let legend = originalColorRamp.map((color, i) => {
+      const stop = stops[i]
+      return [stop, color]
+    })
+
+    const colorRampValues = flatten(legend)
+
+    const d = toQuantizedDays(layer.start)
+    const pickValueAt = layer.singleFrame ? 'value' : d.toString()
+
+    const colorRamp = [
+      'interpolate',
+      ['linear'],
+      ['to-number', ['get', pickValueAt]],
+      ...colorRampValues,
+    ]
 
     const paint = { ...paintByGeomType[geomType] }
-    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
-    const colorRamp = [...COLOR_RAMPS_RAMPS[colorRampType]]
-    const d = toQuantizedDays(layer.start)
-
-    const pickValueAt = layer.singleFrame ? 'value' : d.toString()
-    colorRamp[2] = ['to-number', ['get', pickValueAt]]
-    colorRamp[5] = mult * originalColorRamp[5]
-    colorRamp[7] = mult * originalColorRamp[7]
-    colorRamp[9] = mult * originalColorRamp[9]
-    colorRamp[11] = mult * originalColorRamp[11]
-
     switch (geomType) {
       case GEOM_TYPES.GRIDDED:
         paint['fill-color'] = colorRamp
@@ -206,6 +198,21 @@ class HeatmapGenerator {
       default:
         break
     }
+
+    // 'desactivate' legend values that are similar
+    let prevValidValue
+    legend = legend.map(([value, color], i) => {
+      let rdFn = Math.round
+      if (i === 0) rdFn = Math.floor
+      if (i === 4) rdFn = Math.ceil
+      let finalValue = rdFn(value)
+      if (i > 0 && prevValidValue === finalValue) {
+        finalValue = null
+      } else {
+        prevValidValue = finalValue
+      }
+      return [finalValue, color]
+    })
 
     return [
       {
@@ -217,6 +224,9 @@ class HeatmapGenerator {
           visibility: layer.visible ? 'visible' : 'none',
         },
         paint,
+        metadata: {
+          legend,
+        },
       },
     ]
   }
@@ -235,7 +245,6 @@ class HeatmapGenerator {
       this.fastTilesAPI,
       layer.tileset,
       Math.floor(layer.zoom),
-      getDelta(layer.start, layer.end),
       serverSideFilters
     )
 
