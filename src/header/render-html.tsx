@@ -18,6 +18,7 @@ const components = [
   { component: <Header />, path: 'src/header/html/header.html' },
   { component: <Header mini />, path: 'src/header/html/header-mini.html' },
   { component: <Header inverted />, path: 'src/header/html/header-inverted.html' },
+  { component: <Header mini inverted />, path: 'src/header/html/header-mini-inverted.html' },
 ]
 
 async function preRender(components: any) {
