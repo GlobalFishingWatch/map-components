@@ -2,8 +2,8 @@ import LayerManagerLib from '../../lib/index'
 import { validate as mapboxStyleValidator } from '@mapbox/mapbox-gl-style-spec'
 import HeatmapGenerator, {
   HEATMAP_TYPE,
-  GEOM_TYPES,
-  COLOR_RAMPS,
+  HEATMAP_GEOM_TYPES,
+  HEATMAP_COLOR_RAMPS,
   DEFAULT_QUANTIZE_OFFSET,
   toDays,
 } from '../../lib/generators/heatmap/heatmap.js'
@@ -22,8 +22,8 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
     start: START,
     end: '2019-04-01T00:00:00.000Z',
     visible: true,
-    geomType: GEOM_TYPES.GRIDDED,
-    colorRamp: COLOR_RAMPS.PRESENCE,
+    geomType: HEATMAP_GEOM_TYPES.GRIDDED,
+    colorRamp: HEATMAP_COLOR_RAMPS.PRESENCE,
     colorRampMult: 1,
     fetchStats: false,
     // TBD: Passive layers are visible, with opacity 0, and receive no time updates - allowing them to be toggled on again rapidly but without performance hit
@@ -85,7 +85,7 @@ test('returns a valid style for a simple static gridded heatmap', async () => {
         type: 'vector',
         tiles: [
           `http://__fast_tiles__/{z}/{x}/{y}?tileset=${TILESET}&geomType=${
-            GEOM_TYPES.GRIDDED
+            HEATMAP_GEOM_TYPES.GRIDDED
           }&fastTilesAPI=${encodeURIComponent(
             FAST_TILES_API
           )}&quantizeOffset=${DEFAULT_QUANTIZE_OFFSET}&delta=90`,

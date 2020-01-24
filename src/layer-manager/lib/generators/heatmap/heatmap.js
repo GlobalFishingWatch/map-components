@@ -14,28 +14,28 @@ export const toDays = (d) => {
 
 export const DEFAULT_QUANTIZE_OFFSET = toDays('2017-01-01T00:00:00.000Z')
 
-export const GEOM_TYPES = {
+export const HEATMAP_GEOM_TYPES = {
   BLOB: 'blob',
   GRIDDED: 'gridded',
   EXTRUDED: 'extruded',
 }
 
-export const GEOM_TYPES_GL_TYPES = {
-  [GEOM_TYPES.BLOB]: 'heatmap',
-  [GEOM_TYPES.GRIDDED]: 'fill',
-  [GEOM_TYPES.EXTRUDED]: 'fill-extrusion',
+export const HEATMAP_GEOM_TYPES_GL_TYPES = {
+  [HEATMAP_GEOM_TYPES.BLOB]: 'heatmap',
+  [HEATMAP_GEOM_TYPES.GRIDDED]: 'fill',
+  [HEATMAP_GEOM_TYPES.EXTRUDED]: 'fill-extrusion',
 }
 
-export const COLOR_RAMPS = {
+export const HEATMAP_COLOR_RAMPS = {
   FISHING: 'fishing',
   PRESENCE: 'presence',
   RECEPTION: 'reception',
 }
 
-const COLOR_RAMPS_RAMPS = {
-  [COLOR_RAMPS.FISHING]: ['rgba(0, 0, 0, 0)', '#0c276c', '#3B9088', '#EEFF00', '#ffffff'],
-  [COLOR_RAMPS.PRESENCE]: ['rgba(0, 0, 0, 0)', '#0c276c', '#114685', '#00ffc3', '#ffffff'],
-  [COLOR_RAMPS.RECEPTION]: ['rgba(0, 0, 0, 0)', '#ff4573', '#7b2e8d', '#093b76', '#0c276c'],
+const HEATMAP_COLOR_RAMPS_RAMPS = {
+  [HEATMAP_COLOR_RAMPS.FISHING]: ['rgba(0, 0, 0, 0)', '#0c276c', '#3B9088', '#EEFF00', '#ffffff'],
+  [HEATMAP_COLOR_RAMPS.PRESENCE]: ['rgba(0, 0, 0, 0)', '#0c276c', '#114685', '#00ffc3', '#ffffff'],
+  [HEATMAP_COLOR_RAMPS.RECEPTION]: ['rgba(0, 0, 0, 0)', '#ff4573', '#7b2e8d', '#093b76', '#0c276c'],
 }
 
 // TODO this can yield different deltas depending even when start and end stays equally further apart:
@@ -114,7 +114,7 @@ class HeatmapGenerator {
     if (!layer.start || !layer.end || !layer.tileset) {
       throw new Error('Heatmap generator must specify start, end and tileset parameters', layer)
     }
-    const geomType = layer.geomType || GEOM_TYPES.GRIDDED
+    const geomType = layer.geomType || HEATMAP_GEOM_TYPES.GRIDDED
 
     const url = new URL(BASE_WORKER_URL)
     url.searchParams.set('tileset', layer.tileset)
@@ -149,8 +149,8 @@ class HeatmapGenerator {
   }
 
   _getHeatmapLayers = (layer) => {
-    const geomType = layer.geomType || GEOM_TYPES.GRIDDED
-    const colorRampType = layer.colorRamp || COLOR_RAMPS.PRESENCE
+    const geomType = layer.geomType || HEATMAP_GEOM_TYPES.GRIDDED
+    const colorRampType = layer.colorRamp || HEATMAP_COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
 
     const delta = getDelta(layer.start, layer.end)
@@ -172,7 +172,7 @@ class HeatmapGenerator {
       this.stats.min + maxOffseted * overallMult,
     ]
 
-    const originalColorRamp = COLOR_RAMPS_RAMPS[colorRampType]
+    const originalColorRamp = HEATMAP_COLOR_RAMPS_RAMPS[colorRampType]
     let legend = originalColorRamp.map((color, i) => {
       const stop = stops[i]
       return [stop, color]
@@ -192,7 +192,7 @@ class HeatmapGenerator {
 
     const paint = { ...paintByGeomType[geomType] }
     switch (geomType) {
-      case GEOM_TYPES.GRIDDED:
+      case HEATMAP_GEOM_TYPES.GRIDDED:
         paint['fill-color'] = colorRamp
         break
       default:
@@ -219,7 +219,7 @@ class HeatmapGenerator {
         id: layer.id,
         source: layer.id,
         'source-layer': layer.tileset,
-        type: GEOM_TYPES_GL_TYPES[geomType],
+        type: HEATMAP_GEOM_TYPES_GL_TYPES[geomType],
         layout: {
           visibility: layer.visible ? 'visible' : 'none',
         },
