@@ -1,0 +1,144 @@
+import React, { Fragment } from 'react'
+import PropTypes from 'prop-types'
+import styles from './header.css'
+
+const navigation = [
+  {
+    link: 'https://globalfishingwatch.org/map-and-data/',
+    label: 'Map & data',
+    childs: [
+      { link: 'https://globalfishingwatch.org/our-map/', label: 'Our map' },
+      { link: 'https://globalfishingwatch.org/join/', label: 'Map sign up' },
+      { link: 'https://globalfishingwatch.org/map-and-data/technology/', label: 'How it works' },
+      { link: 'https://globalfishingwatch.org/faqs/', label: 'Help hub' },
+      { link: 'https://globalfishingwatch.org/datasets-and-code/', label: 'Datasets and code' },
+    ],
+  },
+  {
+    link: 'https://globalfishingwatch.org/faqs/',
+    label: 'Help',
+  },
+  {
+    link: 'https://globalfishingwatch.org/research/',
+    label: 'Research',
+    childs: [
+      { link: 'https://globalfishingwatch.org/research-partners/', label: 'Research partners' },
+      { link: 'https://globalfishingwatch.org/publications/', label: 'Publications' },
+    ],
+  },
+  {
+    link: 'https://globalfishingwatch.org/news/',
+    label: 'News & Blog',
+    childs: [
+      { link: 'https://globalfishingwatch.org/news/press-centre/', label: 'Press centre' },
+      { link: 'https://globalfishingwatch.org/blog/', label: 'Blog' },
+      {
+        link: 'https://globalfishingwatch.org/new-and-views/highlights/',
+        label: 'Media highlights',
+      },
+    ],
+  },
+  {
+    link: 'https://globalfishingwatch.org/get-involved/',
+    label: 'Get involved',
+    childs: [
+      {
+        link: 'https://globalfishingwatch.org/transparency-makes-a-difference/',
+        label: 'Share your story',
+      },
+      { link: 'https://globalfishingwatch.org/join/', label: 'Newsletter sign up' },
+      { link: 'https://globalfishingwatch.force.com/gfw', label: 'Discussion forum' },
+      { link: 'https://globalfishingwatch.org/work-for-us/', label: 'Work for us' },
+      { link: 'https://globalfishingwatch.org/contact-us', label: 'Contact us' },
+    ],
+  },
+  {
+    link: 'https://globalfishingwatch.org/about-us/',
+    label: 'About us',
+    mini: true,
+    childs: [
+      { link: 'https://globalfishingwatch.org/programs/', label: 'Programs' },
+      { link: 'https://globalfishingwatch.org/leadership/', label: 'Leadership' },
+      { link: 'https://globalfishingwatch.org/partners/', label: 'Partners' },
+      { link: 'https://globalfishingwatch.org/meet-the-team/', label: 'Meet the team' },
+    ],
+  },
+  {
+    link: 'https://globalfishingwatch.org/donate/',
+    label: 'Donate',
+    highlight: true,
+    mini: true,
+  },
+]
+
+const Header = ({ mini, inverted }) => {
+  return (
+    <div className={`gfw-header-container ${inverted ? 'gfw-header-container-inverted' : ''}`}>
+      <header className="gfw-header">
+        <div className="white-bg"></div>
+        <a className="app-logo" href="http://globalfishingwatch.org" />
+        <a className="sr-only" href="#main">
+          Skip navigation links
+        </a>
+
+        <div className="nav-container">
+          <input className="nav-mobile nav-mobile-menu-action" type="checkbox" />
+          <div className="nav-mobile nav-mobile-menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <nav className="nav" role="navigation" aria-label="main menu">
+            <ul className="nav-list" role="menubar">
+              {navigation.map(
+                (item, index) =>
+                  (!mini || (mini && item.mini)) && (
+                    <li
+                      key={index}
+                      role="menuitem"
+                      className={item.highlight ? 'highlight-btn' : ''}
+                    >
+                      <a href={item.hlink} aria-haspopup="true">
+                        {item.label}
+                      </a>
+                      {!mini && item.childs && item.childs.length > 0 && (
+                        <Fragment>
+                          <input
+                            name={`accordion-toggle-${index}`}
+                            className="accordion-toggle"
+                            type="checkbox"
+                          />
+                          <ul role="menu" className="nav-list-sub-menu">
+                            {item.childs.map((child, index) => (
+                              <li key={index} role="menuitem">
+                                <a href={child.link}>
+                                  <span>{child.label}</span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </Fragment>
+                      )}
+                    </li>
+                  )
+              )}
+            </ul>
+          </nav>
+        </div>
+      </header>
+    </div>
+  )
+}
+
+Header.propTypes = {
+  mini: PropTypes.bool,
+  inverted: PropTypes.bool,
+}
+
+Header.defaultProps = {
+  mini: false,
+  inverted: false,
+}
+
+export default Header

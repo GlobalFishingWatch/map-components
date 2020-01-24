@@ -1,0 +1,8 @@
+.invertedContainer {
+  background-color: cadetblue;
+}
+
+.invertedBg {
+  background-color: cadetblue;
+  min-height: 300px;
+}
