@@ -63,12 +63,16 @@ class LayerManagerLib {
       return this._getStyleJson()
     }
 
-    const layersPromises = []
+    let layersPromises = []
     const layersGenerated = layers.map((layer) => {
-      const { promise, ...rest } = this._getGeneratedLayer(layer)
+      const { promise, promises, ...rest } = this._getGeneratedLayer(layer)
+      let layerPromises = []
       if (promise) {
-        layersPromises.push(promise)
+        layerPromises = [promise]
+      } else if (promises) {
+        layerPromises = promises
       }
+      layersPromises = layersPromises.concat(layerPromises)
       return rest
     })
 

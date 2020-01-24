@@ -1,5 +1,7 @@
 import memoizeOne from 'memoize-one'
 import flatten from 'lodash/flatten'
+import compact from 'lodash/compact'
+import debounce from 'lodash/debounce'
 import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
@@ -121,7 +123,7 @@ class HeatmapGenerator {
     url.searchParams.set('geomType', geomType)
     url.searchParams.set('fastTilesAPI', this.fastTilesAPI)
     url.searchParams.set('quantizeOffset', quantizeOffset)
-    url.searchParams.set('delta', getDelta(layer.start, layer.end))
+    url.searchParams.set('delta', this.delta)
 
     if (layer.singleFrame === true) {
       url.searchParams.set('singleFrame', layer.singleFrame)
@@ -153,7 +155,7 @@ class HeatmapGenerator {
     const colorRampType = layer.colorRamp || HEATMAP_COLOR_RAMPS.PRESENCE
     const colorRampMult = layer.colorRampMult || 1
 
-    const delta = getDelta(layer.start, layer.end)
+    const delta = this.delta
     const overallMult = colorRampMult * delta
 
     const medianOffseted = this.stats.median - this.stats.min + 0.001
@@ -263,13 +265,36 @@ class HeatmapGenerator {
     return { layers, promise }
   }
 
+  _updateDelta = (layer) => {
+    const newDelta = getDelta(layer.start, layer.end)
+    if (newDelta === this.delta) return null
+
+    if (this.currentSetDeltaDebounced) this.currentSetDeltaDebounced.cancel()
+
+    const promise = new Promise((resolve) => {
+      this.currentSetDeltaDebounced = debounce(() => {
+        this.delta = newDelta
+        resolve(this.getStyle(layer))
+      }, 1000)
+      this.currentSetDeltaDebounced()
+    })
+
+    return promise
+  }
+  _setDelta = debounce(this._updateDelta, 1000)
+
   getStyle = (layer) => {
+    if (!this.delta) {
+      this.delta = getDelta(layer.start, layer.end)
+    }
     const { layers, promise } = this._getStyleLayers(layer)
+    const deltaPromise = this._updateDelta(layer)
+    const promises = compact([promise, deltaPromise])
     return {
       id: layer.id,
       sources: this._getStyleSources(layer),
       layers,
-      promise,
+      promises,
     }
   }
 }
