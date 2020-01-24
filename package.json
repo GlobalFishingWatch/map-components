@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "rimraf ./components/* && cross-env NODE_ENV=production rollup -c",
+    "prerender": "ts-node src/header/render-html.tsx",
     "start": "rollup -c -w",
     "docz:dev": "docz dev",
     "docz:build": "docz build",
@@ -69,7 +70,7 @@
     "redux": "^4.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
+    "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
@@ -79,7 +80,9 @@
     "@satellitestudio/eslint-config": "^1.1.0",
     "@svgr/rollup": "^4.1.0",
     "@types/mapbox-gl": "^0.54.1",
-    "@types/react": "^16.9.1",
+    "@types/node": "^13.5.0",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
     "autoprefixer": "^9.5.0",
@@ -134,7 +137,8 @@
     "rollup-plugin-visualizer": "^2.6.0",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0",
-    "typescript": "^3.4.5"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   },
   "husky": {
     "hooks": {
