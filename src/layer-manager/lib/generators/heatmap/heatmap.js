@@ -2,6 +2,7 @@ import memoizeOne from 'memoize-one'
 import flatten from 'lodash/flatten'
 import compact from 'lodash/compact'
 import debounce from 'lodash/debounce'
+import zip from 'lodash/zip'
 import paintByGeomType from './heatmap-layers-paint'
 
 export const HEATMAP_TYPE = 'HEATMAP'
@@ -14,7 +15,7 @@ export const toDays = (d) => {
   return Math.floor(new Date(d).getTime() / 1000 / 60 / 60 / 24)
 }
 
-export const DEFAULT_QUANTIZE_OFFSET = toDays('2017-01-01T00:00:00.000Z')
+export const DEFAULT_QUANTIZE_OFFSET = toDays('2019-01-01T00:00:00.000Z')
 
 export const HEATMAP_GEOM_TYPES = {
   BLOB: 'blob',
@@ -35,9 +36,27 @@ export const HEATMAP_COLOR_RAMPS = {
 }
 
 const HEATMAP_COLOR_RAMPS_RAMPS = {
-  [HEATMAP_COLOR_RAMPS.FISHING]: ['rgba(0, 0, 0, 0)', '#0c276c', '#3B9088', '#EEFF00', '#ffffff'],
-  [HEATMAP_COLOR_RAMPS.PRESENCE]: ['rgba(0, 0, 0, 0)', '#0c276c', '#114685', '#00ffc3', '#ffffff'],
-  [HEATMAP_COLOR_RAMPS.RECEPTION]: ['rgba(0, 0, 0, 0)', '#ff4573', '#7b2e8d', '#093b76', '#0c276c'],
+  [HEATMAP_COLOR_RAMPS.FISHING]: [
+    'rgba(12, 39, 108, 0)',
+    'rgb(12, 39, 108)',
+    '#3B9088',
+    '#EEFF00',
+    '#ffffff',
+  ],
+  [HEATMAP_COLOR_RAMPS.PRESENCE]: [
+    'rgba(12, 39, 108, 0)',
+    'rgb(12, 39, 108)',
+    '#114685',
+    '#00ffc3',
+    '#ffffff',
+  ],
+  [HEATMAP_COLOR_RAMPS.RECEPTION]: [
+    'rgba(255, 69, 115, 0)',
+    'rgb(255, 69, 115)',
+    '#7b2e8d',
+    '#093b76',
+    '#0c276c',
+  ],
 }
 
 // TODO this can yield different deltas depending even when start and end stays equally further apart:
@@ -175,27 +194,49 @@ class HeatmapGenerator {
     ]
 
     const originalColorRamp = HEATMAP_COLOR_RAMPS_RAMPS[colorRampType]
-    let legend = originalColorRamp.map((color, i) => {
-      const stop = stops[i]
-      return [stop, color]
-    })
+    let legend = zip(stops, originalColorRamp)
 
     const colorRampValues = flatten(legend)
 
     const d = toQuantizedDays(layer.start)
     const pickValueAt = layer.singleFrame ? 'value' : d.toString()
 
-    const colorRamp = [
-      'interpolate',
-      ['linear'],
-      ['to-number', ['get', pickValueAt]],
-      ...colorRampValues,
-    ]
-
+    const valueExpression = ['to-number', ['get', pickValueAt]]
+    const colorRamp = ['interpolate', ['linear'], valueExpression, ...colorRampValues]
     const paint = { ...paintByGeomType[geomType] }
     switch (geomType) {
       case HEATMAP_GEOM_TYPES.GRIDDED:
         paint['fill-color'] = colorRamp
+        break
+      case HEATMAP_GEOM_TYPES.EXTRUDED:
+        paint['fill-extrusion-color'] = colorRamp
+        const zoomFactor = 1 / Math.ceil(layer.zoom)
+        const extrusionHeightRamp = flatten(
+          zip(stops, [
+            0,
+            10000 * zoomFactor,
+            150000 * zoomFactor,
+            300000 * zoomFactor,
+            500000 * zoomFactor,
+          ])
+        )
+        paint['fill-extrusion-height'] = [
+          'interpolate',
+          ['linear'],
+          valueExpression,
+          ...extrusionHeightRamp,
+        ]
+
+        break
+      case HEATMAP_GEOM_TYPES.BLOB:
+        paint['heatmap-weight'] = valueExpression
+        const heatmapColorRamp = flatten(zip([0, 0.1, 0.2, 0.6, 0.9], originalColorRamp))
+        paint['heatmap-color'] = [
+          'interpolate',
+          ['linear'],
+          ['heatmap-density'],
+          ...heatmapColorRamp,
+        ]
         break
       default:
         break
