@@ -1,4 +1,4 @@
-export { default as Header } from './header/header'
+export { default as Header } from './header/header.jsx'
 export { default as MiniGlobe } from './miniglobe/miniglobe'
 export { default as Timebar } from './timebar/timebar'
 export { default as TimebarActivity } from './timebar/charts/activity'
