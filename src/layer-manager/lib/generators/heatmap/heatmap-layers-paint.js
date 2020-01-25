@@ -2,7 +2,7 @@ const baseBlobIntensity = 0.003
 
 // TODO this must vary *within* on zoom level
 // TODO also depends on grid size
-const baseBlobRadius = 20
+const baseBlobRadius = 30
 
 export default {
   blob: {

@@ -112,10 +112,14 @@ const aggregate = (
     delta = 30,
     geomType = GEOM_TYPES.GRIDDED,
     numCells = 64,
-    skipOddCells = false,
     singleFrameStart = null,
   }
 ) => {
+  // TODO Here assuming that BLOB --> animation frame. Should it be configurable in another way?
+  //      Generator could set it by default to BLOB, but it could be overridden by layer params
+  // TODO Should be aggregation, not skipping
+  const skipOddCells = geomType === GEOM_TYPES.BLOB
+
   const features = []
 
   let aggregating = []
@@ -136,6 +140,10 @@ const aggregate = (
 
   const writeValueToFeature = (quantizedTail) => {
     // TODO add skipOddCells check
+    // console.log(skipOddCells, currentFeatureCell)
+    if (skipOddCells === true && currentFeatureCell % 2 !== 0) {
+      return
+    }
     if (singleFrameStart === null) {
       currentFeature.properties[quantizedTail.toString()] = currentAggregatedValue
     } else {

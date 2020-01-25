@@ -317,7 +317,7 @@ class HeatmapGenerator {
       this.currentSetDeltaDebounced = debounce(() => {
         this.delta = newDelta
         resolve(this.getStyle(layer))
-      }, 1000)
+      }, 400)
       this.currentSetDeltaDebounced()
     })
 
