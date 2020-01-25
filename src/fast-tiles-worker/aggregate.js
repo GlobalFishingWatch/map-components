@@ -141,7 +141,7 @@ const aggregate = (
   const writeValueToFeature = (quantizedTail) => {
     // TODO add skipOddCells check
     // console.log(skipOddCells, currentFeatureCell)
-    if (skipOddCells === true && currentFeatureCell % 2 !== 0) {
+    if (skipOddCells === true && currentFeatureCell % 4 !== 0) {
       return
     }
     if (singleFrameStart === null) {
