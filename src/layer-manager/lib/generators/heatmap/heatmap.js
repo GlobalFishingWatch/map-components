@@ -65,9 +65,9 @@ const HEATMAP_COLOR_RAMPS_RAMPS = {
 const getDelta = (start, end) => {
   const startTimestampMs = new Date(start).getTime()
   const endTimestampMs = new Date(end).getTime()
-  const startTimestampDays = Math.floor(startTimestampMs / 1000 / 60 / 60 / 24)
-  const endTimestampDays = Math.floor(endTimestampMs / 1000 / 60 / 60 / 24)
-  let daysDelta = endTimestampDays - startTimestampDays
+  const startTimestampDays = startTimestampMs / 1000 / 60 / 60 / 24
+  const endTimestampDays = endTimestampMs / 1000 / 60 / 60 / 24
+  let daysDelta = Math.round(endTimestampDays - startTimestampDays)
   return daysDelta
 }
 
@@ -231,7 +231,6 @@ class HeatmapGenerator {
       case HEATMAP_GEOM_TYPES.BLOB:
         paint['heatmap-weight'] = valueExpression
         const hStops = [0, 0.005, 0.1, 0.3, 1]
-        // const hStops2 = [0, stops[1] / 10, stops[2] / 50, stops[3] / 200, stops[4] / 300]
         const heatmapColorRamp = flatten(zip(hStops, originalColorRamp))
         paint['heatmap-color'] = [
           'interpolate',
