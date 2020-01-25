@@ -238,6 +238,7 @@ class HeatmapGenerator {
           ['heatmap-density'],
           ...heatmapColorRamp,
         ]
+        paint['heatmap-opacity'] = layer.opacity || 1
         break
       default:
         break
@@ -265,11 +266,12 @@ class HeatmapGenerator {
         'source-layer': layer.tileset,
         type: HEATMAP_GEOM_TYPES_GL_TYPES[geomType],
         layout: {
-          visibility: layer.visible ? 'visible' : 'none',
+          visibility: layer.visible === false ? 'none' : 'visible',
         },
         paint,
         metadata: {
           legend,
+          currentlyAt: pickValueAt,
         },
       },
     ]
