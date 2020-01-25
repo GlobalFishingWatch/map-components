@@ -230,7 +230,9 @@ class HeatmapGenerator {
         break
       case HEATMAP_GEOM_TYPES.BLOB:
         paint['heatmap-weight'] = valueExpression
-        const heatmapColorRamp = flatten(zip([0, 0.1, 0.2, 0.6, 0.9], originalColorRamp))
+        const hStops = [0, 0.005, 0.1, 0.3, 1]
+        // const hStops2 = [0, stops[1] / 10, stops[2] / 50, stops[3] / 200, stops[4] / 300]
+        const heatmapColorRamp = flatten(zip(hStops, originalColorRamp))
         paint['heatmap-color'] = [
           'interpolate',
           ['linear'],

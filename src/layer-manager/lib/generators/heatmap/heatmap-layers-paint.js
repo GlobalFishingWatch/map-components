@@ -1,4 +1,4 @@
-const baseBlobIntensity = 0.02
+const baseBlobIntensity = 0.003
 
 // TODO this must vary *within* on zoom level
 // TODO also depends on grid size
