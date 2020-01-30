@@ -4,8 +4,8 @@ import Header from './header'
 import fs from 'fs'
 import util from 'util'
 
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
+const readFile = util.promisify(fs.readFile)
+const writeFile = util.promisify(fs.writeFile)
 
 const components = [
   { component: <Header />, path: 'src/header/html/header.html' },
@@ -16,15 +16,16 @@ const components = [
 
 async function preRender(components: any) {
   const styles = await readFile('src/header/header.css')
+  const script = await readFile('src/header/header-scripts.js')
 
   for (let i = 0, length = components.length; i < length; i++) {
-    const { component, path } = components[i];
+    const { component, path } = components[i]
     const markup = ReactDom.renderToStaticMarkup(component)
-    const html = `<style>\n${styles}</style>\n${markup}`
+    const html = `<style>\n${styles}</style>\n${markup}\n${script}`
     try {
-      const file = await writeFile(path, html)
+      await writeFile(path, html)
       console.log(`Wrote ${path}`)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }

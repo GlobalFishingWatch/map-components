@@ -7,15 +7,15 @@ class HeaderPage extends Component {
   render() {
     return (
       <div>
-        <h1>Mini version</h1>
-        <Header mini />
-        <h1>Mini inverted version</h1>
+        {/* <h1>Mini version</h1>
+        <Header mini /> */}
+        <h1>Regular version</h1>
         <Header />
-        <h1>Inverted version</h1>
+        {/* <h1>Inverted version</h1>
         <div className={styles.invertedContainer}>
           <Header inverted/>
         </div>
-        <div className={styles.invertedBg}/>
+        <div className={styles.invertedBg}/> */}
       </div>
     )
   }

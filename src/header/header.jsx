@@ -63,12 +63,6 @@ const navigation = [
       { link: 'https://globalfishingwatch.org/meet-the-team/', label: 'Meet the team' },
     ],
   },
-  {
-    link: 'https://globalfishingwatch.org/donate/',
-    label: 'Donate',
-    highlight: true,
-    mini: true,
-  },
 ]
 
 const Header = ({ mini, inverted }) => {
@@ -94,12 +88,8 @@ const Header = ({ mini, inverted }) => {
               {navigation.map(
                 (item, index) =>
                   (!mini || (mini && item.mini)) && (
-                    <li
-                      key={index}
-                      role="menuitem"
-                      className={item.highlight ? 'highlight-btn' : ''}
-                    >
-                      <a href={item.hlink} aria-haspopup="true">
+                    <li key={index} role="menuitem">
+                      <a href={item.link} aria-haspopup="true">
                         {item.label}
                       </a>
                       {!mini && item.childs && item.childs.length > 0 && (
@@ -123,6 +113,22 @@ const Header = ({ mini, inverted }) => {
                     </li>
                   )
               )}
+              <li role="menuitem" id="bablic-languages-container" style={{ display: 'none' }}>
+                <a id="bablic-languages-title" href="#" aria-haspopup="true">
+                  Languages
+                </a>
+                <input
+                  name="accordion-toggle-languages"
+                  className="accordion-toggle"
+                  type="checkbox"
+                />
+                <ul role="menu" id="bablic-languages" className="nav-list-sub-menu"></ul>
+              </li>
+              <li key="donate" role="menuitem" className="highlight-btn">
+                <a href="https://globalfishingwatch.org/donate/" aria-haspopup="true">
+                  Donate
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

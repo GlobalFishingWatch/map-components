@@ -153,6 +153,7 @@
   position: relative;
   border-top: 1px solid rgba(127, 178, 192, 0.2);
   overflow: hidden;
+  min-width: var(--space-L, 40px)
 }
 
 .gfw-header-container .gfw-header .nav-list > li.highlight-btn {
