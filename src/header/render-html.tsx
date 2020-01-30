@@ -16,7 +16,7 @@ const components = [
 
 async function preRender(components: any) {
   const styles = await readFile('src/header/header.css')
-  const script = await readFile('src/header/header-scripts.js')
+  const script = await readFile('src/header/header-scripts.html')
 
   for (let i = 0, length = components.length; i < length; i++) {
     const { component, path } = components[i]
