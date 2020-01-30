@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react'
+import React, { useState, useCallback, useEffect, Fragment } from 'react'
 import PropTypes from 'prop-types'
+// eslint-disable-next-line no-unused-vars
 import styles from './header.css'
 
 const navigation = [
@@ -66,6 +67,28 @@ const navigation = [
 ]
 
 const Header = ({ mini, inverted }) => {
+  const [languages, setLanguages] = useState(null)
+  const [currentLanguage, setCurrentLanguage] = useState(null)
+  const onBablicLoad = useCallback(() => {
+    setLanguages(window.bablic.languages.get())
+    setCurrentLanguage('ES')
+  }, [])
+  useEffect(() => {
+    let script
+    if (!window.bablic) {
+      script = document.createElement('script')
+      script.src = 'http://d.bablic.com/snippet/5c76e669cd0fe00001dc6aa4.js?version=3.9'
+      script.async = true
+      script.onload = onBablicLoad
+      document.body.appendChild(script)
+    }
+
+    return () => {
+      // if (script) {
+      //   document.body.removeChild(script)
+      // }
+    }
+  })
   return (
     <div className={`gfw-header-container ${inverted ? 'gfw-header-container-inverted' : ''}`}>
       <header className="gfw-header">
@@ -113,16 +136,30 @@ const Header = ({ mini, inverted }) => {
                     </li>
                   )
               )}
-              <li role="menuitem" id="bablic-languages-container" style={{ display: 'none' }}>
+              <li
+                role="menuitem"
+                id="bablic-languages-container"
+                style={{ display: languages && languages.length ? 'flex' : 'none' }}
+              >
                 <a id="bablic-languages-title" href="#" aria-haspopup="true">
-                  Languages
+                  {currentLanguage || 'Languages'}
                 </a>
                 <input
                   name="accordion-toggle-languages"
                   className="accordion-toggle"
                   type="checkbox"
                 />
-                <ul role="menu" id="bablic-languages" className="nav-list-sub-menu"></ul>
+                <ul role="menu" id="bablic-languages" className="nav-list-sub-menu">
+                  {languages &&
+                    languages.length &&
+                    languages.map((language) => (
+                      <li key="donate" role="menuitem" className="highlight-btn">
+                        <a href={language.link} aria-haspopup="true">
+                          {language.name}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
               </li>
               <li key="donate" role="menuitem" className="highlight-btn">
                 <a href="https://globalfishingwatch.org/donate/" aria-haspopup="true">
