@@ -81,6 +81,4 @@ npm publish
 
 (⚠️ don't forget to bump dependency version on parent project if needed!) 
 
-## License
 
-MIT ©
