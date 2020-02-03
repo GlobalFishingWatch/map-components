@@ -23,16 +23,6 @@ const bundleVisualizer = process.env.BUNDLE_VISUALIZER === 'true' && !isProducti
 
 export default [
   {
-    input: './src/fast-tiles-worker/index.js',
-    output: {
-      file: './workers-dist/fast-tiles-worker.js',
-      format: 'iife',
-      sourcemap: true,
-      name: 'FastTilesWorker',
-    },
-    plugins: [resolve(), commonjs()],
-  },
-  {
     input: ['./src/**/index.js'],
     output: {
       dir: distFolder,
