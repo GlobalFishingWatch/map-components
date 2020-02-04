@@ -1,15 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import LayerManagerLib from './lib'
+import { useEffect, useState } from 'react'
 
-export function useLayerManager(layers, config) {
+export function useMapStyler(layerComposer, layers) {
   const [mapStyle, setMapStyle] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const LayerManagerRef = useRef(new LayerManagerLib(config))
-
   useEffect(() => {
     const getGlStyles = async () => {
-      const { style, promises } = LayerManagerRef.current.getGLStyle(layers)
+      const { style, promises } = layerComposer.getGLStyle(layers)
       setMapStyle(style)
       if (promises && promises.length) {
         setLoading(true)
@@ -24,16 +21,16 @@ export function useLayerManager(layers, config) {
       }
     }
     getGlStyles()
-  }, [layers])
+  }, [layerComposer, layers])
 
   return [mapStyle, loading]
 }
 
-function LayerManager(props) {
-  const { layers, config } = props
-  const [mapStyle, loading] = useLayerManager(layers, config)
+function MapStyler(props) {
+  const { layers } = props
+  const [mapStyle, loading] = useMapStyler(layers)
 
   return props.children ? props.children({ mapStyle, loading }) : null
 }
 
-export default LayerManager
+export default MapStyler
