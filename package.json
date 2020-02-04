@@ -143,7 +143,6 @@
     "components",
     "types",
     "src",
-    "scripts",
-    "workers-dist"
+    "scripts"
   ]
 }

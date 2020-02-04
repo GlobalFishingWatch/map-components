@@ -6,7 +6,6 @@ node_modules
 # builds
 build
 /components
-/workers-dist
 stats.html
 
 # misc
