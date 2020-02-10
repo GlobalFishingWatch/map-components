@@ -1,21 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { MapStyler } from './index'
+import { LayerComposer } from './index'
 
 it('no crashes without child', () => {
   const div = document.createElement('div')
-  ReactDOM.render(<MapStyler />, div)
+  ReactDOM.render(<LayerComposer />, div)
   ReactDOM.unmountComponentAtNode(div)
 })
 
 it('renders without crashing', () => {
   const div = document.createElement('div')
   ReactDOM.render(
-    <MapStyler>
+    <LayerComposer>
       {() => {
         return null
       }}
-    </MapStyler>,
+    </LayerComposer>,
     div
   )
   ReactDOM.unmountComponentAtNode(div)
