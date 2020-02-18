@@ -10,7 +10,7 @@ class CountryFlag extends PureComponent {
   render() {
     // iso2 is deprecated, ignoring prop-types
     // eslint-disable-next-line react/prop-types
-    const { iso, iso2, svg, size, margin } = this.props
+    const { iso, iso2, svg, svgBorder, size, margin, className } = this.props
     if (!iso && !iso2) {
       console.error(' Country flag iso (iso 3) or iso2 code is required')
       return null
@@ -28,7 +28,15 @@ class CountryFlag extends PureComponent {
 
     return svg === true || flag.emoji === null ? (
       <img
-        style={{ height: size, marginRight: margin.right, marginLeft: margin.left }}
+        style={{
+          height: size,
+          marginRight: margin.right,
+          marginLeft: margin.left,
+          ...(svgBorder && {
+            outline: '1px solid var(--color-border-light, rgba(22, 63, 137, 0.15))',
+          }),
+        }}
+        className={className}
         alt={flag.name}
         src={flag.svg}
       />
@@ -43,7 +51,9 @@ class CountryFlag extends PureComponent {
 CountryFlag.propTypes = {
   iso: PropTypes.string.isRequired,
   svg: PropTypes.bool,
+  svgBorder: PropTypes.bool,
   size: PropTypes.string,
+  className: PropTypes.string,
   margin: PropTypes.shape({
     left: PropTypes.string,
     right: PropTypes.string,
@@ -52,6 +62,8 @@ CountryFlag.propTypes = {
 
 CountryFlag.defaultProps = {
   svg: false,
+  svgBorder: true,
+  className: '',
   size: '1em',
   margin: {
     left: '0.1em',
