@@ -8,13 +8,18 @@ const applyStyleTransformations = (style, styleTransformations) => {
   return newStyle
 }
 
-function useMapStyler(layerComposer, styleTransformations, layers) {
+function useMapStyler(
+  layerComposer,
+  styleTransformations,
+  generatorConfigs,
+  globalGeneratorConfig
+) {
   const [mapStyle, setMapStyle] = useState(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getGlStyles = async () => {
-      const { style, promises } = layerComposer.getGLStyle(layers)
+      const { style, promises } = layerComposer.getGLStyle(generatorConfigs, globalGeneratorConfig)
       setMapStyle(applyStyleTransformations(style, styleTransformations))
       if (promises && promises.length) {
         setLoading(true)
@@ -29,7 +34,7 @@ function useMapStyler(layerComposer, styleTransformations, layers) {
       }
     }
     getGlStyles()
-  }, [layerComposer, styleTransformations, layers])
+  }, [layerComposer, styleTransformations, generatorConfigs, globalGeneratorConfig])
 
   return [mapStyle, loading]
 }
