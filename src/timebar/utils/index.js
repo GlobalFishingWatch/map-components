@@ -39,7 +39,8 @@ export const getTimebarRangeByWorkspace = (timeline) => {
 }
 
 export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
-  const segments = geoJSONTrack.features
+  const features = geoJSONTrack.geojson.features
+  const segments = features
     .filter((feature) => feature.properties.type === 'track')
     .map((feature) => {
       const times = feature.properties.coordinateProperties.times
@@ -49,7 +50,7 @@ export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
       }
     })
   let points = []
-  geoJSONTrack.features
+  features
     .filter((feature) => feature.properties.type === 'fishing')
     .forEach((feature) => {
       const times = feature.properties.coordinateProperties.times
@@ -59,6 +60,7 @@ export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
   return {
     segments,
     points,
+    color: geoJSONTrack.color,
   }
 }
 

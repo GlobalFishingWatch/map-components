@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import ImmediateContext from '../immediateContext'
 import styles from './tracks.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
+import { geoJSONTrackToTimebarTrack, geoJSONTrackToTimebarFeatureSegments } from '../utils'
 
 const SegmentType = PropTypes.shape({
   start: PropTypes.number,
@@ -66,6 +67,10 @@ Points.defaultProps = {
   color: 'var(--timebar-track-default)',
 }
 
+const geoJSONTrackToTimebarTracks = (tracks) => {
+  return tracks.map((track) => geoJSONTrackToTimebarTrack(track))
+}
+
 const getCoords = (tracks, outerScale) => {
   if (tracks === null) return null
   return tracks.map((track) => {
@@ -123,7 +128,11 @@ const getClusteredTrackCoords = (tracks) => {
 const Y_TRACK_SPACE = 14
 const Tracks = ({ tracks, outerScale, graphHeight }) => {
   const { immediate } = useContext(ImmediateContext)
-  const trackCoords = useMemo(() => getCoords(tracks, outerScale), [tracks, outerScale])
+  const timebarTracks = useMemo(() => geoJSONTrackToTimebarTracks(tracks), [tracks])
+  const trackCoords = useMemo(() => getCoords(timebarTracks, outerScale), [
+    timebarTracks,
+    outerScale,
+  ])
   const clusteredTrackCoords = useMemo(() => getClusteredTrackCoords(trackCoords), [trackCoords])
 
   if (tracks === null || tracks === undefined) return null
