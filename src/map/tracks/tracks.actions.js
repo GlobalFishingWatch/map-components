@@ -75,6 +75,9 @@ function loadTrack(track) {
   return (dispatch, getState) => {
     const { id, url, type, fitBoundsOnLoad, layerTemporalExtents, color, data } = track
     const state = getState()
+    const token = state.map.module.token
+    console.log('loadTrack -> token', token)
+
     if (state.map.tracks.data.find((t) => t.id === id)) {
       return
     }
@@ -136,7 +139,7 @@ function loadTrack(track) {
         dispatch(completeLoader(loaderID))
       })
     } else {
-      fetch(url)
+      fetch(url, { headers: { Authorization: 'Bearer ' + token } })
         .then((res) => {
           if (res.status >= 400) throw new Error(res.statusText)
           return res.json()
