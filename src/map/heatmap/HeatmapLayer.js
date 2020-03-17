@@ -29,7 +29,7 @@ class HeatmapLayer extends React.Component {
     this._redraw()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.useRadialGradientStyle !== this.props.useRadialGradientStyle) {
       this.setBrushZoomRenderingStyle(nextProps.useRadialGradientStyle)
     }
