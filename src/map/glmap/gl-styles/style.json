@@ -187,13 +187,13 @@
     "events_fishing": {
       "type": "vector",
       "tiles": [
-        "https://events.api.dev.globalfishingwatch.org/datasets/indonesia/events/fishing/tiles/{z},{x},{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/fishing/tiles/{z}/{x}/{y}"
       ]
     },
     "events_encounter": {
       "type": "vector",
       "tiles": [
-        "https://events.api.dev.globalfishingwatch.org/datasets/indonesia/events/encounter/tiles/{z},{x},{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/encounter/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -202,7 +202,7 @@
     "events_gap": {
       "type": "vector",
       "tiles": [
-        "https://events.api.dev.globalfishingwatch.org/datasets/indonesia/events/gap/tiles/{z},{x},{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/gap/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -211,7 +211,7 @@
     "events_port": {
       "type": "vector",
       "tiles": [
-        "https://events.api.dev.globalfishingwatch.org/datasets/indonesia/events/port/tiles/{z},{x},{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/port/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
