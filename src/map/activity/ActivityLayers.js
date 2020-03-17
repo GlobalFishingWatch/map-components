@@ -100,7 +100,7 @@ class ActivityLayers extends BaseControl {
     this._destroy()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.props.exportNativeViewport(this._context.viewport)
 
     if (
