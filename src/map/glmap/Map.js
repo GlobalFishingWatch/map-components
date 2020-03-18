@@ -180,6 +180,8 @@ class Map extends React.Component {
       interactiveLayerIds,
     } = this.props
 
+    console.log(mapStyle.toJS())
+
     return (
       <div
         id="map"
@@ -209,6 +211,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
           clickRadius={4}
+          disableTokenWarning={true}
         >
           {hasHeatmapLayers !== false && <ActivityLayers />}
           {clickPopup !== undefined && clickPopup !== null && (
