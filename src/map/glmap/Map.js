@@ -209,6 +209,7 @@ class Map extends React.Component {
           onViewportChange={this.onViewportChange}
           interactiveLayerIds={interactiveLayerIds}
           clickRadius={4}
+          disableTokenWarning={true}
         >
           {hasHeatmapLayers !== false && <ActivityLayers />}
           {clickPopup !== undefined && clickPopup !== null && (
