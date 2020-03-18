@@ -180,8 +180,6 @@ class Map extends React.Component {
       interactiveLayerIds,
     } = this.props
 
-    console.log(mapStyle.toJS())
-
     return (
       <div
         id="map"
