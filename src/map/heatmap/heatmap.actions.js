@@ -394,7 +394,10 @@ const _queryHeatmap = (state, tileQuery, temporalExtentIndexes) => {
       isEmpty = true
     } else {
       // look up for any negatives ids (clusters on the server side)
-      const clusteredVessels = vessels.filter((v) => v.id < 0)
+      const clusteredVessels = vessels.filter(
+        (v) =>
+          (v.id !== undefined && v.id < 0) || (v.seriesgroup !== undefined && v.seriesgroup < 0)
+      )
       if (clusteredVessels.length) {
         isCluster = true
       } else {
