@@ -73,26 +73,27 @@ const geoJSONTrackToTimebarTracks = (tracks) => {
 
 const getCoords = (tracks, outerScale) => {
   if (tracks === null) return null
-  return tracks.map((track) => {
-    return {
-      ...track,
-      segments: track.segments.map((segment, i) => {
-        const x = outerScale(segment.start)
-        return {
-          id: i,
-          x,
-          width: outerScale(segment.end) - x,
-          ...segment,
-        }
-      }),
-      points: track.points.map((point, i) => ({
-        id: i,
-        x: outerScale(point),
-        width: 0,
-        ...point,
-      })),
+  const coordTracks = []
+  tracks.forEach((track) => {
+    const coordTrack = {
+      color: track.color,
     }
+    coordTrack.segments = track.segments.map((segment, i) => {
+      const x = outerScale(segment.start)
+      return {
+        id: i,
+        x,
+        width: outerScale(segment.end) - x,
+      }
+    })
+    coordTrack.points = track.points.map((point, i) => ({
+      id: i,
+      x: outerScale(point),
+      width: 0,
+    }))
+    coordTracks.push(coordTrack)
   })
+  return coordTracks
 }
 
 // creates cluster with fishing points to avoid generating too many DOM
