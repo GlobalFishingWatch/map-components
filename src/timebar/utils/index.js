@@ -65,8 +65,9 @@ export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
 }
 
 export const geoJSONTrackToTimebarFeatureSegments = (geoJSONTrack) => {
+  const features = geoJSONTrack.features
   const graph = []
-  geoJSONTrack.features
+  features
     .filter((feature) => feature.properties.type === 'track')
     .forEach((feature) => {
       const coordProps = feature.properties.coordinateProperties
