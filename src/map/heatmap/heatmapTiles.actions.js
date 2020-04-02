@@ -1,7 +1,11 @@
 import tilecover from '@mapbox/tile-cover/index'
 import debounce from 'lodash/debounce'
 import { PerspectiveMercatorViewport } from 'viewport-mercator-project'
-import { ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING, TILES_LOAD_ZOOM_OFFSET } from '../config'
+import {
+  ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING,
+  TILES_LOAD_ZOOM_OFFSET,
+  TILES_LOAD_ZOOM_OFFSET_HI_DEF,
+} from '../config'
 import {
   getTile,
   releaseTiles,
@@ -15,10 +19,19 @@ export const SET_CURRENTLY_SWAPPED_TILE_UIDS = 'SET_CURRENTLY_SWAPPED_TILE_UIDS'
 export const MARK_TILES_UIDS_AS_LOADED = 'MARK_TILES_UIDS_AS_LOADED'
 export const RELEASE_MARKED_TILES_UIDS = 'RELEASE_MARKED_TILES_UIDS'
 
+let currentTilesLoadZoomOffset = TILES_LOAD_ZOOM_OFFSET
+
+document.addEventListener('keydown', function(event) {
+  const KEY_H = 72
+  if (event.keyCode == KEY_H) {
+    currentTilesLoadZoomOffset = TILES_LOAD_ZOOM_OFFSET_HI_DEF
+  }
+})
+
 // restrict tilecover to a single zoom level
 // could be customized to load less or more detailed tiles
 const getTilecoverLimits = (viewportZoom) => {
-  let zoom = Math.ceil(viewportZoom + TILES_LOAD_ZOOM_OFFSET)
+  let zoom = Math.ceil(viewportZoom + currentTilesLoadZoomOffset)
   let tilesAvailable = true
   if (zoom > ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING) {
     zoom = ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING
@@ -162,10 +175,34 @@ export const updateHeatmapTilesFromViewport = (forceLoadingAllVisibleTiles = fal
     const e1 = 180 - 0.001
     const w2 = -180
     const e2 = e > 180 ? e - 360 : e
-    boundsPolygonsCoordinates.push([[[w1, n], [e1, n], [e1, s], [w1, s], [w1, n]]])
-    boundsPolygonsCoordinates.push([[[w2, n], [e2, n], [e2, s], [w2, s], [w2, n]]])
+    boundsPolygonsCoordinates.push([
+      [
+        [w1, n],
+        [e1, n],
+        [e1, s],
+        [w1, s],
+        [w1, n],
+      ],
+    ])
+    boundsPolygonsCoordinates.push([
+      [
+        [w2, n],
+        [e2, n],
+        [e2, s],
+        [w2, s],
+        [w2, n],
+      ],
+    ])
   } else {
-    boundsPolygonsCoordinates.push([[[w, n], [e, n], [e, s], [w, s], [w, n]]])
+    boundsPolygonsCoordinates.push([
+      [
+        [w, n],
+        [e, n],
+        [e, s],
+        [w, s],
+        [w, n],
+      ],
+    ])
   }
 
   const geom = {

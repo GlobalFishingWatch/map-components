@@ -38,6 +38,7 @@ export const ACTIVITY_LAYERS_MAX_ZOOM_LEVEL_TILE_LOADING = 10
 // this has a direct impact on the number of points displayed on the map, thus on the
 // performance of the app.
 export const TILES_LOAD_ZOOM_OFFSET = -1
+export const TILES_LOAD_ZOOM_OFFSET_HI_DEF = 0.5
 
 export const STATIC_LAYERS_CARTO_ENDPOINT =
   'https://carto.globalfishingwatch.org/user/admin/api/v1/map?config=$MAPCONFIG'
