@@ -187,13 +187,13 @@
     "events_fishing": {
       "type": "vector",
       "tiles": [
-        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/fishing/tiles/{z}/{x}/{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/fishing/tiles/{z}/{x}/{y}"
       ]
     },
     "events_encounter": {
       "type": "vector",
       "tiles": [
-        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/encounter/tiles/{z}/{x}/{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/encounter/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -202,7 +202,7 @@
     "events_gap": {
       "type": "vector",
       "tiles": [
-        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/gap/tiles/{z}/{x}/{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/gap/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -211,7 +211,7 @@
     "events_port": {
       "type": "vector",
       "tiles": [
-        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/by-type/port/tiles/{z}/{x}/{y}"
+        "https://gateway.api.globalfishingwatch.org/datasets/indonesia:latest/events/port/tiles/{z}/{x}/{y}"
       ],
       "metadata": {
         "gfw:popups": [{ "id": "event_id" }]
@@ -759,7 +759,11 @@
         "line-color": "#174084",
         "line-opacity": {
           "base": 1,
-          "stops": [[0, 0.7], [8, 0.7], [9, 0.2]]
+          "stops": [
+            [0, 0.7],
+            [8, 0.7],
+            [9, 0.2]
+          ]
         },
         "line-width": 0.5
       }
@@ -779,11 +783,17 @@
         "symbol-placement": "line",
         "symbol-spacing": {
           "base": 1,
-          "stops": [[3, 500], [8, 1000]]
+          "stops": [
+            [3, 500],
+            [8, 1000]
+          ]
         },
         "text-size": {
           "base": 1,
-          "stops": [[3, 7], [7, 12]]
+          "stops": [
+            [3, 7],
+            [7, 12]
+          ]
         },
         "text-letter-spacing": 0.2
       },
@@ -794,7 +804,11 @@
         "text-halo-color": "hsla(0, 0%, 68%, 0.49)",
         "text-opacity": {
           "base": 1,
-          "stops": [[0, 1], [8, 1], [9, 0]]
+          "stops": [
+            [0, 1],
+            [8, 1],
+            [9, 0]
+          ]
         }
       }
     },
