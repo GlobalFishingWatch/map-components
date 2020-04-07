@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const applyStyleTransformations = (style, styleTransformations) => {
+  if (!styleTransformations) return style
   let newStyle = style
   styleTransformations.forEach((t) => {
     newStyle = t(newStyle)
@@ -8,16 +9,13 @@ const applyStyleTransformations = (style, styleTransformations) => {
   return newStyle
 }
 
-function useMapStyler(
-  layerComposer,
-  styleTransformations,
-  generatorConfigs,
-  globalGeneratorConfig
-) {
+const defaultConfig = {}
+function useMapStyler(layerComposer, generatorConfigs, config = defaultConfig) {
   const [mapStyle, setMapStyle] = useState(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    const { styleTransformations, ...globalGeneratorConfig } = config
     const getGlStyles = async () => {
       const { style, promises } = layerComposer.getGLStyle(generatorConfigs, globalGeneratorConfig)
       setMapStyle(applyStyleTransformations(style, styleTransformations))
@@ -34,7 +32,7 @@ function useMapStyler(
       }
     }
     getGlStyles()
-  }, [layerComposer, styleTransformations, generatorConfigs, globalGeneratorConfig])
+  }, [layerComposer, generatorConfigs, config])
 
   return [mapStyle, loading]
 }
