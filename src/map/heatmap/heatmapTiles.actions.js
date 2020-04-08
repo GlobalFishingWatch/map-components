@@ -20,11 +20,16 @@ export const MARK_TILES_UIDS_AS_LOADED = 'MARK_TILES_UIDS_AS_LOADED'
 export const RELEASE_MARKED_TILES_UIDS = 'RELEASE_MARKED_TILES_UIDS'
 
 let currentTilesLoadZoomOffset = TILES_LOAD_ZOOM_OFFSET
+let highDefMode = false
 
 document.addEventListener('keydown', function(event) {
   const KEY_H = 72
-  if (event.keyCode == KEY_H) {
-    currentTilesLoadZoomOffset = TILES_LOAD_ZOOM_OFFSET_HI_DEF
+  if (event.keyCode === KEY_H) {
+    highDefMode = !highDefMode
+    currentTilesLoadZoomOffset = highDefMode
+      ? TILES_LOAD_ZOOM_OFFSET_HI_DEF
+      : TILES_LOAD_ZOOM_OFFSET
+    console.log(`Using to ${highDefMode ? 'high' : 'low'} def mode`)
   }
 })
 
