@@ -35,12 +35,10 @@ const getMaxValue = (activity) => {
 }
 
 const getMaxValues = (graphTracks) => {
-  console.log('getMaxValues')
   return graphTracks.map((graphTrack) => getMaxValue(graphTrack.segmentsWithCurrentFeature))
 }
 
 const getPaths = (activity, graphHeight, overallScale, maxValue_, curve, mode = 'mirror') => {
-  console.log('getPaths')
   const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
   const middle = TOP_MARGIN + finalHeight / 2
 
@@ -92,12 +90,13 @@ const Activity = ({
 }) => {
   const { immediate } = useContext(ImmediateContext)
 
-  const maxValues = useMemo(() => getMaxValues(graphTracks), [graphTracks])
+  const maxValues = useMemo(() => {
+    return getMaxValues(graphTracks)
+  }, [graphTracks])
 
-  const pathContainers = useMemo(
-    () => getPathContainers(graphTracks, graphHeight, overallScale, maxValues, curve),
-    [graphTracks, graphHeight, overallScale, maxValues, curve]
-  )
+  const pathContainers = useMemo(() => {
+    return getPathContainers(graphTracks, graphHeight, overallScale, maxValues, curve)
+  }, [graphTracks, graphHeight, overallScale, maxValues, curve])
 
   return (
     <svg width={outerWidth} height={graphHeight}>
