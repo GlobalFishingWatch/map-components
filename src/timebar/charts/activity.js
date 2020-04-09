@@ -34,14 +34,28 @@ const getMaxValue = (activity) => {
   return maxValue
 }
 
-const getPaths = (graphHeight, activity, absoluteEnd, overallScale, maxValue, curve) => {
+const getMaxValues = (graphTracks) => {
+  return graphTracks.map((graphTrack) => getMaxValue(graphTrack.segmentsWithCurrentFeature))
+}
+
+const getPaths = (activity, graphHeight, overallScale, maxValue_, curve, mode = 'mirror') => {
   const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
   const middle = TOP_MARGIN + finalHeight / 2
 
+  const maxValue = 20
+
   const areaGenerator = area()
     .x((d) => overallScale(d.date))
-    .y0((d) => middle - (finalHeight * d.value) / maxValue / 2)
-    .y1((d) => middle + (finalHeight * d.value) / maxValue / 2)
+    .y0(
+      mode === 'mirror' || mode === 'down'
+        ? (d) => middle - (finalHeight * d.value) / maxValue / 2
+        : middle
+    )
+    .y1(
+      mode === 'mirror' || mode === 'up'
+        ? (d) => middle + (finalHeight * d.value) / maxValue / 2
+        : middle
+    )
     .curve(CURVES[curve])
 
   const paths = activity.map((segment, i) => {
@@ -51,12 +65,24 @@ const getPaths = (graphHeight, activity, absoluteEnd, overallScale, maxValue, cu
   return paths
 }
 
+const getPathContainers = (graphTracks, graphHeight, overallScale, maxValues, curve) => {
+  return graphTracks.map((graphTrack, i) => ({
+    paths: getPaths(
+      graphTrack.segmentsWithCurrentFeature,
+      graphHeight,
+      overallScale,
+      maxValues[i],
+      curve,
+      graphTracks.length === 1 ? 'mirror' : i === 0 ? 'up' : 'down'
+    ),
+    color: graphTrack.color,
+  }))
+}
+
 const Activity = ({
-  activity,
-  color,
+  graphTracks,
   opacity,
   curve,
-  absoluteEnd,
   outerWidth,
   graphHeight,
   svgTransform,
@@ -64,12 +90,13 @@ const Activity = ({
 }) => {
   const { immediate } = useContext(ImmediateContext)
 
-  const maxValue = useMemo(() => getMaxValue(activity), [activity])
+  const maxValues = useMemo(() => {
+    return getMaxValues(graphTracks)
+  }, [graphTracks])
 
-  const paths = useMemo(
-    () => getPaths(graphHeight, activity, absoluteEnd, overallScale, maxValue, curve),
-    [graphHeight, activity, absoluteEnd, overallScale, maxValue, curve]
-  )
+  const pathContainers = useMemo(() => {
+    return getPathContainers(graphTracks, graphHeight, overallScale, maxValues, curve)
+  }, [graphTracks, graphHeight, overallScale, maxValues, curve])
 
   return (
     <svg width={outerWidth} height={graphHeight}>
@@ -79,25 +106,34 @@ const Activity = ({
           transition: immediate ? 'none' : `transform ${DEFAULT_CSS_TRANSITION}`,
         }}
       >
-        {paths.map((path, i) => (
-          <path key={i} d={path} fill={color} fillOpacity={opacity} />
-        ))}
+        {pathContainers.map((pathContainer, trackIndex) => {
+          return pathContainer.paths.map((path, i) => (
+            <path
+              key={`${trackIndex}-${i}`}
+              d={path}
+              fill={pathContainer.color}
+              fillOpacity={opacity}
+            />
+          ))
+        })}
       </g>
     </svg>
   )
 }
 
 Activity.propTypes = {
-  activity: PropTypes.arrayOf(
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string,
-        date: PropTypes.number,
-        value: PropTypes.number,
-      })
-    )
+  graphTracks: PropTypes.arrayOf(
+    PropTypes.shape({
+      color: PropTypes.string,
+      segmentsWithCurrentFeature: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+          date: PropTypes.number,
+          value: PropTypes.number,
+        })
+      ),
+    })
   ).isRequired,
-  color: PropTypes.string,
   opacity: PropTypes.number,
   curve: PropTypes.string,
   absoluteEnd: PropTypes.string.isRequired,
@@ -109,7 +145,6 @@ Activity.propTypes = {
 }
 
 Activity.defaultProps = {
-  color: 'var(--timebar-light-blue)',
   opacity: 0.9,
   curve: 'curveStepAfter',
 }

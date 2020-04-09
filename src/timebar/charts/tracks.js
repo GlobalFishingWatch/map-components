@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import ImmediateContext from '../immediateContext'
 import styles from './tracks.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
-import { geoJSONTrackToTimebarTrack, geoJSONTrackToTimebarFeatureSegments } from '../utils'
+import { geoJSONTrackToTimebarTrack } from '../utils'
 
 const SegmentType = PropTypes.shape({
   start: PropTypes.number,
