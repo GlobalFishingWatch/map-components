@@ -28,7 +28,8 @@ const CURVES = {
 
 const getMaxValue = (activity) => {
   const maxValues = activity.map((segment) => {
-    return maxBy(segment, (item) => item.value).value
+    const maxItem = maxBy(segment, (item) => item.value)
+    return maxItem ? maxItem.value : 0
   })
   const maxValue = max(maxValues)
   return maxValue
