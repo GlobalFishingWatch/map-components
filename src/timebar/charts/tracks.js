@@ -4,6 +4,7 @@ import ImmediateContext from '../immediateContext'
 import styles from './tracks.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
 import { geoJSONTrackToTimebarTrack } from '../utils'
+import { getTrackY } from './utils'
 
 const SegmentType = PropTypes.shape({
   start: PropTypes.number,
@@ -126,7 +127,6 @@ const getClusteredTrackCoords = (tracks) => {
   })
 }
 
-const Y_TRACK_SPACE = 14
 const Tracks = ({ tracks, outerScale, graphHeight }) => {
   const { immediate } = useContext(ImmediateContext)
   const timebarTracks = useMemo(() => geoJSONTrackToTimebarTracks(tracks), [tracks])
@@ -138,11 +138,8 @@ const Tracks = ({ tracks, outerScale, graphHeight }) => {
 
   if (tracks === null || tracks === undefined) return null
 
-  const totalHeightOffset = ((tracks.length - 1) * Y_TRACK_SPACE) / 2
-  const startY = -8 + graphHeight / 2
-
   return clusteredTrackCoords.map((track, i) => {
-    const y = startY + i * Y_TRACK_SPACE - totalHeightOffset
+    const y = getTrackY(tracks.length, i, graphHeight)
     return (
       <div key={i}>
         <Segments segments={track.segments} color={track.color} immediate={immediate} y={y} />

@@ -1,0 +1,13 @@
+.Events {
+  position: absolute;
+}
+
+.track,
+.event {
+  position: absolute;
+}
+
+.event {
+  border-radius: 99px;
+  border: 1px solid var(--timebar-main-background-color);
+}
