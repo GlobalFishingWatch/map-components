@@ -10,6 +10,7 @@ import ImmediateContext from '../immediateContext'
 
 import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
+import { ReactComponent as IconLoitering } from '../icons/events/loitering.svg'
 import { ReactComponent as IconGap } from '../icons/events/gap.svg'
 import { ReactComponent as IconPort } from '../icons/events/port.svg'
 
@@ -17,7 +18,7 @@ const ICONS = {
   encounter: <IconEncounter />,
   unregistered: <IconUnregistered />,
   gap: <IconGap />,
-  loitering: <IconUnregistered />,
+  loitering: <IconLoitering />,
   port: <IconPort />,
   fishing: null,
 }
