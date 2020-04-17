@@ -61,7 +61,7 @@ Tooltip.defaultProps = {
 
 const getCoordinates = (tracksEvents, outerScale) => {
   return tracksEvents.map((trackEvents) => {
-    return trackEvents.map((event) => {
+    const trackEventsWithCoordinates = trackEvents.map((event) => {
       const height = 8
       const x1 = outerScale(event.start)
       const x2 = event.end === null ? x1 : outerScale(event.end)
@@ -74,6 +74,8 @@ const getCoordinates = (tracksEvents, outerScale) => {
         height,
       }
     })
+    trackEventsWithCoordinates.sort((eventA, eventB) => eventB.width - eventA.width)
+    return trackEventsWithCoordinates
   })
 }
 
