@@ -79,7 +79,14 @@ const getCoordinates = (tracksEvents, outerScale) => {
   })
 }
 
-const TracksEvents = ({ tracksEvents, outerWidth, graphHeight, outerScale, tooltipContainer }) => {
+const TracksEvents = ({
+  tracksEvents,
+  onEventClick,
+  outerWidth,
+  graphHeight,
+  outerScale,
+  tooltipContainer,
+}) => {
   const { immediate } = useContext(ImmediateContext)
   const tracksEventsWithCoordinates = useMemo(() => getCoordinates(tracksEvents, outerScale), [
     tracksEvents,
@@ -116,6 +123,7 @@ const TracksEvents = ({ tracksEvents, outerWidth, graphHeight, outerScale, toolt
                 }}
                 onMouseEnter={() => setHighlightedEvent(event)}
                 onMouseLeave={() => setHighlightedEvent()}
+                onClick={() => onEventClick(event)}
               />
             ))}
           </div>
@@ -147,6 +155,11 @@ TracksEvents.propTypes = {
   outerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
   tooltipContainer: PropTypes.instanceOf(Element).isRequired,
+  onEventClick: PropTypes.func,
+}
+
+TracksEvents.defaultProps = {
+  onEventClick: () => {},
 }
 
 export default TracksEvents
