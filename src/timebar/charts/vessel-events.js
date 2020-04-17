@@ -1,3 +1,5 @@
+// DEPRECATED - Still in use in data portal, but use tracks-events instead
+
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
