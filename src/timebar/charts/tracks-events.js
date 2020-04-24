@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, Fragment } from 'react'
+import React, { useContext, useState, useMemo, useEffect, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
@@ -82,6 +82,7 @@ const getCoordinates = (tracksEvents, outerScale) => {
 
 const TracksEvents = ({
   tracksEvents,
+  preselectedEventId,
   onEventClick,
   outerWidth,
   graphHeight,
@@ -94,6 +95,20 @@ const TracksEvents = ({
     outerScale,
   ])
   const [highlightedEvent, setHighlightedEvent] = useState(null)
+
+  // checks if preselectedEventId exist in the first trackEvents, pick it and setHighlightedEvent accordingly
+  // TODO should that work on *all* trackEvents?
+  useEffect(() => {
+    if (tracksEventsWithCoordinates && tracksEventsWithCoordinates.length) {
+      const preselectedHighlightedEvent = tracksEventsWithCoordinates[0].find(
+        (event) => event.id === preselectedEventId
+      )
+      if (preselectedHighlightedEvent) {
+        setHighlightedEvent(preselectedHighlightedEvent)
+      }
+    }
+  }, [preselectedEventId, tracksEventsWithCoordinates])
+
   return (
     <Fragment>
       <div width={outerWidth} height={graphHeight} className={styles.Events}>
@@ -152,6 +167,7 @@ TracksEvents.propTypes = {
       })
     )
   ).isRequired,
+  preselectedEventId: PropTypes.string,
   outerScale: PropTypes.func.isRequired,
   outerWidth: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
@@ -161,6 +177,7 @@ TracksEvents.propTypes = {
 
 TracksEvents.defaultProps = {
   onEventClick: () => {},
+  preselectedEventId: null,
 }
 
 export default TracksEvents
