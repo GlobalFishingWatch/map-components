@@ -38,32 +38,6 @@ export const getTimebarRangeByWorkspace = (timeline) => {
     : getTimebarRangeDefault(timeline)
 }
 
-export const geoJSONTrackToTimebarTrack = (geoJSONTrack) => {
-  const features = geoJSONTrack.geojson.features
-  const segments = features
-    .filter((feature) => feature.properties.type === 'track')
-    .map((feature) => {
-      const times = feature.properties.coordinateProperties.times
-      return {
-        start: times[0],
-        end: times[times.length - 1],
-      }
-    })
-  let points = []
-  features
-    .filter((feature) => feature.properties.type === 'fishing')
-    .forEach((feature) => {
-      const times = feature.properties.coordinateProperties.times
-      points = [...points, ...times]
-    })
-
-  return {
-    segments,
-    points,
-    color: geoJSONTrack.color,
-  }
-}
-
 export const geoJSONTrackToTimebarFeatureSegments = ({ features = [] } = {}) => {
   const graph = features
     .filter((feature) => feature.properties.type === 'track')
