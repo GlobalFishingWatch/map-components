@@ -65,8 +65,6 @@ const Tracks = ({ tracks, outerScale, graphHeight }) => {
   const trackCoords = useMemo(() => getCoords(tracks, outerScale), [tracks, outerScale])
   if (tracks === null || tracks === undefined) return null
 
-  console.log(trackCoords)
-
   return trackCoords.map((track, i) => {
     const y = getTrackY(tracks.length, i, graphHeight)
     return (
