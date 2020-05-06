@@ -1,6 +1,6 @@
 {
   "name": "@globalfishingwatch/map-components",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "Set of components used in global fishing watch world",
   "author": "Satellite Studio",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "classnames": "^2.2.6",
-    "countryflag": "^2.5.0",
+    "countryflag": "^2.5.3",
     "d3-ease": "1.0.5",
     "d3-geo": "1.11.3",
     "d3-scale": "2.2.2",
