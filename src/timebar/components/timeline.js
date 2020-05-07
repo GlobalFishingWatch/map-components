@@ -320,7 +320,10 @@ class Timeline extends PureComponent {
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
 
     return (
-      <div ref={(node) => (this.node = node)} className={styles.Timeline}>
+      <div
+        ref={(node) => (this.node = node)}
+        className={cx(styles.Timeline, { [styles._disabled]: immediate })}
+      >
         {bookmarkStart !== undefined && bookmarkStart !== null && (
           <Bookmark
             scale={this.outerScale}

@@ -258,6 +258,7 @@ class Timebar extends Component {
                 type="button"
                 title="Select a time range"
                 className={cx(styles.uiButton, styles.timeRange)}
+                disabled={immediate}
                 onClick={this.toggleTimeRangeSelector}
               >
                 <IconTimeRange />
@@ -268,7 +269,7 @@ class Timebar extends Component {
               title="Bookmark current time range"
               className={cx(styles.uiButton, styles.bookmark)}
               onClick={this.setBookmark}
-              disabled={bookmarkDisabled === true}
+              disabled={immediate || bookmarkDisabled === true}
             >
               {hasBookmark ? <IconBookmarkFilled /> : <IconBookmark />}
             </button>
@@ -276,7 +277,7 @@ class Timebar extends Component {
               <button
                 type="button"
                 title="Zoom out"
-                disabled={canZoomOut === false}
+                disabled={immediate || canZoomOut === false}
                 onClick={() => {
                   this.zoom('out')
                 }}
@@ -287,7 +288,7 @@ class Timebar extends Component {
               <button
                 type="button"
                 title="Zoom in"
-                disabled={canZoomIn === false}
+                disabled={immediate || canZoomIn === false}
                 onClick={() => {
                   this.zoom('in')
                 }}
