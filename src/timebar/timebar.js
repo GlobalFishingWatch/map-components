@@ -25,6 +25,8 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24
+const ONE_HOUR_MS = 1000 * 60 * 60
+const MINIMUM_RANGE = ONE_HOUR_MS
 
 const getRangeMs = (range, unit) => {
   const start = dayjs(new Date())
@@ -77,7 +79,7 @@ class Timebar extends Component {
 
   getMinimumRangeMs = memoize((minimumRange, minimumRangeUnit) => {
     if (minimumRange === null) {
-      return Number.NEGATIVE_INFINITY
+      return MINIMUM_RANGE
     }
     return getRangeMs(minimumRange, minimumRangeUnit)
   })
