@@ -18,6 +18,7 @@ import Bookmark from './bookmark'
 import TimelineUnits from './timeline-units'
 import Handler from './timeline-handler'
 import styles from './timeline.module.css'
+import ResizeObserver from 'resize-observer-polyfill'
 
 const DRAG_INNER = 'DRAG_INNER'
 const DRAG_START = 'DRAG_START'
@@ -63,14 +64,20 @@ class Timeline extends PureComponent {
   }
 
   componentDidMount() {
-    // wait for end of call stack to get rendered CSS
-    window.setTimeout(this.onWindowResize, 10)
-    window.addEventListener('resize', this.onWindowResize)
     window.addEventListener('mousemove', this.onMouseMove)
     window.addEventListener('touchmove', this.onMouseMove)
     window.addEventListener('mouseup', this.onMouseUp)
     window.addEventListener('touchend', this.onMouseUp)
     this.requestAnimationFrame = window.requestAnimationFrame(this.onEnterFrame)
+
+    // wait for end of call stack to get rendered CSS
+    window.setTimeout(this.onWindowResize, 10)
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(this.onWindowResize)
+      this.resizeObserver.observe(this.node)
+    } else {
+      window.addEventListener('resize', this.onWindowResize)
+    }
   }
 
   componentWillUnmount() {
@@ -80,6 +87,10 @@ class Timeline extends PureComponent {
     window.removeEventListener('mouseup', this.onMouseUp)
     window.removeEventListener('touchend', this.onMouseUp)
     window.cancelAnimationFrame(this.requestAnimationFrame)
+
+    if (this.resizeObserver) {
+      this.resizeObserver.unobserve(this.node)
+    }
   }
 
   onWindowResize = () => {
