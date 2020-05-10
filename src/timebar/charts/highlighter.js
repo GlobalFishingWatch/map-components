@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
@@ -25,28 +25,33 @@ const getCoords = (hoverStart, hoverEnd, outerScale) => {
   }
 }
 
-const getValueAtCenter = (activity, centerDate) => {
+const getValuesAtCenter = (activity, centerDate) => {
   if (activity === null) return null
   const centerTime = centerDate.getTime()
-  for (let s = 0; s < activity.length; s++) {
-    const segment = activity[s]
-    const segmentLength = segment.length
-    const segmentStart = segment[0].date
-    const segmentEnd = segment[segmentLength - 1].date
-    if (centerDate > segmentStart && centerDate < segmentEnd) {
-      for (let i = 0; i < segmentLength; i++) {
-        const point = segment[i]
-        const nextPoint = segment[i + 1]
-        const time = point.date
-        const nextTime = nextPoint ? nextPoint.date : Number.POSITIVE_INFINITY
-        if (centerTime > time && centerTime <= nextTime) {
-          return point.value
+  return activity.map((track) => {
+    if (!track.segmentsWithCurrentFeature) return null
+    for (let s = 0; s < track.segmentsWithCurrentFeature.length; s++) {
+      const segment = track.segmentsWithCurrentFeature[s]
+      const segmentLength = segment.length
+      const segmentStart = segment[0].date
+      const segmentEnd = segment[segmentLength - 1].date
+      if (centerDate > segmentStart && centerDate < segmentEnd) {
+        for (let i = 0; i < segmentLength; i++) {
+          const point = segment[i]
+          const nextPoint = segment[i + 1]
+          const time = point.date
+          const nextTime = nextPoint ? nextPoint.date : Number.POSITIVE_INFINITY
+          if (centerTime > time && centerTime <= nextTime) {
+            return point.value
+          }
         }
       }
     }
-  }
-  return null
+    return null
+  })
 }
+
+const truncDecimals = (num) => (Math.round(num * 100) / 100).toFixed(2)
 
 const Highlighter = ({
   hoverStart,
@@ -61,7 +66,7 @@ const Highlighter = ({
     () => getCoords(hoverStart, hoverEnd, outerScale),
     [hoverStart, hoverEnd, outerScale]
   )
-  const valueAtCenter = useMemo(() => getValueAtCenter(activity, centerDate), [
+  const valuesAtCenter = useMemo(() => getValuesAtCenter(activity, centerDate), [
     activity,
     centerDate,
   ])
@@ -69,10 +74,13 @@ const Highlighter = ({
     return null
   }
 
-  const valueLabel = valueAtCenter !== null ? `${valueAtCenter} ${unit}` : null
+  const valueLabel =
+    valuesAtCenter !== null
+      ? valuesAtCenter.map((value) => `${truncDecimals(value)} ${unit}`).join(', ')
+      : null
 
   return (
-    <>
+    <Fragment>
       <div
         className={styles.highlighter}
         style={{
@@ -91,12 +99,12 @@ const Highlighter = ({
           >
             <div className={styles.tooltip}>
               <span className={styles.tooltipDate}>{centerDateLabel}</span>
-              <span className={styles.tooltipValue}>{valueLabel}</span>
+              {valueLabel && <span className={styles.tooltipValue}>{valueLabel}</span>}
             </div>
           </div>,
           tooltipContainer
         )}
-    </>
+    </Fragment>
   )
 }
 
@@ -106,12 +114,15 @@ Highlighter.propTypes = {
   hoverStart: PropTypes.string,
   hoverEnd: PropTypes.string,
   activity: PropTypes.arrayOf(
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        date: PropTypes.number,
-        value: PropTypes.number,
-      })
-    )
+    PropTypes.shape({
+      segmentsWithCurrentFeature: PropTypes.arrayOf(
+        PropTypes.shape({
+          date: PropTypes.number,
+          value: PropTypes.number,
+        })
+      ),
+      maxValue: PropTypes.number,
+    })
   ),
   unit: PropTypes.string,
   tooltipContainer: PropTypes.instanceOf(Element),
