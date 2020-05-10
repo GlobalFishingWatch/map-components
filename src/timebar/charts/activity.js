@@ -36,14 +36,17 @@ const getMaxValue = (activity) => {
 }
 
 const getMaxValues = (graphTracks) => {
-  return graphTracks.map((graphTrack) => getMaxValue(graphTrack.segmentsWithCurrentFeature))
+  return graphTracks.map((graphTrack) => {
+    if (!graphTrack) return 0
+    return graphTrack.maxValue
+      ? graphTrack.maxValue
+      : getMaxValue(graphTrack.segmentsWithCurrentFeature)
+  })
 }
 
-const getPaths = (activity, graphHeight, overallScale, maxValue_, curve, mode = 'mirror') => {
+const getPaths = (activity, graphHeight, overallScale, maxValue, curve, mode = 'mirror') => {
   const finalHeight = graphHeight - TOP_MARGIN - BOTTOM_MARGIN
   const middle = TOP_MARGIN + finalHeight / 2
-
-  const maxValue = 20
 
   const areaGenerator = area()
     .x((d) => overallScale(d.date))
@@ -67,17 +70,24 @@ const getPaths = (activity, graphHeight, overallScale, maxValue_, curve, mode = 
 }
 
 const getPathContainers = (graphTracks, graphHeight, overallScale, maxValues, curve) => {
-  return graphTracks.map((graphTrack, i) => ({
-    paths: getPaths(
-      graphTrack.segmentsWithCurrentFeature,
-      graphHeight,
-      overallScale,
-      maxValues[i],
-      curve,
-      graphTracks.length === 1 ? 'mirror' : i === 0 ? 'up' : 'down'
-    ),
-    color: graphTrack.color,
-  }))
+  if (!graphTracks) return []
+  return graphTracks.map((graphTrack, i) => {
+    if (!graphTrack)
+      return {
+        paths: [],
+      }
+    return {
+      paths: getPaths(
+        graphTrack.segmentsWithCurrentFeature,
+        graphHeight,
+        overallScale,
+        maxValues[i],
+        curve,
+        graphTracks.length === 1 ? 'mirror' : i === 0 ? 'up' : 'down'
+      ),
+      color: graphTrack.color,
+    }
+  })
 }
 
 const Activity = ({
@@ -133,6 +143,7 @@ Activity.propTypes = {
           value: PropTypes.number,
         })
       ),
+      maxValue: PropTypes.number,
     })
   ).isRequired,
   opacity: PropTypes.number,
