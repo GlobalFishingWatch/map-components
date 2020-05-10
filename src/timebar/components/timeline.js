@@ -183,7 +183,7 @@ class Timeline extends PureComponent {
     const clientX = event.clientX || event.changedTouches[0].clientX
     this.lastX = clientX
     const x = clientX - outerX
-    this.context.toggleImmediate(true)
+
     this.setState({
       dragging,
       handlerMouseX: x,
@@ -216,7 +216,20 @@ class Timeline extends PureComponent {
       onMouseLeave()
       this.notifyMouseLeave()
     }
-    if (dragging === DRAG_INNER) {
+
+    const isDraggingInner = dragging === DRAG_INNER
+    const isDraggingZoomIn = this.isHandlerZoomInValid(x).isValid === true
+    const isDraggingZoomOut = this.isHandlerZoomOutValid(x) === true
+
+    if (isDraggingInner || isDraggingZoomIn || isDraggingZoomOut) {
+      // trigger setting immediate only once, when any drag interaction starts
+      // this can't be done in onMouseDown because it would disable click interaction on graph or tmln units
+      if (this.context.immediate === false) {
+        this.context.toggleImmediate(true)
+      }
+    }
+
+    if (isDraggingInner) {
       const currentDeltaMs = getDeltaMs(start, end)
       // Calculates x movement from last event since TouchEvent doesn't have the movementX property
       const movementX = clientX - this.lastX
@@ -231,12 +244,12 @@ class Timeline extends PureComponent {
         absoluteEnd
       )
       onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
-    } else if (this.isHandlerZoomInValid(x).isValid === true) {
+    } else if (isDraggingZoomIn) {
       this.setState({
         handlerMouseX: x,
         outerDrag: false,
       })
-    } else if (this.isHandlerZoomOutValid(x) === true) {
+    } else if (isDraggingZoomOut) {
       this.setState({
         handlerMouseX: x,
         outerDrag: true,
@@ -248,6 +261,8 @@ class Timeline extends PureComponent {
     const { start, end, onChange } = this.props
     const { dragging, outerX, innerStartPx } = this.state
 
+    this.context.toggleImmediate(false)
+
     if (dragging === null) {
       return
     }
@@ -257,7 +272,6 @@ class Timeline extends PureComponent {
 
     const isHandlerZoomInValid = this.isHandlerZoomInValid(x)
 
-    this.context.toggleImmediate(false)
     this.setState({
       dragging: null,
       handlerMouseX: null,
