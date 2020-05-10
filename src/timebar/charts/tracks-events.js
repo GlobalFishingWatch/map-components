@@ -63,7 +63,7 @@ Tooltip.defaultProps = {
 const getCoordinates = (tracksEvents, outerScale) => {
   return tracksEvents.map((trackEvents) => {
     const trackEventsWithCoordinates = trackEvents.map((event) => {
-      const height = 8
+      const height = event.height || 7
       const x1 = outerScale(event.start)
       const x2 = event.end === null ? x1 : outerScale(event.end)
       const width = Math.max(height, x2 - x1)
@@ -130,7 +130,7 @@ const TracksEvents = ({
                 style={{
                   background: event.color || 'white',
                   left: `${event.x1}px`,
-                  top: `${-event.height / 2}px`,
+                  top: `${-(event.height / 2) - 1}px`,
                   width: `${event.width}px`,
                   height: `${event.height}px`,
                   transition: immediate
