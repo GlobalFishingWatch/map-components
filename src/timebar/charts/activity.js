@@ -51,12 +51,12 @@ const getPaths = (activity, graphHeight, overallScale, maxValue, curve, mode = '
   const areaGenerator = area()
     .x((d) => overallScale(d.date))
     .y0(
-      mode === 'mirror' || mode === 'down'
+      mode === 'mirror' || mode === 'up'
         ? (d) => middle - (finalHeight * d.value) / maxValue / 2
         : middle
     )
     .y1(
-      mode === 'mirror' || mode === 'up'
+      mode === 'mirror' || mode === 'down'
         ? (d) => middle + (finalHeight * d.value) / maxValue / 2
         : middle
     )
