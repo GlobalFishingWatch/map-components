@@ -308,6 +308,7 @@ class Timeline extends PureComponent {
       bookmarkEnd,
       onChange,
       onBookmarkChange,
+      showLastUpdate,
     } = this.props
     const {
       dragging,
@@ -436,7 +437,7 @@ class Timeline extends PureComponent {
             width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
           }}
         />
-        {lastUpdatePosition <= outerWidth && (
+        {showLastUpdate && lastUpdatePosition <= outerWidth && (
           <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
             {(style) => (
               <animated.div className={styles.absoluteEnd} style={style}>
@@ -463,6 +464,7 @@ Timeline.propTypes = {
   onBookmarkChange: PropTypes.func,
   bookmarkStart: PropTypes.string,
   bookmarkEnd: PropTypes.string,
+  showLastUpdate: PropTypes.bool,
 }
 
 Timeline.defaultProps = {
@@ -471,6 +473,7 @@ Timeline.defaultProps = {
   onBookmarkChange: () => {},
   onMouseLeave: () => {},
   onMouseMove: () => {},
+  showLastUpdate: true,
 }
 
 export default Timeline
