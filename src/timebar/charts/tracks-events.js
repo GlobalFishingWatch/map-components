@@ -36,7 +36,10 @@ const Tooltip = ({ highlightedEvent, outerScale }) => {
     <div className={styles.tooltip} style={{ left: `${center}px` }} key="tooltip">
       {ICONS[highlightedEvent.type]}
       <div className={styles.tooltipText}>
-        <div className={styles.tooltipDate} style={{ color: highlightedEvent.color }}>
+        <div
+          className={styles.tooltipDate}
+          style={{ color: highlightedEvent.colorLabels || highlightedEvent.color }}
+        >
           {start.format(DEFAULT_FULL_DATE_FORMAT)}
         </div>
         {highlightedEvent.description}
@@ -51,6 +54,7 @@ Tooltip.propTypes = {
     start: PropTypes.number,
     end: PropTypes.number,
     color: PropTypes.string,
+    colorLabels: PropTypes.string,
     description: PropTypes.string,
   }),
   outerScale: PropTypes.func.isRequired,
@@ -163,6 +167,7 @@ TracksEvents.propTypes = {
         id: PropTypes.string,
         type: PropTypes.string,
         color: PropTypes.string,
+        colorLabels: PropTypes.string,
         description: PropTypes.string,
       })
     )
