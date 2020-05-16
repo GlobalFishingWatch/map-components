@@ -267,7 +267,7 @@ class Timeline extends PureComponent {
       return
     }
 
-    const clientX = event.clientX || event.changedTouches[0].clientX
+    const clientX = event.clientX || (event.changedTouches && event.changedTouches[0].clientX) || 0
     const x = clientX - outerX
 
     const isHandlerZoomInValid = this.isHandlerZoomInValid(x)
