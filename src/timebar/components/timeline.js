@@ -339,7 +339,7 @@ class Timeline extends PureComponent {
         ref={(node) => (this.node = node)}
         className={cx(styles.Timeline, { [styles._disabled]: immediate })}
       >
-        {bookmarkStart !== undefined && bookmarkStart !== null && (
+        {bookmarkStart !== undefined && bookmarkStart !== null && bookmarkStart !== '' && (
           <Bookmark
             scale={this.outerScale}
             bookmarkStart={bookmarkStart}
