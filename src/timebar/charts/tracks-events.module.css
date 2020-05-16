@@ -26,8 +26,9 @@
   padding: 6px 8px;
   transform: translate(-50%, -100%);
   top: 10px;
-  z-index: 10;
+  z-index: 100;
   font-weight: normal;
+  min-width: fit-content;
 }
 
 .tooltip::after {
