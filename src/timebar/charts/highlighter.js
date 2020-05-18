@@ -29,6 +29,7 @@ const getValuesAtCenter = (activity, centerDate) => {
   if (activity === null) return null
   const centerTime = centerDate.getTime()
   return activity.map((track) => {
+    if (!track) return null
     if (!track.segmentsWithCurrentFeature) return null
     for (let s = 0; s < track.segmentsWithCurrentFeature.length; s++) {
       const segment = track.segmentsWithCurrentFeature[s]
@@ -57,9 +58,9 @@ const getFormattedValuesAtCenter = (activity, centerDate, unit) => {
     valuesAtCenter !== null
       ? valuesAtCenter
           .map((value) => {
-            return value === null ? 'unknown' : `${truncDecimals(value)} ${unit}`
+            return value === null ? 'Unknown value' : `${truncDecimals(value)} ${unit}`
           })
-          .join(', ')
+          .join(' / ')
       : null
 
   return valueLabel
