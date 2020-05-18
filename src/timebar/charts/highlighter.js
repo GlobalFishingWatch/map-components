@@ -51,6 +51,20 @@ const getValuesAtCenter = (activity, centerDate) => {
   })
 }
 
+const getFormattedValuesAtCenter = (activity, centerDate, unit) => {
+  const valuesAtCenter = getValuesAtCenter(activity, centerDate)
+  const valueLabel =
+    valuesAtCenter !== null
+      ? valuesAtCenter
+          .map((value) => {
+            return value === null ? 'unknown' : `${truncDecimals(value)} ${unit}`
+          })
+          .join(', ')
+      : null
+
+  return valueLabel
+}
+
 const truncDecimals = (num) => (Math.round(num * 100) / 100).toFixed(2)
 
 const Highlighter = ({
@@ -66,18 +80,15 @@ const Highlighter = ({
     () => getCoords(hoverStart, hoverEnd, outerScale),
     [hoverStart, hoverEnd, outerScale]
   )
-  const valuesAtCenter = useMemo(() => getValuesAtCenter(activity, centerDate), [
+  const valueLabel = useMemo(() => getFormattedValuesAtCenter(activity, centerDate, unit), [
     activity,
     centerDate,
+    unit,
   ])
+
   if (hoverStart === null || hoverEnd === null) {
     return null
   }
-
-  const valueLabel =
-    valuesAtCenter !== null
-      ? valuesAtCenter.map((value) => `${truncDecimals(value)} ${unit}`).join(', ')
-      : null
 
   return (
     <Fragment>
