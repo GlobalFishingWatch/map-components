@@ -1,4 +1,5 @@
 .Timebar {
+  position: relative;
   width: 100%;
   height: var(--timebar-size);
   display: flex;

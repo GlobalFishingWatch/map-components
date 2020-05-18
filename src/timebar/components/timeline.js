@@ -97,6 +97,7 @@ class Timeline extends PureComponent {
     if (this.graphContainer !== null) {
       const graphStyle = window.getComputedStyle(this.graphContainer)
       const outerX = parseFloat(this.graphContainer.getBoundingClientRect().left)
+      const relativeOffsetX = -this.node.offsetLeft
       const outerWidth = parseFloat(graphStyle.width)
       const outerHeight = parseFloat(graphStyle.height)
       const innerStartPx = outerWidth * 0.15
@@ -109,6 +110,7 @@ class Timeline extends PureComponent {
         innerWidth,
         outerWidth,
         outerHeight,
+        relativeOffsetX,
       })
     }
   }
@@ -316,7 +318,7 @@ class Timeline extends PureComponent {
       innerStartPx,
       innerEndPx,
       innerWidth,
-      outerX,
+      relativeOffsetX,
       outerWidth,
       outerHeight,
     } = this.state
@@ -333,7 +335,6 @@ class Timeline extends PureComponent {
     const svgTransform = this.getSvgTransform(overallScale, start, end, innerWidth, innerStartPx)
 
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
-
     return (
       <div
         ref={(node) => (this.node = node)}
@@ -344,7 +345,7 @@ class Timeline extends PureComponent {
             scale={this.outerScale}
             bookmarkStart={bookmarkStart}
             bookmarkEnd={bookmarkEnd}
-            minX={-outerX}
+            minX={relativeOffsetX}
             maxX={outerWidth}
             onDelete={() => {
               onBookmarkChange(null, null)
