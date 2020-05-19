@@ -23,11 +23,16 @@ const ICONS = {
   fishing: null,
 }
 
-const Tooltip = ({ highlightedEvent, outerScale }) => {
+const Tooltip = ({ highlightedEvent, outerScale, innerStartPx, innerEndPx }) => {
   if (!highlightedEvent) {
     return null
   }
   const left = outerScale(highlightedEvent.start)
+
+  if (left < innerStartPx || left > innerEndPx) {
+    return null
+  }
+
   const width = highlightedEvent.end === null ? 0 : outerScale(highlightedEvent.end) - left
   const center = left + width / 2
 
@@ -58,6 +63,8 @@ Tooltip.propTypes = {
     description: PropTypes.string,
   }),
   outerScale: PropTypes.func.isRequired,
+  innerStartPx: PropTypes.number.isRequired,
+  innerEndPx: PropTypes.number.isRequired,
 }
 
 Tooltip.defaultProps = {
@@ -92,6 +99,8 @@ const TracksEvents = ({
   graphHeight,
   outerScale,
   tooltipContainer,
+  innerStartPx,
+  innerEndPx,
 }) => {
   const { immediate } = useContext(ImmediateContext)
   const tracksEventsWithCoordinates = useMemo(() => getCoordinates(tracksEvents, outerScale), [
@@ -151,7 +160,12 @@ const TracksEvents = ({
       </div>
       {tooltipContainer &&
         ReactDOM.createPortal(
-          <Tooltip highlightedEvent={highlightedEvent} outerScale={outerScale} />,
+          <Tooltip
+            highlightedEvent={highlightedEvent}
+            outerScale={outerScale}
+            innerStartPx={innerStartPx}
+            innerEndPx={innerEndPx}
+          />,
           tooltipContainer
         )}
     </Fragment>
@@ -175,6 +189,8 @@ TracksEvents.propTypes = {
   preselectedEventId: PropTypes.string,
   outerScale: PropTypes.func.isRequired,
   outerWidth: PropTypes.number.isRequired,
+  innerStartPx: PropTypes.number.isRequired,
+  innerEndPx: PropTypes.number.isRequired,
   graphHeight: PropTypes.number.isRequired,
   tooltipContainer: PropTypes.instanceOf(Element).isRequired,
   onEventClick: PropTypes.func,

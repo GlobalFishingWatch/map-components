@@ -386,6 +386,8 @@ class Timeline extends PureComponent {
                 outerHeight,
                 graphHeight: outerHeight,
                 innerWidth,
+                innerStartPx,
+                innerEndPx,
                 overallScale,
                 svgTransform,
                 tooltipContainer: this.tooltipContainer,
