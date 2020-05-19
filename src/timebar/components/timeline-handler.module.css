@@ -18,7 +18,7 @@
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
-  z-index: 2;
+  z-index: var(--timebar-z-handlers);
   transition: var(--timebar-hover-transition);
 }
 

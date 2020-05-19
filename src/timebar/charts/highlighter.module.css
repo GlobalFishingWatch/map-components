@@ -13,7 +13,7 @@
 .tooltipContainer {
   pointer-events: none;
   top: -23px;
-  z-index: 10;
+  z-index: var(--timebar-z-highlighter-tooltips);
 }
 
 .tooltip {

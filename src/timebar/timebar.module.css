@@ -48,7 +48,6 @@
   width: var(--timebar-size);
   display: flex;
   flex-wrap: wrap;
-  z-index: var(--timebar-z-date-selector);
 }
 
 .timeRange {

@@ -26,7 +26,7 @@
   padding: 6px 8px;
   transform: translate(-50%, -100%);
   top: 10px;
-  z-index: 100;
+  z-index: var(--timebar-z-tooltips);
   font-weight: normal;
   min-width: fit-content;
 }

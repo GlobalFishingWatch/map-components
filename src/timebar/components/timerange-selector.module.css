@@ -6,7 +6,7 @@
   background: var(--timebar-main-background-color);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-sizing: border-box;
-  z-index: 0;
+  z-index: var(--timebar-z-date-selector);
   box-shadow: 0 0 28px 5px rgba(0, 0, 0, 0.8);
 }
 

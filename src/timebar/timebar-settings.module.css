@@ -23,8 +23,11 @@
   --timebar-small-font-size: 1.2rem;
 
   /* Z */
+  --timebar-z-handlers: 2;
+  --timebar-z-highlighter-tooltips: 10;
   --timebar-z-timeline-bookmark: 98;
-  --timebar-z-date-selector: 99;
+  --timebar-z-tooltips: 100;
+  --timebar-z-date-selector: 999;
 
   /* OTHER */
   --timebar-hover-transition: all 150ms linear;
