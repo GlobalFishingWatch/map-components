@@ -36,7 +36,8 @@ const Tooltip = ({ highlightedEvent, outerScale, innerStartPx, innerEndPx }) => 
   const width = highlightedEvent.end === null ? 0 : outerScale(highlightedEvent.end) - left
   const center = left + width / 2
 
-  const start = dayjs(highlightedEvent.start)
+  const start = dayjs(highlightedEvent.start).utc()
+
   return (
     <div className={styles.tooltip} style={{ left: `${center}px` }} key="tooltip">
       {ICONS[highlightedEvent.type]}
@@ -95,6 +96,7 @@ const TracksEvents = ({
   tracksEvents,
   preselectedEventId,
   onEventClick,
+  onEventHover,
   outerWidth,
   graphHeight,
   outerScale,
@@ -150,8 +152,14 @@ const TracksEvents = ({
                     ? 'none'
                     : `left ${DEFAULT_CSS_TRANSITION}, width ${DEFAULT_CSS_TRANSITION}`,
                 }}
-                onMouseEnter={() => setHighlightedEvent(event)}
-                onMouseLeave={() => setHighlightedEvent()}
+                onMouseEnter={() => {
+                  onEventHover(event)
+                  setHighlightedEvent(event)
+                }}
+                onMouseLeave={() => {
+                  onEventHover()
+                  setHighlightedEvent()
+                }}
                 onClick={() => onEventClick(event)}
               />
             ))}
@@ -194,10 +202,12 @@ TracksEvents.propTypes = {
   graphHeight: PropTypes.number.isRequired,
   tooltipContainer: PropTypes.instanceOf(Element).isRequired,
   onEventClick: PropTypes.func,
+  onEventHover: PropTypes.func,
 }
 
 TracksEvents.defaultProps = {
   onEventClick: () => {},
+  onEventHover: () => {},
   preselectedEventId: null,
 }
 
