@@ -265,11 +265,10 @@ class Timeline extends PureComponent {
     const { start, end, onChange } = this.props
     const { dragging, outerX, innerStartPx } = this.state
 
-    this.context.toggleImmediate(false)
-
     if (dragging === null) {
       return
     }
+    this.context.toggleImmediate(false)
 
     const clientX = event.clientX || (event.changedTouches && event.changedTouches[0].clientX) || 0
     const x = clientX - outerX
