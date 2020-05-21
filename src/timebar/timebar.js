@@ -249,7 +249,9 @@ class Timebar extends Component {
           <div className={styles.timeActions}>
             {showTimeRangeSelector && (
               <TimeRangeSelector
-                {...this.props}
+                start={start}
+                end={end}
+                absoluteStart={absoluteStart}
                 absoluteEnd={absoluteEnd}
                 onSubmit={this.onTimeRangeSelectorSubmit}
                 onDiscard={this.toggleTimeRangeSelector}
@@ -301,7 +303,20 @@ class Timebar extends Component {
             </div>
           </div>
 
-          <Timeline {...this.props} onChange={this.notifyChange} absoluteEnd={absoluteEnd} />
+          <Timeline
+            children={this.props.children}
+            start={start}
+            end={end}
+            onChange={this.notifyChange}
+            onMouseLeave={this.props.onMouseLeave}
+            onMouseMove={this.props.onMouseMove}
+            absoluteStart={absoluteStart}
+            absoluteEnd={absoluteEnd}
+            onBookmarkChange={this.props.onBookmarkChange}
+            bookmarkStart={bookmarkStart}
+            bookmarkEnd={bookmarkEnd}
+            showLastUpdate={this.props.showLastUpdate}
+          />
         </div>
       </ImmediateContext.Provider>
     )
@@ -311,10 +326,13 @@ class Timebar extends Component {
 Timebar.propTypes = {
   start: PropTypes.string.isRequired,
   end: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  children: PropTypes.func.isRequired,
   bookmarkStart: PropTypes.string,
   bookmarkEnd: PropTypes.string,
+  onMouseLeave: PropTypes.func,
+  onMouseMove: PropTypes.func,
   onBookmarkChange: PropTypes.func,
-  onChange: PropTypes.func.isRequired,
   absoluteStart: PropTypes.string.isRequired,
   absoluteEnd: PropTypes.string.isRequired,
   enablePlayback: PropTypes.bool,
@@ -322,17 +340,21 @@ Timebar.propTypes = {
   minimumRangeUnit: PropTypes.string,
   maximumRange: PropTypes.number,
   maximumRangeUnit: PropTypes.string,
+  showLastUpdate: PropTypes.bool,
 }
 
 Timebar.defaultProps = {
   bookmarkStart: null,
   bookmarkEnd: null,
   enablePlayback: false,
+  onMouseLeave: () => {},
+  onMouseMove: () => {},
   onBookmarkChange: () => {},
   minimumRange: null,
   minimumRangeUnit: 'day',
   maximumRange: null,
   maximumRangeUnit: 'month',
+  showLastUpdate: true,
 }
 
 export default Timebar
