@@ -7,6 +7,7 @@ import styles from './tracks-events.module.css'
 import { getTrackY } from './utils'
 import { DEFAULT_CSS_TRANSITION, DEFAULT_FULL_DATE_FORMAT } from '../constants'
 import ImmediateContext from '../immediateContext'
+import { TimelineContext } from '../components/timeline'
 
 import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
@@ -92,19 +93,16 @@ const getCoordinates = (tracksEvents, outerScale) => {
   })
 }
 
-const TracksEvents = ({
-  tracksEvents,
-  preselectedEventId,
-  onEventClick,
-  onEventHover,
-  outerWidth,
-  graphHeight,
-  outerScale,
-  tooltipContainer,
-  innerStartPx,
-  innerEndPx,
-}) => {
+const TracksEvents = ({ tracksEvents, preselectedEventId, onEventClick, onEventHover }) => {
   const { immediate } = useContext(ImmediateContext)
+  const {
+    outerScale,
+    outerWidth,
+    graphHeight,
+    tooltipContainer,
+    innerStartPx,
+    innerEndPx,
+  } = useContext(TimelineContext)
   const tracksEventsWithCoordinates = useMemo(() => getCoordinates(tracksEvents, outerScale), [
     tracksEvents,
     outerScale,
@@ -195,12 +193,6 @@ TracksEvents.propTypes = {
     )
   ).isRequired,
   preselectedEventId: PropTypes.string,
-  outerScale: PropTypes.func.isRequired,
-  outerWidth: PropTypes.number.isRequired,
-  innerStartPx: PropTypes.number.isRequired,
-  innerEndPx: PropTypes.number.isRequired,
-  graphHeight: PropTypes.number.isRequired,
-  tooltipContainer: PropTypes.instanceOf(Element).isRequired,
   onEventClick: PropTypes.func,
   onEventHover: PropTypes.func,
 }

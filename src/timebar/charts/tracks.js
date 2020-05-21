@@ -4,6 +4,7 @@ import ImmediateContext from '../immediateContext'
 import styles from './tracks.module.css'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
 import { getTrackY } from './utils'
+import { TimelineContext } from '../components/timeline'
 
 const SegmentType = PropTypes.shape({
   start: PropTypes.number,
@@ -60,8 +61,9 @@ const getCoords = (tracks, outerScale) => {
   return coordTracks
 }
 
-const Tracks = ({ tracks, outerScale, graphHeight }) => {
+const Tracks = ({ tracks }) => {
   const { immediate } = useContext(ImmediateContext)
+  const { outerScale, graphHeight } = useContext(TimelineContext)
   const trackCoords = useMemo(() => getCoords(tracks, outerScale), [tracks, outerScale])
   if (tracks === null || tracks === undefined) return null
 
@@ -77,8 +79,6 @@ const Tracks = ({ tracks, outerScale, graphHeight }) => {
 
 Tracks.propTypes = {
   tracks: PropTypes.arrayOf(TrackType).isRequired,
-  outerScale: PropTypes.func.isRequired,
-  graphHeight: PropTypes.number.isRequired,
 }
 
 Tracks.defaultProps = {
