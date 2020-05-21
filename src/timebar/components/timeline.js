@@ -24,6 +24,8 @@ const DRAG_INNER = 'DRAG_INNER'
 const DRAG_START = 'DRAG_START'
 const DRAG_END = 'DRAG_END'
 
+export const TimelineContext = React.createContext({})
+
 class Timeline extends PureComponent {
   static contextType = ImmediateContext
 
@@ -336,121 +338,130 @@ class Timeline extends PureComponent {
 
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
     return (
-      <div
-        ref={(node) => (this.node = node)}
-        className={cx(styles.Timeline, { [styles._disabled]: immediate })}
+      <TimelineContext.Provider
+        value={{
+          outerScale: this.outerScale,
+          outerStart,
+          outerEnd,
+          outerWidth,
+          outerHeight,
+          graphHeight: outerHeight,
+          innerWidth,
+          innerStartPx,
+          innerEndPx,
+          overallScale,
+          svgTransform,
+          tooltipContainer: this.tooltipContainer,
+        }}
       >
-        {bookmarkStart !== undefined && bookmarkStart !== null && bookmarkStart !== '' && (
-          <Bookmark
-            scale={this.outerScale}
-            bookmarkStart={bookmarkStart}
-            bookmarkEnd={bookmarkEnd}
-            minX={relativeOffsetX}
-            maxX={outerWidth}
-            onDelete={() => {
-              onBookmarkChange(null, null)
-            }}
-            onSelect={() => {
-              onChange(bookmarkStart, bookmarkEnd)
-            }}
-          />
-        )}
         <div
-          className={styles.graphContainer}
-          ref={(ref) => {
-            this.graphContainer = ref
-          }}
+          ref={(node) => (this.node = node)}
+          className={cx(styles.Timeline, { [styles._disabled]: immediate })}
         >
-          {/* // TODO separated drag area? */}
+          {bookmarkStart !== undefined && bookmarkStart !== null && bookmarkStart !== '' && (
+            <Bookmark
+              scale={this.outerScale}
+              bookmarkStart={bookmarkStart}
+              bookmarkEnd={bookmarkEnd}
+              minX={relativeOffsetX}
+              maxX={outerWidth}
+              onDelete={() => {
+                onBookmarkChange(null, null)
+              }}
+              onSelect={() => {
+                onChange(bookmarkStart, bookmarkEnd)
+              }}
+            />
+          )}
           <div
-            className={styles.graph}
-            onMouseDown={(event) => {
-              this.onMouseDown(event, DRAG_INNER)
-            }}
-            onTouchStart={(event) => {
-              this.onMouseDown(event, DRAG_INNER)
+            className={styles.graphContainer}
+            ref={(ref) => {
+              this.graphContainer = ref
             }}
           >
-            <TimelineUnits
-              {...this.props}
-              outerScale={this.outerScale}
-              outerStart={outerStart}
-              outerEnd={outerEnd}
-            />
-            {this.props.children &&
-              this.props.children({
-                outerScale: this.outerScale,
-                outerStart,
-                outerEnd,
-                outerWidth,
-                outerHeight,
-                graphHeight: outerHeight,
-                innerWidth,
-                innerStartPx,
-                innerEndPx,
-                overallScale,
-                svgTransform,
-                tooltipContainer: this.tooltipContainer,
-                ...this.props,
-              })}
+            {/* // TODO separated drag area? */}
+            <div
+              className={styles.graph}
+              onMouseDown={(event) => {
+                this.onMouseDown(event, DRAG_INNER)
+              }}
+              onTouchStart={(event) => {
+                this.onMouseDown(event, DRAG_INNER)
+              }}
+            >
+              <TimelineUnits
+                start={start}
+                end={end}
+                absoluteStart={absoluteStart}
+                absoluteEnd={absoluteEnd}
+                outerScale={this.outerScale}
+                outerStart={outerStart}
+                outerEnd={outerEnd}
+                onChange={onChange}
+              />
+              {/* // TODO still need to pass props? */}
+              {this.props.children && this.props.children()}
+            </div>
           </div>
+          <div
+            className={styles.tooltipContainer}
+            ref={(el) => {
+              this.tooltipContainer = el
+            }}
+          />
+          <div
+            className={cx(styles.veilLeft, styles.veil, {
+              [styles._immediate]: dragging === DRAG_START,
+            })}
+            style={{
+              width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
+            }}
+          />
+          <Handler
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_START)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_START)
+            }}
+            dragging={this.state.dragging === DRAG_START}
+            x={innerStartPx}
+            mouseX={this.state.handlerMouseX}
+          />
+          <Handler
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_END)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_END)
+            }}
+            dragging={this.state.dragging === DRAG_END}
+            x={innerEndPx}
+            mouseX={this.state.handlerMouseX}
+          />
+          <div
+            className={cx(styles.veilRight, styles.veil, {
+              [styles._immediate]: dragging === DRAG_END,
+            })}
+            style={{
+              left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
+              width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
+            }}
+          />
+          {showLastUpdate && lastUpdatePosition <= outerWidth && (
+            <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
+              {(style) => (
+                <animated.div className={styles.absoluteEnd} style={style}>
+                  <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
+                  <div className={styles.lastUpdate}>
+                    {dayjs(absoluteEnd).format('MMMM D YYYY')}
+                  </div>
+                </animated.div>
+              )}
+            </Spring>
+          )}
         </div>
-        <div
-          className={styles.tooltipContainer}
-          ref={(el) => {
-            this.tooltipContainer = el
-          }}
-        />
-        <div
-          className={cx(styles.veilLeft, styles.veil, {
-            [styles._immediate]: dragging === DRAG_START,
-          })}
-          style={{
-            width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
-          }}
-        />
-        <Handler
-          onMouseDown={(event) => {
-            this.onMouseDown(event, DRAG_START)
-          }}
-          onTouchStart={(event) => {
-            this.onMouseDown(event, DRAG_START)
-          }}
-          dragging={this.state.dragging === DRAG_START}
-          x={innerStartPx}
-          mouseX={this.state.handlerMouseX}
-        />
-        <Handler
-          onMouseDown={(event) => {
-            this.onMouseDown(event, DRAG_END)
-          }}
-          onTouchStart={(event) => {
-            this.onMouseDown(event, DRAG_END)
-          }}
-          dragging={this.state.dragging === DRAG_END}
-          x={innerEndPx}
-          mouseX={this.state.handlerMouseX}
-        />
-        <div
-          className={cx(styles.veilRight, styles.veil, {
-            [styles._immediate]: dragging === DRAG_END,
-          })}
-          style={{
-            left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
-            width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
-          }}
-        />
-        {showLastUpdate && lastUpdatePosition <= outerWidth && (
-          <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
-            {(style) => (
-              <animated.div className={styles.absoluteEnd} style={style}>
-                <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
-                <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
-              </animated.div>
-            )}
-          </Spring>
-        )}
-      </div>
+      </TimelineContext.Provider>
     )
   }
 }

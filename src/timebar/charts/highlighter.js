@@ -1,9 +1,10 @@
-import React, { useMemo, Fragment } from 'react'
+import React, { useMemo, useContext, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import { getDefaultFormat } from '../utils/internal-utils'
 import styles from './highlighter.module.css'
+import { TimelineContext } from '../components/timeline'
 
 const getCoords = (hoverStart, hoverEnd, outerScale) => {
   const hoverStartDate = new Date(hoverStart)
@@ -68,15 +69,8 @@ const getFormattedValuesAtCenter = (activity, centerDate, unit) => {
 
 const truncDecimals = (num) => (Math.round(num * 100) / 100).toFixed(2)
 
-const Highlighter = ({
-  hoverStart,
-  hoverEnd,
-  activity,
-  unit,
-  outerScale,
-  graphHeight,
-  tooltipContainer,
-}) => {
+const Highlighter = ({ hoverStart, hoverEnd, activity, unit }) => {
+  const { outerScale, graphHeight, tooltipContainer } = useContext(TimelineContext)
   const { width, left, center, centerDate, centerDateLabel } = useMemo(
     () => getCoords(hoverStart, hoverEnd, outerScale),
     [hoverStart, hoverEnd, outerScale]
@@ -121,8 +115,6 @@ const Highlighter = ({
 }
 
 Highlighter.propTypes = {
-  outerScale: PropTypes.func.isRequired,
-  graphHeight: PropTypes.number.isRequired,
   hoverStart: PropTypes.string,
   hoverEnd: PropTypes.string,
   activity: PropTypes.arrayOf(

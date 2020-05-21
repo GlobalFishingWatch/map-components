@@ -13,6 +13,7 @@ import {
 } from 'd3-shape'
 import ImmediateContext from '../immediateContext'
 import { DEFAULT_CSS_TRANSITION } from '../constants'
+import { TimelineContext } from '../components/timeline'
 
 const TOP_MARGIN = 5
 const BOTTOM_MARGIN = 20
@@ -87,16 +88,9 @@ const getPathContainers = (graphTracks, graphHeight, overallScale, maxValues, cu
   })
 }
 
-const Activity = ({
-  graphTracks,
-  opacity,
-  curve,
-  outerWidth,
-  graphHeight,
-  svgTransform,
-  overallScale,
-}) => {
+const Activity = ({ graphTracks, opacity, curve }) => {
   const { immediate } = useContext(ImmediateContext)
+  const { overallScale, outerWidth, graphHeight, svgTransform } = useContext(TimelineContext)
 
   const maxValues = useMemo(() => {
     return getMaxValues(graphTracks)
@@ -145,12 +139,6 @@ Activity.propTypes = {
   ).isRequired,
   opacity: PropTypes.number,
   curve: PropTypes.string,
-  absoluteEnd: PropTypes.string.isRequired,
-  outerScale: PropTypes.func.isRequired,
-  outerWidth: PropTypes.number.isRequired,
-  graphHeight: PropTypes.number.isRequired,
-  svgTransform: PropTypes.string.isRequired,
-  overallScale: PropTypes.func.isRequired,
 }
 
 Activity.defaultProps = {
