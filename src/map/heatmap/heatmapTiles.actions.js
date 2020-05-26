@@ -220,19 +220,17 @@ export const updateHeatmapTilesFromViewport = (forceLoadingAllVisibleTiles = fal
   const viewportTilesIndexes = tilecover.indexes(geom, limits)
   const visibleTiles = []
 
+  console.log(viewportTilesCoords)
   viewportTilesCoords.forEach((coords, i) => {
     const uid = viewportTilesIndexes[i]
-    const zoom = coords[2]
-    if (zoom >= 2) {
-      visibleTiles.push({
-        tileCoordinates: {
-          x: coords[0],
-          y: coords[1],
-          zoom: coords[2],
-        },
-        uid,
-      })
-    }
+    visibleTiles.push({
+      tileCoordinates: {
+        x: coords[0],
+        y: coords[1],
+        zoom: coords[2],
+      },
+      uid,
+    })
   })
 
   dispatch({
