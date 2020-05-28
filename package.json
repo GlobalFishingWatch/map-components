@@ -25,9 +25,7 @@
     "docz:deploy": "npm run docz:build && gh-pages -d .docz/dist",
     "prepublish": "npm test && npm run build",
     "postpublish": "yarn docz:deploy",
-    "debug-server": "./src/map/redux-debug-server.js",
-    "test:watch": "jest test --env=jsdom --watch",
-    "test": "jest test --env=jsdom"
+    "debug-server": "./src/map/redux-debug-server.js"
   },
   "dependencies": {
     "@globalfishingwatch/map-convert": "github:GlobalFishingWatch/map-convert",
@@ -135,8 +133,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run test"
+      "pre-commit": "lint-staged"
     }
   },
   "files": [
