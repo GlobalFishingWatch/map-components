@@ -1,12 +1,9 @@
-// DEPRECATED - Still in use in data portal, but use tracks-events instead
-
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import { DEFAULT_FULL_DATE_FORMAT } from '../constants'
 import styles from './vessel-events.module.css'
 import { ReactComponent as IconEncounter } from '../icons/events/encounter.svg'
 import { ReactComponent as IconUnregistered } from '../icons/events/unregistered.svg'
@@ -27,6 +24,8 @@ const HEIGHTS = {
   gap: 8,
   encounter: 8,
 }
+
+const TOOLTIP_DATE_FORMAT = 'MMM D YYYY h:mm a'
 
 const Layer = React.memo((props) => {
   const { outerScale, events, y, className, children } = props
@@ -214,7 +213,7 @@ class VesselEvents extends Component {
       >
         {ICONS[highlightedEvent.type]}
         <div className={styles.tooltipText}>
-          <div className={styles.tooltipDate}>{start.format(DEFAULT_FULL_DATE_FORMAT)}</div>
+          <div className={styles.tooltipDate}>{start.format(TOOLTIP_DATE_FORMAT)}</div>
           {description}
         </div>
       </div>

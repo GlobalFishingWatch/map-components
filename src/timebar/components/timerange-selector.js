@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
-import { getTime } from '../utils/internal-utils'
+import { getTime } from '../utils'
 import DateSelector from './date-selector'
 import styles from './timerange-selector.module.css'
 

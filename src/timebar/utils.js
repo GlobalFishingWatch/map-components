@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { DEFAULT_DATE_FORMAT, DEFAULT_FULL_DATE_FORMAT } from '../constants'
 
 export const getTime = (dateISO) => new Date(dateISO).getTime()
 
@@ -35,8 +34,6 @@ export const clampToAbsoluteBoundaries = (
 export const getDeltaMs = (start, end) => getTime(end) - getTime(start)
 export const getDeltaDays = (start, end) => getDeltaMs(start, end) / 1000 / 60 / 60 / 24
 export const isMoreThanADay = (start, end) => getDeltaDays(start, end) >= 1
-export const getDefaultFormat = (start, end) =>
-  isMoreThanADay(start, end) ? DEFAULT_DATE_FORMAT : DEFAULT_FULL_DATE_FORMAT
 
 export const stickToClosestUnit = (date, unit) => {
   const mDate = dayjs(date)
@@ -46,4 +43,11 @@ export const stickToClosestUnit = (date, unit) => {
   const endDeltaMs = mEndOf.valueOf() - getTime(date)
   const mClosest = startDeltaMs > endDeltaMs ? mEndOf : mStartOf
   return mClosest.toISOString()
+}
+
+export const getHumanizedDates = (start, end) => {
+  const format = isMoreThanADay(start, end) ? 'MMM D YYYY' : 'MMM D YYYY HH[h]'
+  const humanizedStart = dayjs(start).format(format)
+  const humanizedEnd = dayjs(end).format(format)
+  return { humanizedStart, humanizedEnd }
 }

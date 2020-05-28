@@ -1,16 +1,3 @@
-import dayjs from 'dayjs'
-import { getDefaultFormat } from './internal-utils'
-
-export const getHumanizedDates = (start, end) => {
-  const format = getDefaultFormat(start, end)
-  const mStart = dayjs(start)
-  const mEnd = dayjs(end)
-  const humanizedStart = mStart.format(format)
-  const humanizedEnd = mEnd.format(format)
-  const interval = mEnd.diff(mStart, 'day')
-  return { humanizedStart, humanizedEnd, interval }
-}
-
 const getTimebarRangeAuto = (auto) => {
   const ONE_DAY = 24 * 60 * 60 * 1000
   const daysEndInnerOuterFromToday = auto.daysEndInnerOuterFromToday || 4
@@ -36,25 +23,4 @@ export const getTimebarRangeByWorkspace = (timeline) => {
   return timeline.auto !== undefined
     ? getTimebarRangeAuto(timeline.auto)
     : getTimebarRangeDefault(timeline)
-}
-
-export const geoJSONTrackToTimebarFeatureSegments = ({ features = [] } = {}) => {
-  const graph = features
-    .filter((feature) => feature.properties.type === 'track')
-    .map((feature) => {
-      const coordProps = feature.properties.coordinateProperties
-      const featureKeys = Object.keys(coordProps)
-      const segment = []
-      coordProps.times.forEach((time, i) => {
-        const point = {
-          date: time,
-        }
-        featureKeys.forEach((key) => {
-          point[key] = coordProps[key][i]
-        })
-        segment.push(point)
-      })
-      return segment
-    })
-  return graph
 }

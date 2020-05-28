@@ -1,23 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { animated, Transition } from 'react-spring/renderprops'
+import { getDeltaDays } from '../utils'
 import ImmediateContext from '../immediateContext'
 import styles from './timeline-units.module.css'
-import { DEFAULT_CSS_TRANSITION } from '../constants'
 import { getUnitsPositions } from '../layouts'
-import { clampToAbsoluteBoundaries, getDeltaMs, getDeltaDays } from '../utils/internal-utils'
 
 class TimelineUnits extends Component {
   static contextType = ImmediateContext
   zoomToUnit({ start, end }) {
-    const { absoluteStart, absoluteEnd } = this.props
-    const { newStartClamped, newEndClamped } = clampToAbsoluteBoundaries(
-      start,
-      end,
-      getDeltaMs(start, end),
-      absoluteStart,
-      absoluteEnd
-    )
-    this.props.onChange(newStartClamped, newEndClamped)
+    this.props.onChange(start, end)
   }
 
   render() {
@@ -38,35 +30,37 @@ class TimelineUnits extends Component {
       absoluteEnd,
       baseUnit
     )
+
     return (
       <div>
-        {units.map((d) => (
-          <div
-            key={d.id}
-            style={{
-              left: d.x,
-              width: d.width,
-              transition: immediate
-                ? 'none'
-                : `width ${DEFAULT_CSS_TRANSITION}, left ${DEFAULT_CSS_TRANSITION}`,
-            }}
-            className={styles.unit}
-          >
-            {baseUnit === 'hour' ? (
-              <div>{d.label}</div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  this.zoomToUnit(d)
-                }}
-                title={d.hoverLabel}
-              >
-                {d.label}
-              </button>
-            )}
-          </div>
-        ))}
+        <Transition
+          native
+          immediate={immediate}
+          items={units}
+          keys={units.map((d) => d.id)}
+          from={{ opacity: 0 }}
+          leave={{ opacity: 0 }}
+          enter={(d) => ({ left: d.x, width: d.width, opacity: 1 })}
+          update={(d) => ({ left: d.x, width: d.width, opacity: 1 })}
+        >
+          {(d) => (s) => (
+            <animated.div style={s} className={styles.unit}>
+              {baseUnit === 'hour' ? (
+                <animated.div>{d.label}</animated.div>
+              ) : (
+                <animated.button
+                  type="button"
+                  onClick={() => {
+                    this.zoomToUnit(d)
+                  }}
+                  title={d.hoverLabel}
+                >
+                  {d.label}
+                </animated.button>
+              )}
+            </animated.div>
+          )}
+        </Transition>
       </div>
     )
   }

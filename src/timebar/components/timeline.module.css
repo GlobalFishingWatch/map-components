@@ -2,11 +2,7 @@
   width: 100%;
   background-position-y: 1rem;
   position: relative;
-  z-index: var(--timebar-z-timeline-bookmark);
-}
-
-._disabled {
-  pointer-events: none;
+  z-index: 0;
 }
 
 .graphContainer {
@@ -82,8 +78,4 @@
   text-transform: uppercase;
   opacity: 0.4;
   font-size: 1.2rem;
-}
-
-.tooltipContainer {
-  visibility: visible;
 }

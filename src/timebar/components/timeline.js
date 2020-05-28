@@ -1,6 +1,5 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import memoize from 'memoize-one'
 import cx from 'classnames'
 import { scaleTime } from 'd3-scale'
 import dayjs from 'dayjs'
@@ -13,44 +12,18 @@ import {
   getDeltaMs,
   isMoreThanADay,
   stickToClosestUnit,
-} from '../utils/internal-utils'
+} from '../utils'
 import Bookmark from './bookmark'
 import TimelineUnits from './timeline-units'
 import Handler from './timeline-handler'
 import styles from './timeline.module.css'
-import ResizeObserver from 'resize-observer-polyfill'
 
 const DRAG_INNER = 'DRAG_INNER'
 const DRAG_START = 'DRAG_START'
 const DRAG_END = 'DRAG_END'
 
-export const TimelineContext = React.createContext({})
-
-class Timeline extends PureComponent {
+class Timeline extends Component {
   static contextType = ImmediateContext
-
-  getOuterScale = memoize((outerStart, outerEnd, outerWidth) =>
-    scaleTime()
-      .domain([new Date(outerStart), new Date(outerEnd)])
-      .range([0, outerWidth])
-  )
-
-  getOverallScale = memoize((absoluteStart, absoluteEnd, innerWidth) =>
-    scaleTime()
-      .domain([new Date(absoluteStart), new Date(absoluteEnd)])
-      .range([0, innerWidth])
-  )
-
-  getSvgTransform = memoize((overallScale, start, end, innerWidth, innerStartPx) => {
-    const startX = overallScale(new Date(start))
-    const endX = overallScale(new Date(end))
-    const deltaX = endX - startX
-    const scaleX = innerWidth / deltaX
-
-    const t = `translate(${innerStartPx}, 0) scale(${scaleX}, 1) translate(${-startX}, 0)`
-    return t
-  })
-
   constructor() {
     super()
     this.state = {
@@ -66,20 +39,14 @@ class Timeline extends PureComponent {
   }
 
   componentDidMount() {
+    // wait for end of call stack to get rendered CSS
+    window.setTimeout(this.onWindowResize, 10)
+    window.addEventListener('resize', this.onWindowResize)
     window.addEventListener('mousemove', this.onMouseMove)
     window.addEventListener('touchmove', this.onMouseMove)
     window.addEventListener('mouseup', this.onMouseUp)
     window.addEventListener('touchend', this.onMouseUp)
     this.requestAnimationFrame = window.requestAnimationFrame(this.onEnterFrame)
-
-    // wait for end of call stack to get rendered CSS
-    window.setTimeout(this.onWindowResize, 10)
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(this.onWindowResize)
-      this.resizeObserver.observe(this.node)
-    } else {
-      window.addEventListener('resize', this.onWindowResize)
-    }
   }
 
   componentWillUnmount() {
@@ -89,17 +56,12 @@ class Timeline extends PureComponent {
     window.removeEventListener('mouseup', this.onMouseUp)
     window.removeEventListener('touchend', this.onMouseUp)
     window.cancelAnimationFrame(this.requestAnimationFrame)
-
-    if (this.resizeObserver) {
-      this.resizeObserver.unobserve(this.node)
-    }
   }
 
   onWindowResize = () => {
     if (this.graphContainer !== null) {
       const graphStyle = window.getComputedStyle(this.graphContainer)
       const outerX = parseFloat(this.graphContainer.getBoundingClientRect().left)
-      const relativeOffsetX = -this.node.offsetLeft
       const outerWidth = parseFloat(graphStyle.width)
       const outerHeight = parseFloat(graphStyle.height)
       const innerStartPx = outerWidth * 0.15
@@ -112,7 +74,6 @@ class Timeline extends PureComponent {
         innerWidth,
         outerWidth,
         outerHeight,
-        relativeOffsetX,
       })
     }
   }
@@ -176,7 +137,7 @@ class Timeline extends PureComponent {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
+      onChange(newStartClamped, newEndClamped)
     }
 
     this.requestAnimationFrame = window.requestAnimationFrame(this.onEnterFrame)
@@ -187,7 +148,7 @@ class Timeline extends PureComponent {
     const clientX = event.clientX || event.changedTouches[0].clientX
     this.lastX = clientX
     const x = clientX - outerX
-
+    this.context.toggleImmediate(true)
     this.setState({
       dragging,
       handlerMouseX: x,
@@ -197,10 +158,6 @@ class Timeline extends PureComponent {
   throttledMouseMove = throttle((clientX, scale, isDay) => {
     this.props.onMouseMove(clientX, scale, isDay)
   }, 16)
-
-  notifyMouseLeave = () => {
-    this.throttledMouseMove(null, null, null)
-  }
 
   onMouseMove = (event) => {
     const { start, end, absoluteStart, absoluteEnd, onChange, onMouseLeave } = this.props
@@ -218,22 +175,8 @@ class Timeline extends PureComponent {
     } else if (this.isMovingInside === true) {
       this.isMovingInside = false
       onMouseLeave()
-      this.notifyMouseLeave()
     }
-
-    const isDraggingInner = dragging === DRAG_INNER
-    const isDraggingZoomIn = this.isHandlerZoomInValid(x).isValid === true
-    const isDraggingZoomOut = this.isHandlerZoomOutValid(x) === true
-
-    if (isDraggingInner || isDraggingZoomIn || isDraggingZoomOut) {
-      // trigger setting immediate only once, when any drag interaction starts
-      // this can't be done in onMouseDown because it would disable click interaction on graph or tmln units
-      if (this.context.immediate === false) {
-        this.context.toggleImmediate(true)
-      }
-    }
-
-    if (isDraggingInner) {
+    if (dragging === DRAG_INNER) {
       const currentDeltaMs = getDeltaMs(start, end)
       // Calculates x movement from last event since TouchEvent doesn't have the movementX property
       const movementX = clientX - this.lastX
@@ -247,13 +190,13 @@ class Timeline extends PureComponent {
         absoluteStart,
         absoluteEnd
       )
-      onChange(newStartClamped, newEndClamped, dragging === DRAG_END)
-    } else if (isDraggingZoomIn) {
+      onChange(newStartClamped, newEndClamped)
+    } else if (this.isHandlerZoomInValid(x).isValid === true) {
       this.setState({
         handlerMouseX: x,
         outerDrag: false,
       })
-    } else if (isDraggingZoomOut) {
+    } else if (this.isHandlerZoomOutValid(x) === true) {
       this.setState({
         handlerMouseX: x,
         outerDrag: true,
@@ -268,13 +211,13 @@ class Timeline extends PureComponent {
     if (dragging === null) {
       return
     }
-    this.context.toggleImmediate(false)
 
-    const clientX = event.clientX || (event.changedTouches && event.changedTouches[0].clientX) || 0
+    const clientX = event.clientX || event.changedTouches[0].clientX
     const x = clientX - outerX
 
     const isHandlerZoomInValid = this.isHandlerZoomInValid(x)
 
+    this.context.toggleImmediate(false)
     this.setState({
       dragging: null,
       handlerMouseX: null,
@@ -305,13 +248,11 @@ class Timeline extends PureComponent {
     const {
       start,
       end,
-      absoluteStart,
       absoluteEnd,
       bookmarkStart,
       bookmarkEnd,
       onChange,
       onBookmarkChange,
-      showLastUpdate,
     } = this.props
     const {
       dragging,
@@ -319,7 +260,7 @@ class Timeline extends PureComponent {
       innerStartPx,
       innerEndPx,
       innerWidth,
-      relativeOffsetX,
+      outerX,
       outerWidth,
       outerHeight,
     } = this.state
@@ -331,136 +272,119 @@ class Timeline extends PureComponent {
     const outerStart = this.innerScale.invert(-innerStartPx).toISOString()
     const outerEnd = this.innerScale.invert(outerWidth - innerStartPx).toISOString()
 
-    this.outerScale = this.getOuterScale(outerStart, outerEnd, this.state.outerWidth)
-    const overallScale = this.getOverallScale(absoluteStart, absoluteEnd, innerWidth)
-    const svgTransform = this.getSvgTransform(overallScale, start, end, innerWidth, innerStartPx)
+    this.outerScale = scaleTime()
+      .domain([new Date(outerStart), new Date(outerEnd)])
+      .range([0, this.state.outerWidth])
 
     const lastUpdatePosition = this.outerScale(new Date(absoluteEnd))
+
     return (
-      <TimelineContext.Provider
-        value={{
-          outerScale: this.outerScale,
-          outerStart,
-          outerEnd,
-          outerWidth,
-          outerHeight,
-          graphHeight: outerHeight,
-          innerWidth,
-          innerStartPx,
-          innerEndPx,
-          overallScale,
-          svgTransform,
-          tooltipContainer: this.tooltipContainer,
-        }}
-      >
+      <div ref={(node) => (this.node = node)} className={styles.Timeline}>
+        {bookmarkStart !== undefined && bookmarkStart !== null && (
+          <Bookmark
+            scale={this.outerScale}
+            bookmarkStart={bookmarkStart}
+            bookmarkEnd={bookmarkEnd}
+            minX={-outerX}
+            maxX={outerWidth}
+            onDelete={() => {
+              onBookmarkChange(null, null)
+            }}
+            onSelect={() => {
+              onChange(bookmarkStart, bookmarkEnd)
+            }}
+          />
+        )}
         <div
-          ref={(node) => (this.node = node)}
-          className={cx(styles.Timeline, { [styles._disabled]: immediate })}
+          className={styles.graphContainer}
+          ref={(ref) => {
+            this.graphContainer = ref
+          }}
         >
-          {bookmarkStart !== undefined && bookmarkStart !== null && bookmarkStart !== '' && (
-            <Bookmark
-              scale={this.outerScale}
-              bookmarkStart={bookmarkStart}
-              bookmarkEnd={bookmarkEnd}
-              minX={relativeOffsetX}
-              maxX={outerWidth}
-              onDelete={() => {
-                onBookmarkChange(null, null)
-              }}
-              onSelect={() => {
-                onChange(bookmarkStart, bookmarkEnd)
-              }}
-            />
-          )}
+          {/* // TODO separated drag area? */}
           <div
-            className={styles.graphContainer}
-            ref={(ref) => {
-              this.graphContainer = ref
+            className={styles.graph}
+            onMouseDown={(event) => {
+              this.onMouseDown(event, DRAG_INNER)
+            }}
+            onTouchStart={(event) => {
+              this.onMouseDown(event, DRAG_INNER)
             }}
           >
-            {/* // TODO separated drag area? */}
-            <div
-              className={styles.graph}
-              onMouseDown={(event) => {
-                this.onMouseDown(event, DRAG_INNER)
-              }}
-              onTouchStart={(event) => {
-                this.onMouseDown(event, DRAG_INNER)
-              }}
-            >
-              <TimelineUnits
-                start={start}
-                end={end}
-                absoluteStart={absoluteStart}
-                absoluteEnd={absoluteEnd}
-                outerScale={this.outerScale}
-                outerStart={outerStart}
-                outerEnd={outerEnd}
-                onChange={onChange}
-              />
-              {/* // TODO still need to pass props? */}
-              {this.props.children && this.props.children()}
-            </div>
+            <TimelineUnits
+              {...this.props}
+              outerScale={this.outerScale}
+              outerStart={outerStart}
+              outerEnd={outerEnd}
+            />
+            {this.props.children &&
+              this.props.children({
+                outerScale: this.outerScale,
+                outerStart,
+                outerEnd,
+                outerWidth,
+                outerHeight,
+                graphHeight: outerHeight,
+                tooltipContainer: this.tooltipContainer,
+                ...this.props,
+              })}
           </div>
-          <div
-            className={styles.tooltipContainer}
-            ref={(el) => {
-              this.tooltipContainer = el
-            }}
-          />
-          <div
-            className={cx(styles.veilLeft, styles.veil, {
-              [styles._immediate]: dragging === DRAG_START,
-            })}
-            style={{
-              width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
-            }}
-          />
-          <Handler
-            onMouseDown={(event) => {
-              this.onMouseDown(event, DRAG_START)
-            }}
-            onTouchStart={(event) => {
-              this.onMouseDown(event, DRAG_START)
-            }}
-            dragging={this.state.dragging === DRAG_START}
-            x={innerStartPx}
-            mouseX={this.state.handlerMouseX}
-          />
-          <Handler
-            onMouseDown={(event) => {
-              this.onMouseDown(event, DRAG_END)
-            }}
-            onTouchStart={(event) => {
-              this.onMouseDown(event, DRAG_END)
-            }}
-            dragging={this.state.dragging === DRAG_END}
-            x={innerEndPx}
-            mouseX={this.state.handlerMouseX}
-          />
-          <div
-            className={cx(styles.veilRight, styles.veil, {
-              [styles._immediate]: dragging === DRAG_END,
-            })}
-            style={{
-              left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
-              width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
-            }}
-          />
-          {showLastUpdate && lastUpdatePosition <= outerWidth && (
-            <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
-              {(style) => (
-                <animated.div className={styles.absoluteEnd} style={style}>
-                  <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
-                  <div className={styles.lastUpdate}>
-                    {dayjs(absoluteEnd).format('MMMM D YYYY')}
-                  </div>
-                </animated.div>
-              )}
-            </Spring>
-          )}
         </div>
-      </TimelineContext.Provider>
+        <div
+          ref={(el) => {
+            this.tooltipContainer = el
+          }}
+        />
+        <div
+          className={cx(styles.veilLeft, styles.veil, {
+            [styles._immediate]: dragging === DRAG_START,
+          })}
+          style={{
+            width: dragging === DRAG_START ? handlerMouseX : innerStartPx,
+          }}
+        />
+        <Handler
+          onMouseDown={(event) => {
+            this.onMouseDown(event, DRAG_START)
+          }}
+          onTouchStart={(event) => {
+            this.onMouseDown(event, DRAG_START)
+          }}
+          dragging={this.state.dragging === DRAG_START}
+          x={innerStartPx}
+          mouseX={this.state.handlerMouseX}
+        />
+        <Handler
+          onMouseDown={(event) => {
+            this.onMouseDown(event, DRAG_END)
+          }}
+          onTouchStart={(event) => {
+            this.onMouseDown(event, DRAG_END)
+          }}
+          dragging={this.state.dragging === DRAG_END}
+          x={innerEndPx}
+          mouseX={this.state.handlerMouseX}
+        />
+        <div
+          className={cx(styles.veilRight, styles.veil, {
+            [styles._immediate]: dragging === DRAG_END,
+          })}
+          style={{
+            left: dragging === DRAG_END ? handlerMouseX : innerEndPx,
+            width: dragging === DRAG_END ? outerWidth - handlerMouseX : outerWidth - innerEndPx,
+          }}
+        />
+        {lastUpdatePosition <= outerWidth && (
+          <Spring native immediate={immediate} to={{ left: lastUpdatePosition }}>
+            {(style) => (
+              <animated.div className={styles.absoluteEnd} style={style}>
+                <div className={cx(styles.lastUpdate, styles.lastUpdateLabel)}>Last Update</div>
+                <div className={styles.lastUpdate}>{dayjs(absoluteEnd).format('MMMM D YYYY')}</div>
+              </animated.div>
+            )}
+          </Spring>
+        )}
+      </div>
     )
   }
 }
@@ -477,7 +401,6 @@ Timeline.propTypes = {
   onBookmarkChange: PropTypes.func,
   bookmarkStart: PropTypes.string,
   bookmarkEnd: PropTypes.string,
-  showLastUpdate: PropTypes.bool,
 }
 
 Timeline.defaultProps = {
@@ -486,7 +409,6 @@ Timeline.defaultProps = {
   onBookmarkChange: () => {},
   onMouseLeave: () => {},
   onMouseMove: () => {},
-  showLastUpdate: true,
 }
 
 export default Timeline
