@@ -1,14 +1,20 @@
-# GFW map components
+# ⚠️ LEGACY ⚠️ GFW map components
 
 [![npm version](https://badge.fury.io/js/%40globalfishingwatch%2Fmap-components.svg)](https://badge.fury.io/js/%40globalfishingwatch%2Fmap-components)
 
-Set of components used in global fishing watch map frontend.
+All components has been moved to a [monorepo](https://github.com/GlobalFishingWatch/frontend/tree/master/packages/ui-components) and are now available at @globalfishingwatch/ui-components.
+
+This repo only contains now legacy components used in data-portal and map-client
+
+- Timebar
+- MapModule
 
 ## Using the components
 
 Check out the [online documentation](http://globalfishingwatch.io/map-components/)
 
 ## Components structure
+
 ```
 component
 │   component.js    // Component logic
@@ -44,17 +50,6 @@ yarn link "@globalfishingwatch/map-components"
 yarn start
 ```
 
-### React hooks error
-
-This is due to mismatching/duplicate `react(-dom)` versions between `map-components` and the parent project when using `yarn link`. Run from the `map-components` directory:
-
-```
-npm link ../[parent project]/node_modules/react
-npm link ../[parent project]/node_modules/react-dom
-```
-
-Where `[parent project]` is `map-client`, `carrier-portal`, etc...
-
 ## Documentation
 
 [Docz](https://www.docz.site/) is used to include live components documentation using mdx.
@@ -79,6 +74,4 @@ and it will update the package.json, generate the github release and push your c
 npm publish
 ```
 
-(⚠️ don't forget to bump dependency version on parent project if needed!) 
-
-
+(⚠️ don't forget to bump dependency version on parent project if needed!)
