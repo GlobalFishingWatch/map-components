@@ -6,7 +6,7 @@ All components has been moved to a [monorepo](https://github.com/GlobalFishingWa
 
 This repo only contains now legacy components used in data-portal and map-client
 
-- Timebar
+- Timebar (2.2 branch)
 - MapModule
 
 ## Using the components
