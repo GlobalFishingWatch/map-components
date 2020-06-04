@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { getTime } from '../utils/internal-utils'
+import { getTime } from '../utils'
 
 const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
   /* eslint key-spacing: 0, no-multi-spaces: 0 */
@@ -15,7 +15,11 @@ const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
     year: { isFirst: () => false, formats: [[0, 'YYYY']] },
     month: {
       isFirst: (fm) => fm.month() === 0,
-      formats: [[200, 'MMMM YYYY'], [100, 'MMMM', 'MMM YYYY'], [0, 'MMM', 'MMM YY']],
+      formats: [
+        [200, 'MMMM YYYY'],
+        [100, 'MMMM', 'MMM YYYY'],
+        [0, 'MMM', 'MMM YY'],
+      ],
     },
     week: {
       isFirst: (fm) => {
@@ -44,7 +48,10 @@ const getUnitLabel = (mUnit, baseUnit, availableWidth) => {
     },
     hour: {
       isFirst: (fm) => fm.hour() === 0,
-      formats: [[999, 'ddd D MMMM YYYY H[H]'], [0, 'H[H]', 'ddd D']],
+      formats: [
+        [999, 'ddd D MMMM YYYY H[H]'],
+        [0, 'H[H]', 'ddd D'],
+      ],
     },
   }
   const unitFormat = FORMATS[baseUnit]

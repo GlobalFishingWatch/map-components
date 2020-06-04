@@ -44,13 +44,8 @@
   margin: 0 2.4rem;
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 72rem) {
   .playbackActions {
     display: none;
   }
-}
-
-.play:disabled {
-  pointer-events: none;
-  opacity: 0.5;
 }

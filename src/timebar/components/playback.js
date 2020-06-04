@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import cx from 'classnames'
 import memoize from 'memoize-one'
 import { scaleLinear } from 'd3-scale'
-import { clampToAbsoluteBoundaries } from '../utils/internal-utils'
+import { clampToAbsoluteBoundaries } from '../utils'
 import ImmediateContext from '../immediateContext'
 import { ReactComponent as IconLoop } from '../icons/loop.svg'
 import { ReactComponent as IconBack } from '../icons/back.svg'
@@ -100,13 +100,12 @@ class Playback extends Component {
 
     const playingNext = force === undefined ? !playing : force
 
-    this.lastUpdateMs = null
-
     if (playingNext) {
       this.context.toggleImmediate(true)
       this.requestAnimationFrame = window.requestAnimationFrame(this.tick)
     } else {
       this.context.toggleImmediate(false)
+      this.lastUpdateMs = null
       window.cancelAnimationFrame(this.requestAnimationFrame)
     }
 
@@ -145,8 +144,6 @@ class Playback extends Component {
 
   render() {
     const { playing, loop, speedStep } = this.state
-    const { end, absoluteEnd } = this.props
-    const stoppedAtEnd = end === absoluteEnd && loop !== true
 
     return (
       <div
@@ -176,7 +173,6 @@ class Playback extends Component {
           type="button"
           title={`${playing === true ? 'Pause' : 'Play'} animation`}
           onClick={this.onPlayToggleClick}
-          disabled={stoppedAtEnd}
           className={cx(uiStyles.uiButton, styles.buttonBigger, styles.play)}
         >
           {playing === true ? <IconPause /> : <IconPlay />}

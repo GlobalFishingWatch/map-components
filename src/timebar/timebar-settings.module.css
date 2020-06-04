@@ -12,7 +12,6 @@
   --timebar-cta-btn-color: #46a4b9;
   --timebar-cta-btn-hover: #58acbf;
   --timebar-light-blue: #4fc6d7;
-  --timebar-track-default: #fe81eb;
   --timebar-white: #fff;
 
   /* TYPE */
@@ -21,13 +20,6 @@
   --timebar-font-size: 1.3rem;
   --timebar-font-weight: 500;
   --timebar-small-font-size: 1.2rem;
-
-  /* Z */
-  --timebar-z-handlers: 2;
-  --timebar-z-highlighter-tooltips: 10;
-  --timebar-z-timeline-bookmark: 98;
-  --timebar-z-tooltips: 100;
-  --timebar-z-date-selector: 999;
 
   /* OTHER */
   --timebar-hover-transition: all 150ms linear;

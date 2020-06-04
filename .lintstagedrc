@@ -1,12 +1,10 @@
 {
-  "*.css": ["prettier --write", "stylelint --fix", "git add"],
-  "*.scss": ["prettier --write", "stylelint --syntax=scss --fix", "git add"],
+  "*.css": ["prettier --write", "stylelint --fix"],
+  "*.scss": ["prettier --write", "stylelint --syntax=scss --fix"],
   "*.{js,jsx}": [
-    "eslint --fix",
-    "git add"
+    "eslint --fix"
   ],
   "*.{png,jpeg,jpg,gif,svg}": [
-    "imagemin-lint-staged",
-    "git add"
+    "imagemin-lint-staged"
   ]
 }
