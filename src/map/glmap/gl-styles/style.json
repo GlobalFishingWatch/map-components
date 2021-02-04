@@ -182,7 +182,8 @@
     },
     "encounters_ais": {
       "type": "vector",
-      "tiles": []
+      "tiles": [],
+      "maxzoom": 3
     },
     "events_fishing": {
       "type": "vector",
@@ -572,10 +573,9 @@
       "id": "encounters_ais",
       "type": "circle",
       "source": "encounters_ais",
-      "source-layer": "points",
+      "source-layer": "default",
       "metadata": {
         "gfw:temporal": true,
-        "gfw:temporalField": "timeIndex",
         "mapbox:group": "temporal"
       },
       "paint": {
@@ -589,10 +589,9 @@
       "id": "encounters_ais_outline",
       "type": "circle",
       "source": "encounters_ais",
-      "source-layer": "points",
+      "source-layer": "default",
       "metadata": {
         "gfw:temporal": true,
-        "gfw:temporalField": "timeIndex",
         "gfw:mainColorPaintProperty": "circle-stroke-color",
         "mapbox:group": "temporal"
       },
