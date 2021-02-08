@@ -182,7 +182,8 @@
     },
     "encounters_ais": {
       "type": "vector",
-      "tiles": []
+      "tiles": [],
+      "maxzoom": 3
     },
     "events_fishing": {
       "type": "vector",
