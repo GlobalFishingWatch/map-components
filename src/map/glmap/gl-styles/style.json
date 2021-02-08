@@ -573,10 +573,11 @@
       "id": "encounters_ais",
       "type": "circle",
       "source": "encounters_ais",
-      "source-layer": "default",
+      "source-layer": "points",
       "metadata": {
         "gfw:temporal": true,
-        "mapbox:group": "temporal"
+        "mapbox:group": "temporal",
+        "gfw:temporalField": "timeIndex"
       },
       "paint": {
         "circle-color": "#e5647d",
@@ -589,11 +590,12 @@
       "id": "encounters_ais_outline",
       "type": "circle",
       "source": "encounters_ais",
-      "source-layer": "default",
+      "source-layer": "points",
       "metadata": {
         "gfw:temporal": true,
         "gfw:mainColorPaintProperty": "circle-stroke-color",
-        "mapbox:group": "temporal"
+        "mapbox:group": "temporal",
+        "gfw:temporalField": "timeIndex"
       },
       "paint": {
         "circle-color": "hsla(0, 0%, 0%, 0)",
